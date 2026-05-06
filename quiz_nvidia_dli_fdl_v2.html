@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QCM — NVIDIA DLI Fundamentals of Deep Learning | CYBERSTRUCT</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f8f7f4; --surface: #ffffff; --surface2: #f2f1ee;
+    --text: #1a1a18; --text-muted: #6b6a66; --text-hint: #9e9d99;
+    --border: rgba(0,0,0,0.10); --border-med: rgba(0,0,0,0.18);
+    --accent: #76B900; --accent-bg: #F0F9E0; --accent-text: #3D6200;
+    --success-bg: #EAF3DE; --success-border: #639922; --success-text: #27500A;
+    --error-bg: #FCEBEB; --error-border: #E24B4A; --error-text: #A32D2D;
+    --warn-bg: #FAEEDA; --warn-border: #BA7517; --warn-text: #854F0B;
+    --code-bg: #1e1e1e; --code-text: #d4d4d4;
+    --radius: 10px; --radius-sm: 6px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a; --surface: #252523; --surface2: #2e2e2b;
+      --text: #f0ede8; --text-muted: #a09f9a; --text-hint: #6b6a66;
+      --border: rgba(255,255,255,0.10); --border-med: rgba(255,255,255,0.18);
+      --accent: #76B900; --accent-bg: #1A2D00; --accent-text: #A8E050;
+      --success-bg: #0e2206; --success-border: #3B6D11; --success-text: #C0DD97;
+      --error-bg: #2a0a0a; --error-border: #A32D2D; --error-text: #F09595;
+      --warn-bg: #2a1a04; --warn-border: #854F0B; --warn-text: #FAC775;
+    }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+  .header { background: var(--surface); border-bottom: 0.5px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; }
+  .header-logo { width: 32px; height: 32px; background: var(--accent); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; font-weight: 800; color: #1a1a18; }
+  .header-info { flex: 1; min-width: 0; }
+  .header-title { font-size: 13px; font-weight: 500; color: var(--text); }
+  .header-sub { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .header-score { font-size: 12px; font-weight: 500; color: var(--accent-text); background: var(--accent-bg); padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+  .main { max-width: 720px; margin: 0 auto; padding: 20px 16px 60px; }
+  .progress-wrap { margin-bottom: 18px; }
+  .progress-track { height: 3px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+  .progress-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-hint); margin-top: 5px; }
+  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 22px; }
+  .bloc-badge { display: inline-block; font-size: 11px; font-weight: 500; background: var(--accent-bg); color: var(--accent-text); padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; }
+  .question-text { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.55; margin-bottom: 14px; }
+  .code-block { background: var(--code-bg); color: var(--code-text); font-family: 'SF Mono','Fira Code','Consolas',monospace; font-size: 12px; line-height: 1.7; padding: 14px 16px; border-radius: var(--radius-sm); margin-bottom: 14px; overflow-x: auto; white-space: pre; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn { display: flex; align-items: flex-start; gap: 11px; padding: 11px 14px; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; text-align: left; font-size: 13px; color: var(--text); line-height: 1.5; transition: background 0.12s, border-color 0.12s, transform 0.08s; width: 100%; font-family: inherit; }
+  .option-btn:hover:not(:disabled) { background: var(--surface2); border-color: var(--accent); transform: translateX(2px); }
+  .option-btn:disabled { cursor: default; }
+  .option-letter { font-size: 11px; font-weight: 500; min-width: 20px; height: 20px; background: var(--surface2); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; color: var(--text-muted); }
+  .option-btn:hover:not(:disabled) .option-letter { background: var(--accent-bg); color: var(--accent-text); }
+  .option-btn.correct { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+  .option-btn.correct .option-letter { background: var(--success-border); color: white; }
+  .option-btn.wrong { background: var(--error-bg); border-color: var(--error-border); color: var(--error-text); }
+  .option-btn.wrong .option-letter { background: var(--error-border); color: white; }
+  .option-btn.reveal-correct { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); opacity: 0.65; }
+  .feedback-box { margin-top: 14px; padding: 11px 14px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.65; border: 0.5px solid; animation: fadeIn 0.2s ease; }
+  .feedback-box.correct { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+  .feedback-box.wrong { background: var(--error-bg); border-color: var(--error-border); color: var(--error-text); }
+  .feedback-label { font-weight: 500; display: block; margin-bottom: 3px; }
+  .nav-row { display: flex; justify-content: flex-end; margin-top: 16px; }
+  .btn-next { padding: 9px 20px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); cursor: pointer; font-family: inherit; transition: background 0.12s; }
+  .btn-next:hover { background: var(--surface2); }
+  .result-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 28px 22px; text-align: center; }
+  .result-pct { font-size: 58px; font-weight: 500; color: var(--text); line-height: 1; margin-bottom: 5px; }
+  .result-fraction { font-size: 14px; color: var(--text-muted); margin-bottom: 18px; }
+  .result-verdict { display: inline-block; font-size: 14px; font-weight: 500; padding: 9px 18px; border-radius: var(--radius-sm); margin-bottom: 24px; border: 0.5px solid; }
+  .bloc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 9px; margin-bottom: 18px; text-align: left; }
+  .bloc-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 11px 13px; }
+  .bloc-card-name { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; line-height: 1.4; }
+  .bloc-card-score { font-size: 20px; font-weight: 500; color: var(--text); }
+  .bloc-card-pct { font-size: 12px; color: var(--text-hint); margin-left: 3px; }
+  .threshold-note { font-size: 12px; color: var(--text-hint); margin-bottom: 18px; padding: 7px 11px; background: var(--surface2); border-radius: var(--radius-sm); }
+  .btn-restart { padding: 9px 24px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); cursor: pointer; font-family: inherit; }
+  .btn-restart:hover { background: var(--surface2); }
+  .intro-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 28px 24px; }
+  .intro-title { font-size: 20px; font-weight: 500; margin-bottom: 6px; }
+  .intro-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+  .intro-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); gap: 8px; margin-bottom: 20px; }
+  .intro-stat { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .intro-stat-val { font-size: 19px; font-weight: 500; }
+  .intro-stat-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  .intro-blocs { margin-bottom: 22px; }
+  .intro-blocs-title { font-size: 11px; font-weight: 500; color: var(--text-hint); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+  .intro-bloc-item { display: flex; align-items: center; gap: 9px; font-size: 12px; padding: 7px 0; border-bottom: 0.5px solid var(--border); }
+  .intro-bloc-item:last-child { border-bottom: none; }
+  .intro-bloc-num { width: 20px; height: 20px; background: var(--accent-bg); color: var(--accent-text); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+  .intro-bloc-q { font-size: 10px; color: var(--text-hint); margin-left: auto; }
+  .btn-start { width: 100%; padding: 12px; font-size: 14px; font-weight: 500; background: var(--accent); color: #1a1a18; border: none; border-radius: var(--radius-sm); cursor: pointer; font-family: inherit; transition: opacity 0.12s; font-weight: 600; }
+  .btn-start:hover { opacity: 0.88; }
+  .card-anim { animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div class="header" id="header">
+  <div class="header-logo">NV</div>
+  <div class="header-info">
+    <div class="header-title">NVIDIA DLI — Fundamentals of Deep Learning</div>
+    <div class="header-sub" id="header-sub">QCM de positionnement — CYBERSTRUCT</div>
+  </div>
+  <div class="header-score" id="header-score" style="display:none"></div>
+</div>
+<div class="main" id="app"></div>
+
+<script>
+const Q = [
+// ═══════════════════════════════════════════════════
+// BLOC 1 — Mécaniques du Deep Learning (14 questions)
+// ═══════════════════════════════════════════════════
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:1,
+text:"Quelle est la différence fondamentale entre le Machine Learning traditionnel et le Deep Learning ?",
+code:null,
+opts:["Le Deep Learning nécessite toujours plus de données que le ML traditionnel.","Le Deep Learning apprend automatiquement des représentations hiérarchiques à partir des données brutes, sans extraction manuelle de features ; le ML traditionnel requiert une feature engineering manuelle.","Le Deep Learning est uniquement applicable aux images ; le ML traditionnel s'applique à tous types de données.","Le Deep Learning est plus rapide à entraîner que les modèles ML classiques."],
+ok:1,
+fb:"Le Deep Learning apprend automatiquement des représentations (features) à partir des données brutes grâce aux couches successives du réseau neuronal : pixels → contours → formes → objets. Le ML traditionnel (SVM, Random Forest...) nécessite une extraction manuelle de features par des experts du domaine. C'est la notion clé introduite dès la première heure du cours NVIDIA DLI."
+},
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:2,
+text:"Qu'est-ce qu'un neurone artificiel et comment calcule-t-il sa sortie ?",
+code:null,
+opts:["Un neurone calcule la moyenne pondérée de ses entrées, sans aucune transformation.","Un neurone calcule une somme pondérée de ses entrées, y ajoute un biais, puis applique une fonction d'activation pour produire sa sortie.","Un neurone sélectionne la valeur maximale parmi ses entrées et la transmet à la couche suivante.","Un neurone calcule le produit de ses entrées et applique une normalisation."],
+ok:1,
+fb:"Un neurone artificiel : 1) calcule la somme pondérée de ses entrées (Σ wᵢxᵢ), 2) ajoute un biais (b), 3) applique une fonction d'activation f(). Sortie = f(Σwᵢxᵢ + b). Les poids (w) et le biais (b) sont les paramètres appris pendant l'entraînement. La fonction d'activation introduit la non-linéarité — sans elle, plusieurs couches équivaudraient à une seule transformation linéaire."
+},
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:3,
+text:"Quel est le rôle de la fonction de perte (loss function) dans l'entraînement d'un réseau de neurones ?",
+code:null,
+opts:["La fonction de perte génère les données d'entraînement pour le modèle.","La fonction de perte mesure l'écart entre les prédictions du modèle et les vraies valeurs — elle guide l'optimisation en indiquant dans quelle direction ajuster les poids.","La fonction de perte normalise les activations entre les couches pour accélérer la convergence.","La fonction de perte sélectionne automatiquement l'architecture optimale du réseau."],
+ok:1,
+fb:"La loss function quantifie l'erreur du modèle. Exemples : MSE (Mean Squared Error) pour la régression, Cross-Entropy pour la classification. L'objectif de l'entraînement est de minimiser cette perte. Le gradient de la perte par rapport à chaque poids est calculé par rétropropagation (backpropagation) et utilisé par l'optimiseur pour mettre à jour les poids."
+},
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:4,
+text:"Qu'est-ce que la descente de gradient (gradient descent) et comment est-elle utilisée dans l'entraînement ?",
+code:null,
+opts:["La descente de gradient est une technique de visualisation des performances d'un modèle au fil des epochs.","La descente de gradient est un algorithme d'optimisation qui met à jour les poids du réseau dans la direction opposée au gradient de la perte pour minimiser l'erreur.","La descente de gradient est un algorithme de sélection des hyperparamètres optimaux du réseau.","La descente de gradient est utilisée uniquement pour la classification binaire."],
+ok:1,
+fb:"La descente de gradient : w = w - α × ∂L/∂w où α est le taux d'apprentissage (learning rate) et ∂L/∂w est le gradient de la perte par rapport au poids. On 'descend' dans le paysage de la perte vers un minimum. SGD (Stochastic Gradient Descent) utilise des mini-batches. Adam (Adaptive Moment Estimation) est l'optimiseur le plus utilisé en pratique — il adapte le learning rate individuellement pour chaque paramètre."
+},
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:5,
+text:"Analysez ce code Keras. Que fait la couche 'Dense(512, activation=\"relu\")' ?",
+code:'model = Sequential([\n    Dense(512, activation="relu", input_shape=(784,)),\n    Dense(10, activation="softmax")\n])',
+opts:["Elle crée une couche de 512 neurones avec une activation linéaire et 784 connexions d'entrée.","Elle crée une couche entièrement connectée de 512 neurones avec la fonction d'activation ReLU, chaque neurone connecté à toutes les entrées.","Elle crée un filtre convolutionnel de taille 512×512 avec ReLU.","Elle crée une couche de pooling qui réduit la dimension à 512."],
+ok:1,
+fb:"Dense(512, activation='relu') crée une couche entièrement connectée (fully connected / feedforward) avec 512 neurones. Chaque neurone reçoit toutes les entrées (784 dans ce cas), calcule sa somme pondérée + biais, puis applique ReLU (max(0, x)). ReLU (Rectified Linear Unit) est la fonction d'activation la plus utilisée dans les couches cachées — elle résout le problème de vanishing gradient et est simple à calculer."
+},
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:6,
+text:"Quelle est la fonction d'activation appropriée pour la couche de sortie d'un problème de classification multiclasse ?",
+code:null,
+opts:["ReLU — car elle donne des valeurs positives pour toutes les classes.","Sigmoid — car elle donne des probabilités entre 0 et 1.","Softmax — car elle produit une distribution de probabilités sur toutes les classes dont la somme vaut 1.","Tanh — car elle centre les sorties autour de zéro."],
+ok:2,
+fb:"Softmax transforme un vecteur de scores bruts (logits) en distribution de probabilités : P(classe_i) = exp(zᵢ) / Σexp(zⱼ). La somme des probabilités vaut toujours 1. Pour la classification binaire, Sigmoid suffit (une seule sortie). Pour la régression, on utilise souvent une activation linéaire (pas d'activation) ou ReLU. Dans le code ci-dessus, Dense(10, activation='softmax') produit 10 probabilités (une par classe MNIST)."
+},
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:7,
+text:"Qu'est-ce qu'une epoch dans le contexte de l'entraînement d'un modèle de deep learning ?",
+code:null,
+opts:["Une epoch correspond à une mise à jour des poids (un batch).","Une epoch correspond à un passage complet de toutes les données d'entraînement dans le réseau, en avant puis en arrière.","Une epoch correspond à 1000 itérations de l'optimiseur.","Une epoch est la phase d'évaluation du modèle sur le jeu de test."],
+ok:1,
+fb:"Une epoch = un passage complet du dataset d'entraînement à travers le réseau (forward pass + backpropagation pour chaque batch). Si on a 60 000 images et un batch_size=128, une epoch = 60000/128 ≈ 469 mises à jour des poids. L'entraînement se fait sur plusieurs dizaines à centaines d'epochs. model.fit(X_train, y_train, epochs=20, batch_size=128) dans Keras."
+},
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:8,
+text:"Qu'est-ce que le surapprentissage (overfitting) et comment se manifeste-t-il ?",
+code:null,
+opts:["L'overfitting se produit quand le modèle converge trop lentement pendant l'entraînement.","L'overfitting se produit quand le modèle mémorise les données d'entraînement au lieu de généraliser — il a une excellente précision sur le train mais une mauvaise précision sur le test/validation.","L'overfitting se produit quand le learning rate est trop élevé et que la loss diverge.","L'overfitting se produit uniquement avec les réseaux convolutionnels, pas avec les réseaux denses."],
+ok:1,
+fb:"L'overfitting : train accuracy élevée, val accuracy basse → le modèle a mémorisé les exemples d'entraînement (bruit inclus) mais ne généralise pas. Symptôme classique : la loss de validation remonte après quelques epochs alors que la loss d'entraînement continue de baisser. Solutions : dropout, data augmentation, L2 regularization, early stopping, réduction de la complexité du modèle."
+},
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:9,
+text:"Que fait le Dropout dans un réseau de neurones et pourquoi est-il utilisé ?",
+code:'model.add(Dense(512, activation="relu"))\nmodel.add(Dropout(0.5))',
+opts:["Le Dropout supprime définitivement 50% des neurones les moins performants pendant l'entraînement.","Le Dropout désactive aléatoirement 50% des neurones à chaque forward pass pendant l'entraînement, forçant le réseau à apprendre des représentations redondantes et robustes.","Le Dropout réduit la taille du réseau de 50% pour accélérer l'inférence.","Le Dropout normalise les activations pour maintenir une distribution stable pendant l'entraînement."],
+ok:1,
+fb:"Dropout(0.5) désactive aléatoirement 50% des neurones à chaque forward pass pendant l'entraînement (en les mettant à zéro). Cela force le réseau à ne pas dépendre d'un sous-ensemble de neurones spécifiques — il doit apprendre des représentations distribuées et robustes. Pendant l'inférence, tous les neurones sont actifs mais leurs sorties sont multipliées par (1 - dropout_rate). C'est une technique de régularisation très efficace contre l'overfitting."
+},
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:10,
+text:"Comment interpréter ces courbes d'apprentissage ?",
+code:"Epoch 1/20 — loss: 0.95, val_loss: 0.92\nEpoch 5/20 — loss: 0.42, val_loss: 0.45\nEpoch 10/20 — loss: 0.21, val_loss: 0.38\nEpoch 15/20 — loss: 0.08, val_loss: 0.61\nEpoch 20/20 — loss: 0.03, val_loss: 0.89",
+opts:["Le modèle converge correctement — la loss train et val diminuent ensemble.","Le modèle souffre d'underfitting — les deux losses restent trop élevées.","Le modèle souffre d'overfitting — la loss d'entraînement continue de baisser mais la val_loss remonte à partir de l'epoch 10.","Le learning rate est trop élevé — la loss oscille sans converger."],
+ok:2,
+fb:"C'est un cas classique d'overfitting : jusqu'à l'epoch 10, train et val convergent ensemble (c'est la zone saine). À partir de l'epoch 10, train_loss continue de baisser (0.08 → 0.03) mais val_loss remonte (0.38 → 0.89) — le modèle mémorise le jeu d'entraînement. Solution idéale : Early Stopping à l'epoch 10 (callbacks dans Keras), ou data augmentation, ou Dropout. L'epoch optimale est autour de 10."
+},
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:11,
+text:"Quel est le rôle du taux d'apprentissage (learning rate) dans l'entraînement ?",
+code:null,
+opts:["Le learning rate définit la proportion du dataset utilisée pour l'entraînement vs la validation.","Le learning rate contrôle la taille des mises à jour des poids à chaque étape d'optimisation — trop élevé : divergence ; trop faible : convergence lente ou blocage dans un minimum local.","Le learning rate définit le nombre de couches cachées du réseau.","Le learning rate est un paramètre fixe calculé automatiquement par Keras — il n'est pas réglable."],
+ok:1,
+fb:"Le learning rate (α) est l'hyperparamètre le plus critique : trop élevé → la loss oscille ou diverge (les mises à jour sont trop grandes et on 'saute' le minimum). Trop faible → l'entraînement est très lent et peut rester bloqué dans un minimum local. Adam utilise un learning rate adaptatif (typiquement 1e-3 par défaut). Un learning rate scheduler peut réduire progressivement α au cours de l'entraînement."
+},
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:12,
+text:"Qu'est-ce que la rétropropagation (backpropagation) ?",
+code:null,
+opts:["La rétropropagation est la phase d'inférence où le modèle produit des prédictions sur de nouvelles données.","La rétropropagation est l'algorithme qui calcule les gradients de la perte par rapport à chaque poids du réseau en appliquant la règle de la chaîne (chain rule), de la couche de sortie vers les couches d'entrée.","La rétropropagation est un processus d'augmentation des données qui rétrograde les images pour créer de nouvelles variantes.","La rétropropagation est l'initialisation aléatoire des poids du réseau avant l'entraînement."],
+ok:1,
+fb:"Backpropagation = calcul efficace des gradients via la règle de la chaîne de dérivation composée. On calcule d'abord l'erreur en sortie (forward pass), puis on propage l'erreur couche par couche vers l'entrée pour calculer ∂L/∂w pour chaque poids. Ces gradients sont ensuite utilisés par l'optimiseur (Adam, SGD) pour mettre à jour les poids. C'est l'algorithme fondamental qui rend l'entraînement des réseaux profonds possible."
+},
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:13,
+text:"Que fait model.compile() dans Keras et quels paramètres sont essentiels ?",
+code:'model.compile(\n    optimizer="adam",\n    loss="categorical_crossentropy",\n    metrics=["accuracy"]\n)',
+opts:["model.compile() entraîne le modèle sur les données en configurant l'optimiseur et la loss.","model.compile() configure le modèle pour l'entraînement : définit l'optimiseur (algorithme d'optimisation), la loss function (métrique à minimiser), et les métriques à surveiller — sans lancer l'entraînement.","model.compile() sauvegarde les poids initiaux du modèle avant l'entraînement.","model.compile() teste automatiquement plusieurs optimiseurs pour sélectionner le meilleur."],
+ok:1,
+fb:"model.compile() prépare le modèle pour l'entraînement sans le lancer. Les trois paramètres clés : optimizer (Adam, SGD, RMSprop...), loss (categorical_crossentropy pour multiclasse, binary_crossentropy pour binaire, mse pour régression), metrics (accuracy, etc. — pour le monitoring, pas pour l'optimisation). L'entraînement réel est lancé par model.fit(). model.evaluate() évalue sur le jeu de test. model.predict() fait de l'inférence."
+},
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:14,
+text:"Quelle est la différence entre les jeux d'entraînement, de validation et de test ?",
+code:null,
+opts:["Train = données pour entraîner, Validation = données pour évaluer les hyperparamètres pendant l'entraînement sans contaminer le test, Test = évaluation finale non biaisée du modèle.","Train = 60% des données, Validation = 20%, Test = 20% — toujours dans ces proportions fixes.","Validation et Test sont deux noms pour le même jeu de données d'évaluation finale.","Le jeu de test peut être utilisé pour ajuster les hyperparamètres si le jeu de validation est insuffisant."],
+ok:0,
+fb:"La séparation train/val/test est fondamentale : Train — apprentissage des poids. Validation — évaluation pendant l'entraînement pour détecter l'overfitting et régler les hyperparamètres (architecture, learning rate, dropout...) — ne doit jamais influencer les poids directement. Test — évaluation finale unique une fois le modèle définitivement choisi — si on l'utilise pour régler les hyperparamètres, les résultats sont biaisés (data leakage). Les proportions typiques : 70/15/15 ou 80/10/10."
+},
+
+// ═══════════════════════════════════════════════════
+// BLOC 2 — Réseaux Convolutionnels & Vision (14 questions)
+// ═══════════════════════════════════════════════════
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:15,
+text:"Pourquoi les réseaux de neurones convolutionnels (CNN) sont-ils plus adaptés aux images que les réseaux denses (fully connected) ?",
+code:null,
+opts:["Les CNNs sont plus rapides à entraîner car ils ont moins de couches.","Les CNNs exploitent la structure spatiale locale des images via des filtres partagés (parameter sharing) et la détection de features locales (translation invariance) — réduisant massivement le nombre de paramètres.","Les CNNs ne nécessitent pas de GPU contrairement aux réseaux denses.","Les CNNs peuvent traiter des images de n'importe quelle résolution sans redimensionnement."],
+ok:1,
+fb:"Un réseau dense appliqué à une image 224×224×3 créerait une couche d'entrée de 150 528 neurones × N neurones de la couche suivante = des centaines de millions de paramètres. Un CNN avec des filtres 3×3 partagés sur toute l'image a beaucoup moins de paramètres. Les filtres CNN détectent des patterns locaux (contours, textures) indépendamment de leur position (translation invariance). Les couches de pooling réduisent progressivement la résolution spatiale."
+},
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:16,
+text:"Qu'est-ce qu'une couche de convolution et comment opère-t-elle sur une image ?",
+code:null,
+opts:["Une couche de convolution divise l'image en patches de taille fixe et calcule la moyenne de chaque patch.","Une couche de convolution fait glisser un filtre (kernel) appris sur l'image d'entrée, calculant le produit scalaire entre le filtre et chaque région locale pour produire une feature map.","Une couche de convolution redimensionne l'image à une taille standard avant traitement.","Une couche de convolution sélectionne uniquement les pixels les plus brillants de l'image."],
+ok:1,
+fb:"Un filtre convolutionnel (ex. 3×3) est une petite matrice de poids appris pendant l'entraînement. Il glisse sur l'image (stride par stride) et calcule le produit scalaire avec chaque région 3×3 de l'image, produisant une feature map. Chaque filtre détecte un type de pattern : contours horizontaux, verticaux, coins, textures... Les premières couches CNN détectent des features simples (contours), les couches profondes détectent des features complexes (visages, objets)."
+},
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:17,
+text:"Quel est le rôle du Max Pooling dans un CNN ?",
+code:'model.add(Conv2D(32, (3,3), activation="relu"))\nmodel.add(MaxPooling2D(pool_size=(2,2)))',
+opts:["Le Max Pooling augmente la résolution spatiale des feature maps pour améliorer la précision.","Le Max Pooling réduit la dimensionnalité spatiale en conservant la valeur maximale dans chaque région — réduisant le nombre de paramètres et apportant une invariance aux petites translations.","Le Max Pooling normalise les activations pour maintenir des valeurs entre 0 et 1.","Le Max Pooling remplace la couche de convolution dans les architectures légères."],
+ok:1,
+fb:"MaxPooling2D(2,2) prend la valeur maximale dans chaque fenêtre 2×2 → divise la résolution spatiale par 2 (ex. 28×28 → 14×14). Avantages : réduction du nombre de paramètres (moins de risque d'overfitting), accélération du calcul, et légère invariance aux translations (un pattern décalé de 1 pixel sera toujours détecté). Average pooling prend la moyenne au lieu du max — utilisé dans certaines architectures (ex. MobileNet)."
+},
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:18,
+text:"Analysez cette architecture CNN. Que fait la couche Flatten() ?",
+code:'model = Sequential([\n    Conv2D(32, (3,3), activation="relu", input_shape=(28,28,1)),\n    MaxPooling2D(2,2),\n    Conv2D(64, (3,3), activation="relu"),\n    MaxPooling2D(2,2),\n    Flatten(),\n    Dense(128, activation="relu"),\n    Dense(10, activation="softmax")\n])',
+opts:["Flatten() supprime les dimensions à zéro dans les feature maps.","Flatten() convertit les feature maps 3D (hauteur × largeur × canaux) en un vecteur 1D pour qu'elles puissent être passées aux couches Dense.","Flatten() aplati l'image d'entrée pour la normaliser entre 0 et 1.","Flatten() fait la moyenne de toutes les feature maps pour produire un seul vecteur de features."],
+ok:1,
+fb:"Après les couches Conv2D et MaxPooling2D, les feature maps sont en 3D (ex. 5×5×64). Les couches Dense attendent un vecteur 1D. Flatten() étend ces feature maps en un vecteur 1D (5×5×64 = 1600 valeurs). C'est le pont entre la partie convolutionnelle (extraction de features spatiales) et la partie classification (couches Dense). GlobalAveragePooling2D est une alternative qui calcule la moyenne spatiale de chaque canal."
+},
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:19,
+text:"Qu'est-ce que la data augmentation et pourquoi est-elle utile pour améliorer un modèle de vision ?",
+code:'datagen = ImageDataGenerator(\n    rotation_range=10,\n    zoom_range=0.1,\n    width_shift_range=0.1,\n    height_shift_range=0.1,\n    horizontal_flip=True\n)',
+opts:["La data augmentation augmente la résolution des images pour améliorer la qualité des features extraites.","La data augmentation génère des variantes transformées (rotations, zooms, flips...) des images existantes, augmentant artificiellement la diversité du dataset et améliorant la généralisation du modèle.","La data augmentation filtre les images de mauvaise qualité du dataset d'entraînement.","La data augmentation est une technique d'accélération qui pré-calcule les augmentations pour l'inférence."],
+ok:1,
+fb:"ImageDataGenerator applique des transformations aléatoires à la volée pendant l'entraînement : rotations, zooms, translations, flips... Chaque epoch voit des versions légèrement différentes des mêmes images → le modèle ne peut pas mémoriser les exemples exacts et doit généraliser. Très utile avec de petits datasets. Les transformations doivent être réalistes (ex. pas de flip horizontal si la classe est une lettre 'b' vs 'd')."
+},
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:20,
+text:"Combien de paramètres entraînables a une couche Conv2D(32, (3,3)) appliquée à une image RGB (3 canaux) ?",
+code:null,
+opts:["32 paramètres (un par filtre)","896 paramètres (32 filtres × (3×3×3 poids + 1 biais) = 32 × 28 = 896)","9 paramètres (taille du filtre 3×3)","32 × 3 = 96 paramètres"],
+ok:1,
+fb:"Calcul : 32 filtres × (3×3 pixels × 3 canaux RGB + 1 biais) = 32 × (27 + 1) = 32 × 28 = 896 paramètres. Chaque filtre 3×3×3 s'applique sur les 3 canaux simultanément. Le biais est un scalaire par filtre. La formule générale : n_filtres × (filtre_h × filtre_w × n_canaux_entrée + 1). C'est cette formule que les étudiants doivent maîtriser pour estimer la taille d'un modèle."
+},
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:21,
+text:"Quelle est la différence entre le padding 'valid' et 'same' dans une couche Conv2D ?",
+code:null,
+opts:["'valid' garde la même taille de sortie ; 'same' réduit la taille spatiale.","'valid' ne rajoute pas de zéros → la taille de sortie est plus petite (input - kernel + 1) ; 'same' rajoute des zéros pour maintenir la même taille spatiale en sortie qu'en entrée.","'valid' et 'same' produisent des sorties de même taille — seule la vitesse de calcul diffère.","'same' est uniquement disponible pour les filtres de taille impaire (3×3, 5×5...)."],
+ok:1,
+fb:"padding='valid' (défaut) : pas de zéros ajoutés → sortie plus petite. Ex. entrée 28×28, filtre 3×3 → sortie 26×26. padding='same' : des zéros sont ajoutés autour de l'image pour que la sortie ait la même taille spatiale que l'entrée (28×28 → 28×28). 'same' est utile pour maintenir les dimensions et faciliter la conception d'architectures avec skip connections (ResNet). Les bords sont traités avec des zéros (zero padding)."
+},
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:22,
+text:"Quelle métrique est la plus appropriée pour évaluer un modèle de classification d'images sur un dataset déséquilibré (ex. 95% classe A, 5% classe B) ?",
+code:null,
+opts:["L'accuracy globale — c'est toujours la métrique de référence.","La précision (precision) et le rappel (recall) ou l'AUC-ROC — car un modèle qui prédit toujours la classe A aurait 95% d'accuracy mais serait inutile.","La loss Cross-Entropy — elle capture mieux le déséquilibre que l'accuracy.","Le nombre total d'erreurs absolues (MAE)."],
+ok:1,
+fb:"Avec un dataset déséquilibré (95% classe A), un modèle naïf qui prédit toujours A a 95% d'accuracy mais 0% de recall sur la classe B. Métriques adaptées : Précision = TP/(TP+FP), Rappel (Recall/Sensitivity) = TP/(TP+FN), F1 = 2×(P×R)/(P+R), AUC-ROC. Ces métriques révèlent si le modèle détecte bien la classe minoritaire. Class weights dans Keras peut compenser le déséquilibre."
+},
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:23,
+text:"Quelle est la structure typique d'un bloc convolutionnel dans un CNN moderne ?",
+code:null,
+opts:["MaxPooling → Conv2D → Activation","Conv2D → Activation → BatchNormalization → MaxPooling","Dense → Conv2D → Softmax","Input → Flatten → Conv2D"],
+ok:1,
+fb:"Un bloc convolutionnel moderne suit typiquement : Conv2D (extraction de features) → Activation ReLU (non-linéarité) → BatchNormalization (normalisation des activations pour stabiliser et accélérer l'entraînement, optionnel mais recommandé) → MaxPooling (réduction spatiale, souvent toutes les 2 couches Conv). BatchNorm est devenu quasi-standard dans les architectures profondes (ResNet, VGG, EfficientNet) car il accélère la convergence et agit comme régulariseur."
+},
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:24,
+text:"Qu'est-ce que le Batch Normalization et quel avantage apporte-t-il ?",
+code:'model.add(Conv2D(64, (3,3), activation="relu"))\nmodel.add(BatchNormalization())',
+opts:["Batch Normalization divise le dataset en batches égaux pour accélérer le chargement des données.","Batch Normalization normalise les activations de chaque couche (moyenne ≈ 0, variance ≈ 1) pour chaque mini-batch, ce qui stabilise l'entraînement, permet des learning rates plus élevés et réduit l'overfitting.","Batch Normalization augmente artificiellement la taille du batch en répliquant les exemples.","Batch Normalization est uniquement utile pour les réseaux avec plus de 50 couches."],
+ok:1,
+fb:"BatchNormalization normalise les activations intermédiaires au sein de chaque mini-batch : μ_batch et σ_batch sont calculées, les activations sont standardisées puis re-échelonnées par des paramètres appris γ et β. Avantages : réduit le phénomène d'internal covariate shift, permet des learning rates plus élevés (convergence plus rapide), agit comme régulariseur (souvent réduit le besoin de Dropout). C'est l'une des innovations les plus impactantes du deep learning moderne."
+},
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:25,
+text:"Quelle est l'architecture de VGG-16 et pourquoi est-elle importante pour le transfer learning ?",
+code:null,
+opts:["VGG-16 est une architecture avec 16 couches de convolution 1×1 entraînée sur ImageNet.","VGG-16 est un CNN avec 16 couches apprenant des features (13 Conv2D + 3 Dense), entraîné sur ImageNet (1000 classes, 1.2M images) — ses poids pré-entraînés encodent des features visuelles génériques réutilisables pour d'autres tâches.","VGG-16 est une architecture légère de 16Ko conçue pour le déploiement mobile.","VGG-16 est une architecture récurrente pour la classification vidéo."],
+ok:1,
+fb:"VGG-16 (Oxford, 2014) est l'une des architectures CNN de référence : 13 couches Conv2D (filtres 3×3) + 3 couches Dense = 138 millions de paramètres, entraîné sur ImageNet. Ses poids pré-entraînés capturent des features visuelles génériques (contours → textures → formes → objets) réutilisables pour d'autres tâches de vision. D'autres architectures populaires : ResNet, InceptionNet, EfficientNet, MobileNet (pour mobile)."
+},
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:26,
+text:"Comment ImageDataGenerator.flow_from_directory() charge-t-il les données et quelle structure de dossiers attend-il ?",
+code:'train_gen = datagen.flow_from_directory(\n    "data/train",\n    target_size=(224, 224),\n    batch_size=32,\n    class_mode="categorical"\n)',
+opts:["Il charge toutes les images dans un seul dossier sans sous-dossiers.","Il s'attend à des sous-dossiers par classe (data/train/chien/, data/train/chat/) et assigne automatiquement les labels basés sur les noms de dossiers.","Il charge les images et les labels depuis un fichier CSV séparé.","Il nécessite que les images soient déjà converties en arrays NumPy."],
+ok:1,
+fb:"flow_from_directory() s'attend à une structure : data/train/classe_1/*.jpg, data/train/classe_2/*.jpg... Chaque sous-dossier = une classe. Les labels sont générés automatiquement. target_size=(224,224) redimensionne toutes les images. batch_size=32 = taille des batches. class_mode='categorical' → labels en one-hot encoding. C'est la méthode standard pour charger de grandes datasets d'images qui ne tiennent pas en mémoire."
+},
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:27,
+text:"Qu'est-ce que le prétraitement des images avec model.preprocess_input() dans le cadre du transfer learning ?",
+code:'from tensorflow.keras.applications.vgg16 import VGG16, preprocess_input\nbase_model = VGG16(weights="imagenet", include_top=False)\nX = preprocess_input(X)',
+opts:["preprocess_input() redimensionne les images à 224×224 automatiquement.","preprocess_input() applique la normalisation spécifique au modèle pré-entraîné (ex. soustraction de la moyenne ImageNet, changement de canal BGR pour VGG) pour que les données correspondent au prétraitement utilisé lors de l'entraînement original.","preprocess_input() augmente les données avec des rotations et flips aléatoires.","preprocess_input() convertit les images en niveaux de gris pour réduire la dimensionnalité."],
+ok:1,
+fb:"Chaque architecture pré-entraînée a été entraînée avec un prétraitement spécifique qu'il faut reproduire. VGG16 : soustrait la moyenne RGB d'ImageNet (103.939, 116.779, 123.68) et convertit RGB→BGR. ResNet/InceptionNet : normalise entre -1 et 1 ou standardise différemment. Ne pas appliquer le bon preprocess_input est une erreur fréquente qui dégrade significativement les performances du transfer learning."
+},
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:28,
+text:"Lors de l'utilisation de VGG16 en transfer learning, que signifie include_top=False ?",
+code:'base_model = VGG16(weights="imagenet", include_top=False, input_shape=(224,224,3))',
+opts:["include_top=False charge uniquement les 5 premières couches de VGG16.","include_top=False exclut les couches Dense du classifieur final (le 'top' du réseau) et conserve uniquement les couches convolutionnelles d'extraction de features — on peut ainsi ajouter son propre classifieur adapté à son nombre de classes.","include_top=False désactive le BatchNormalization pour accélérer le fine-tuning.","include_top=False charge le modèle sans les poids pré-entraînés (aléatoirement initialisés)."],
+ok:1,
+fb:"VGG16 a deux parties : la base convolutionnelle (couches Conv2D/MaxPool qui extraient les features — c'est ce qu'on veut réutiliser) et le top (classifieur Dense de 1000 classes ImageNet — à remplacer). include_top=False supprime le top et expose les feature maps de la dernière couche Conv. On ajoute ensuite : GlobalAveragePooling2D() + Dense(N_classes, activation='softmax'). C'est la configuration standard pour le transfer learning."
+},
+
+// ═══════════════════════════════════════════════════
+// BLOC 3 — Transfer Learning & Modèles pré-entraînés (12 questions)
+// ═══════════════════════════════════════════════════
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:29,
+text:"Qu'est-ce que le Transfer Learning et pourquoi est-il particulièrement utile avec peu de données ?",
+code:null,
+opts:["Le Transfer Learning transfère les données d'un dataset source vers un dataset cible pour augmenter la taille d'entraînement.","Le Transfer Learning réutilise les poids d'un modèle entraîné sur une grande tâche source (ex. ImageNet) pour initialiser un modèle sur une tâche cible avec peu de données — évitant d'entraîner from scratch.","Le Transfer Learning est une technique de compression qui transfère les connaissances d'un grand modèle vers un petit modèle (distillation).","Le Transfer Learning transfère automatiquement les hyperparamètres optimaux d'une tâche à une autre."],
+ok:1,
+fb:"Entraîner un CNN from scratch nécessite des millions d'images et des jours de calcul GPU. Le Transfer Learning permet de partir de poids pré-entraînés sur ImageNet (1.2M images, 1000 classes) qui encodent des features visuelles génériques (contours, textures, formes). Avec seulement quelques centaines d'images de la tâche cible, on peut adapter ces features et obtenir d'excellents résultats. C'est l'une des techniques les plus importantes du deep learning pratique."
+},
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:30,
+text:"Qu'est-ce que le fine-tuning et comment diffère-t-il de la simple utilisation d'un feature extractor ?",
+code:null,
+opts:["Le fine-tuning entraîne uniquement les nouvelles couches ajoutées (top) avec la base gelée ; le feature extractor entraîne toutes les couches.","Feature extraction gèle toutes les couches de la base pré-entraînée et entraîne uniquement le nouveau classifieur. Fine-tuning dégèle les dernières couches de la base et les entraîne avec un très faible learning rate pour les adapter à la tâche cible.","Fine-tuning et feature extraction sont deux termes synonymes pour la même technique.","Le fine-tuning ne peut être appliqué qu'aux architectures ResNet."],
+ok:1,
+fb:"Deux approches de transfer learning : 1) Feature extraction : base_model.trainable = False → on entraîne uniquement le nouveau top. Rapide, peu de risque d'overfitting, recommandé si peu de données et domaines similaires. 2) Fine-tuning : après feature extraction, on dégèle les dernières couches de la base (base_model.trainable = True pour certaines couches) et on entraîne avec un lr très faible (1e-5) pour adapter les features sans les détruire. Plus puissant mais risque de catastrophic forgetting si lr trop élevé."
+},
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:31,
+text:"Analysez ce code de transfer learning. Quelle est l'étape manquante pour que ce modèle soit entraînable ?",
+code:'base_model = VGG16(weights="imagenet", include_top=False)\nbase_model.trainable = False\n\nx = base_model.output\nx = GlobalAveragePooling2D()(x)\nx = Dense(256, activation="relu")(x)\noutput = Dense(2, activation="softmax")(x)\n\nmodel = Model(inputs=base_model.input, outputs=output)',
+opts:["Il manque une couche Dropout pour éviter l'overfitting.","Il manque model.compile() qui définit l'optimiseur, la loss et les métriques avant de pouvoir lancer model.fit().","Il manque model.summary() pour visualiser l'architecture.","Il manque la couche Flatten() entre GlobalAveragePooling2D et Dense."],
+ok:1,
+fb:"Le code construit correctement le modèle (architecture + gèle la base VGG16 + ajoute un classifieur pour 2 classes) mais sans model.compile(), Keras ne sait pas comment l'entraîner. Il faut ajouter : model.compile(optimizer=Adam(lr=1e-4), loss='categorical_crossentropy', metrics=['accuracy']). GlobalAveragePooling2D() est une bonne alternative à Flatten() pour réduire la dimensionnalité spatiale — elle est plus robuste à l'overfitting."
+},
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:32,
+text:"Dans l'exemple du 'doggy door' du cours NVIDIA DLI, quel problème résout le transfer learning ?",
+code:null,
+opts:["Il permet à la porte de s'ouvrir uniquement quand il fait jour, en classifiant la luminosité de l'image.","Un modèle pré-entraîné sur ImageNet reconnaît les chiens parmi 1000 classes sans réentraînement — puis le transfer learning permet d'affiner pour reconnaître uniquement son propre chien parmi d'autres chiens.","Il permet à la porte de détecter des objets dangereux en utilisant la détection d'objet YOLO.","Il applique une segmentation sémantique pour localiser précisément le chien dans l'image."],
+ok:1,
+fb:"Le cas du 'doggy door' du cours NVIDIA DLI illustre deux niveaux de transfer learning : 1) Un modèle ImageNet reconnaît déjà les chiens (classe 'dog' parmi 1000 classes) → la porte s'ouvre pour tous les chiens. 2) Fine-tuning avec quelques photos de son propre chien → le modèle apprend à distinguer son chien des autres chiens. Ce cas concret illustre parfaitement comment le transfer learning réduit le besoin en données."
+},
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:33,
+text:"Pourquoi utilise-t-on un learning rate plus faible lors du fine-tuning qu'avec l'entraînement from scratch ?",
+code:null,
+opts:["Parce que le fine-tuning utilise moins de données et un lr élevé causerait une instabilité numérique.","Parce que les poids pré-entraînés encodent déjà des features utiles — un lr élevé les détruirait (catastrophic forgetting). Un lr faible (ex. 1e-5) permet d'ajuster légèrement sans perdre les features apprises.","Parce que la GPU est moins puissante pendant le fine-tuning et un lr élevé causerait un timeout.","Parce que les nouvelles couches ajoutées nécessitent toujours un lr plus faible que la base."],
+ok:1,
+fb:"Le catastrophic forgetting est le principal risque du fine-tuning : si le learning rate est trop élevé, les gradients sur les nouvelles données écrasent les poids soigneusement appris sur ImageNet, perdant les features génériques. Un lr très faible (typiquement 10x à 100x plus faible que l'entraînement from scratch) permet d'adapter doucement les features sans les détruire. On commence souvent par feature extraction quelques epochs avant de dégeler la base pour le fine-tuning."
+},
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:34,
+text:"Dans le projet final 'fresh vs rotten fruit' du cours NVIDIA DLI (notebook 07_assessment), quel modèle pré-entraîné est utilisé et quel seuil de précision faut-il atteindre pour obtenir le certificat ?",
+code:null,
+opts:["ResNet50 pré-entraîné sur ImageNet, seuil de 75% d'accuracy.","VGG16 pré-entraîné sur ImageNet (include_top=False), avec transfer learning — le seuil à atteindre est 92% d'accuracy sur les données de validation pour décrocher le certificat.","MobileNetV2 pré-entraîné, seuil de 80% d'accuracy.","Un CNN entraîné from scratch sans transfer learning, seuil de 85%."],
+ok:1,
+fb:"Le notebook 07_assessment.ipynb (confirmé dans le cours officiel) utilise VGG16 avec weights='imagenet' et include_top=False — exactement comme dans le notebook 05b (presidential doggy door). Le seuil officiel pour obtenir le certificat NVIDIA DLI est de 92% d'accuracy sur le jeu de validation. La data augmentation est recommandée pour atteindre ce niveau. La dernière couche Dense doit avoir le bon nombre de neurones pour les catégories du dataset de fruits."
+},
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:35,
+text:"Quelle est la différence entre l'extraction de features (feature extraction) et le fine-tuning en termes d'implémentation Keras ?",
+code:null,
+opts:["Feature extraction : toutes les couches sont entraînables. Fine-tuning : aucune couche n'est entraînable.","Feature extraction : base_model.trainable = False (base gelée, seul le top s'entraîne). Fine-tuning : base_model.trainable = True puis on gèle sélectivement certaines couches et on recompile avec un lr réduit.","Feature extraction et fine-tuning utilisent le même code — seul le nombre d'epochs change.","Fine-tuning : on utilise model.freeze() ; Feature extraction : model.unfreeze()."],
+ok:1,
+fb:"Feature extraction (code) : base_model.trainable = False → model.compile(lr=1e-3) → model.fit(epochs=10). Fine-tuning (après feature extraction) : base_model.trainable = True, puis geler les premières couches : for layer in base_model.layers[:15]: layer.trainable = False → model.compile(lr=1e-5) → model.fit(epochs=10). La recompilation est obligatoire après avoir changé trainable. Sans recompilation, les changements trainable ne sont pas pris en compte."
+},
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:36,
+text:"Qu'est-ce que le callback EarlyStopping dans Keras et comment l'utiliser ?",
+code:'callback = EarlyStopping(\n    monitor="val_loss",\n    patience=3,\n    restore_best_weights=True\n)',
+opts:["EarlyStopping arrête l'entraînement après un nombre fixe d'epochs défini par patience.","EarlyStopping surveille une métrique (val_loss) et arrête l'entraînement si elle ne s'améliore pas pendant 'patience' epochs consécutives — avec restore_best_weights=True, il restaure les poids de la meilleure epoch.","EarlyStopping arrête l'entraînement si le learning rate tombe en dessous d'un seuil.","EarlyStopping est uniquement utilisable avec l'optimiseur Adam."],
+ok:1,
+fb:"EarlyStopping avec monitor='val_loss', patience=3, restore_best_weights=True : si val_loss ne diminue pas pendant 3 epochs consécutives, l'entraînement s'arrête et le modèle est restauré aux poids de l'epoch avec la meilleure val_loss. C'est la solution idéale contre l'overfitting — on n'a pas besoin de choisir le nombre d'epochs à l'avance. Autres callbacks utiles : ModelCheckpoint (sauvegarde régulière), ReduceLROnPlateau (réduit lr si plateau)."
+},
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:37,
+text:"Comment sauvegarder et recharger un modèle Keras entraîné ?",
+code:'# Sauvegarde\nmodel.save("mon_modele.h5")\n# Rechargement\nfrom tensorflow.keras.models import load_model\nmodele_charge = load_model("mon_modele.h5")',
+opts:["model.save() sauvegarde uniquement les poids — l'architecture doit être reconstruite manuellement au rechargement.","model.save() sauvegarde l'architecture complète, les poids entraînés et la configuration de compilation. load_model() recharge tout et le modèle est prêt pour l'inférence ou la reprise d'entraînement.","model.save() génère un fichier texte avec les hyperparamètres uniquement.","Pour recharger un modèle, il faut obligatoirement utiliser le format SavedModel (dossier) — le format .h5 est obsolète."],
+ok:1,
+fb:"model.save('modele.h5') sauvegarde tout dans un fichier HDF5 : architecture (config JSON), poids (numpy arrays), et configuration de compilation (optimizer, loss, metrics). load_model() recharge tout — le modèle peut directement faire des prédictions ou reprendre l'entraînement. Alternative moderne : model.save('mon_dossier') → format SavedModel (TensorFlow 2.x). model.save_weights() et model.load_weights() sauvegardent/rechargent uniquement les poids (nécessite de reconstruire l'architecture)."
+},
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:38,
+text:"Qu'est-ce que model.predict() et comment interpréter sa sortie pour un classifieur multiclasse ?",
+code:'predictions = model.predict(X_test)\npredicted_class = np.argmax(predictions, axis=1)',
+opts:["model.predict() retourne directement la classe prédite sous forme d'entier.","model.predict() retourne un tableau de probabilités (softmax output) — np.argmax() est utilisé pour trouver l'index de la probabilité maximale, correspondant à la classe prédite.","model.predict() retourne la loss sur les données de test.","model.predict() est identique à model.evaluate() — les deux retournent la précision."],
+ok:1,
+fb:"Pour un classifieur multiclasse avec softmax : model.predict(X_test) retourne un tableau shape=(n_samples, n_classes) contenant les probabilités pour chaque classe. np.argmax(predictions, axis=1) extrait l'indice de la probabilité maximale pour chaque exemple = la classe prédite. Pour avoir les probabilités d'une seule prédiction : predictions[0] = [0.02, 0.95, 0.03] → classe 1 avec 95% de confiance. np.max(predictions, axis=1) donne le score de confiance."
+},
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:39,
+text:"Quelle est la différence entre model.evaluate() et model.predict() ?",
+code:null,
+opts:["model.evaluate() est plus rapide car il ne calcule pas les gradients.","model.evaluate() calcule et retourne la loss et les métriques configurées sur un jeu de données labelisé. model.predict() retourne les prédictions brutes (probabilités) sans calculer de métriques — utilisé quand on n'a pas les vraies labels.","model.evaluate() retourne les prédictions et model.predict() retourne les métriques.","Les deux fonctions sont identiques — seule la syntaxe diffère."],
+ok:1,
+fb:"model.evaluate(X_test, y_test) : prend des données labelisées, retourne [loss, accuracy, ...] — utilisé pour mesurer les performances finales du modèle. model.predict(X) : prend des données sans labels, retourne les probabilités/prédictions brutes — utilisé en production pour faire des inférences sur de nouvelles données. model.evaluate() peut aussi être utilisé pour vérifier les perfs sur train/val. En pratique : evaluate → métriques globales, predict → prédictions individuelles."
+},
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:40,
+text:"Qu'est-ce que la matrice de confusion et que révèle-t-elle sur les performances d'un classificateur ?",
+code:null,
+opts:["La matrice de confusion montre la distribution des classes dans le dataset.","La matrice de confusion compare les prédictions du modèle avec les vraies classes — chaque cellule (i,j) indique combien d'exemples de la classe i ont été classés comme classe j, révélant quelles classes sont confondues entre elles.","La matrice de confusion montre la corrélation entre les features d'entrée et les prédictions.","La matrice de confusion est uniquement utilisable pour les problèmes à 2 classes."],
+ok:1,
+fb:"La matrice de confusion (shape n_classes × n_classes) : la diagonale = prédictions correctes. Les cellules hors diagonale = erreurs. Ex. : modèle de fruits confond 'pomme' et 'poire' → fort nombre dans la cellule (pomme, poire). Révèle : quelles classes sont difficiles, si certaines classes sont systématiquement confondues, si le modèle est biaisé vers certaines classes. Calculer avec sklearn.metrics.confusion_matrix(y_true, y_pred)."
+},
+
+// ═══════════════════════════════════════════════════
+// BLOC 4 — Réseaux Récurrents & NLP (10 questions)
+// ═══════════════════════════════════════════════════
+{b:"Bloc 4 — Réseaux Récurrents & NLP",bi:3,n:41,
+text:"Pourquoi les réseaux de neurones récurrents (RNN) sont-ils adaptés aux données séquentielles contrairement aux réseaux denses ?",
+code:null,
+opts:["Les RNN sont plus rapides à entraîner sur des séquences longues grâce à leur architecture parallèle.","Les RNN maintiennent un état caché (hidden state) qui capture le contexte des éléments précédents de la séquence, permettant de traiter des données avec des dépendances temporelles ou séquentielles.","Les RNN n'ont pas besoin de tokenisation préalable contrairement aux réseaux denses.","Les RNN peuvent traiter des séquences de longueur variable car ils n'ont pas de couche d'entrée de taille fixe."],
+ok:1,
+fb:"Un réseau dense traite chaque entrée indépendamment — il n'a pas de mémoire des entrées précédentes. Un RNN maintient un état caché hₜ = f(hₜ₋₁, xₜ) qui encode le contexte accumulé. À chaque pas de temps, il prend l'entrée courante ET l'état caché précédent. Cela permet de modéliser : texte (chaque mot dépend du contexte), séries temporelles (chaque valeur dépend des précédentes), audio (chaque frame dépend des frames précédentes)."
+},
+{b:"Bloc 4 — Réseaux Récurrents & NLP",bi:3,n:42,
+text:"Qu'est-ce que le problème du vanishing gradient dans les RNN simples et comment le LSTM le résout-il ?",
+code:null,
+opts:["Le vanishing gradient apparaît quand le learning rate est trop faible — le LSTM le résout avec un learning rate adaptatif.","Dans les RNN simples, les gradients deviennent exponentiellement petits lors de la rétropropagation sur de longues séquences (dépendances à long terme perdues). Le LSTM utilise des gates (forget, input, output) qui contrôlent sélectivement le flux d'information et maintiennent les gradients stables.","Le vanishing gradient est uniquement un problème des CNNs — les RNN ne sont pas affectés.","Le LSTM résout le vanishing gradient en utilisant la normalisation batch sur chaque pas de temps."],
+ok:1,
+fb:"Vanishing gradient dans les RNN : lors de la backpropagation through time (BPTT), les gradients sont multipliés par la dérivée de tanh à chaque pas de temps → devient exponentiellement petit → le réseau 'oublie' les dépendances à long terme. LSTM (Long Short-Term Memory) : maintient une cellule mémoire Cₜ avec une porte d'oubli (forget gate), une porte d'entrée (input gate) et une porte de sortie (output gate). Ces gates permettent de contrôler ce qu'on garde/oublie et maintiennent les gradients sur de longues séquences."
+},
+{b:"Bloc 4 — Réseaux Récurrents & NLP",bi:3,n:43,
+text:"Dans le cas d'usage d'autocomplétion de texte du cours NVIDIA DLI, quelle architecture est utilisée ?",
+code:null,
+opts:["Un CNN 1D qui traite les caractères de texte comme des séquences de pixels.","Un LSTM entraîné pour prédire le prochain caractère ou mot dans une séquence, basé sur les n caractères/mots précédents.","Un Transformer avec attention multi-têtes pour capturer les dépendances à long terme.","Un réseau Dense entièrement connecté avec une couche d'embedding en entrée."],
+ok:1,
+fb:"Dans le cours NVIDIA DLI (section 'Pre-trained Models and Recurrent Networks'), un LSTM est entraîné sur des titres du New York Times pour apprendre à prédire le prochain mot (ou caractère) d'une séquence. Modèle génératif : à l'inférence, on donne quelques mots de départ et le réseau génère le texte mot par mot. Cette approche autoregressive est à la base des LLMs modernes (GPT), même si les architectures actuelles utilisent des Transformers."
+},
+{b:"Bloc 4 — Réseaux Récurrents & NLP",bi:3,n:44,
+text:"Qu'est-ce que la tokenisation et pourquoi est-elle nécessaire avant d'alimenter du texte dans un réseau de neurones ?",
+code:'from tensorflow.keras.preprocessing.text import Tokenizer\ntokenizer = Tokenizer()\ntokenizer.fit_on_texts(texts)\nsequences = tokenizer.texts_to_sequences(texts)',
+opts:["La tokenisation convertit les images en vecteurs numériques pour les CNN.","Les réseaux de neurones ne peuvent traiter que des nombres — la tokenisation convertit le texte en séquences d'entiers (indices de mots dans un vocabulaire) qui peuvent ensuite être transformés en vecteurs denses via un embedding.","La tokenisation compresse le texte pour réduire la mémoire nécessaire à l'entraînement.","La tokenisation est une étape optionnelle — certains RNN peuvent traiter directement le texte brut."],
+ok:1,
+fb:"Les réseaux de neurones opèrent sur des nombres. Tokenisation : 'Le chat mange' → [3, 12, 47] (indices dans le vocabulaire). Ces indices sont ensuite passés à une couche Embedding qui apprend des représentations denses (word vectors) : chaque mot → un vecteur de dimension N (ex. 128). L'Embedding capture les relations sémantiques entre mots. Keras tokenizer : fit_on_texts() construit le vocabulaire, texts_to_sequences() convertit le texte en séquences d'indices."
+},
+{b:"Bloc 4 — Réseaux Récurrents & NLP",bi:3,n:45,
+text:"Qu'est-ce qu'une couche Embedding dans un RNN pour le traitement du texte ?",
+code:'model.add(Embedding(vocab_size, 128, input_length=max_len))',
+opts:["Une couche Embedding est identique à une couche Dense — elle fait simplement une multiplication matricielle.","Une couche Embedding apprend des représentations vectorielles denses pour chaque mot du vocabulaire. Elle transforme des indices entiers (tokens) en vecteurs de dimension fixe (128 ici) qui encodent les relations sémantiques entre mots.","Une couche Embedding réduit la dimensionnalité des images en créant des représentations compactes.","Une couche Embedding est une couche de preprocessing qui normalise le texte avant tokenisation."],
+ok:1,
+fb:"Embedding(vocab_size, 128) crée une matrice de taille vocab_size × 128. Chaque mot (index) est converti en un vecteur de 128 dimensions appris pendant l'entraînement. Des mots similaires sémantiquement ont des vecteurs proches dans l'espace d'embedding. C'est une alternative au one-hot encoding (beaucoup plus compact et informatif). Word2Vec, GloVe, FastText sont des embeddings pré-entraînés réutilisables par transfer learning en NLP."
+},
+{b:"Bloc 4 — Réseaux Récurrents & NLP",bi:3,n:46,
+text:"Quelle est la différence entre un modèle de deep learning génératif et un modèle discriminatif ?",
+code:null,
+opts:["Un modèle génératif prédit des classes (ex. chat vs chien) ; un modèle discriminatif génère de nouvelles données.","Un modèle discriminatif apprend à classer/distinguer des exemples (P(y|x)). Un modèle génératif apprend la distribution des données pour générer de nouveaux exemples réalistes (P(x) ou P(x|y)).","Un modèle génératif nécessite des labels ; un modèle discriminatif est toujours non supervisé.","Il n'y a pas de différence — tous les modèles de deep learning sont à la fois génératifs et discriminatifs."],
+ok:1,
+fb:"Modèles discriminatifs (classification, détection) : apprennent P(y|x) — 'étant donné cette image, quelle est la probabilité que ce soit un chat ?'. Modèles génératifs : apprennent P(x) ou P(x|y) pour générer de nouveaux exemples — GANs (images réalistes), VAEs (variational autoencoders), LLMs (texte). Le RNN d'autocomplétion du cours DLI est génératif : il génère du nouveau texte en apprenant la distribution des séquences de mots."
+},
+{b:"Bloc 4 — Réseaux Récurrents & NLP",bi:3,n:47,
+text:"Qu'est-ce que le padding de séquences (sequence padding) et pourquoi est-il nécessaire dans un RNN ?",
+code:'from tensorflow.keras.preprocessing.sequence import pad_sequences\nX_padded = pad_sequences(sequences, maxlen=100, padding="post")',
+opts:["Le padding redimensionne toutes les séquences à une longueur maximale en tronquant les séquences longues.","Les RNN dans Keras traitent des batchs — toutes les séquences d'un batch doivent avoir la même longueur. pad_sequences() ajoute des zéros (pre ou post) pour uniformiser les longueurs, permettant le traitement en batch.","Le padding est uniquement nécessaire pour les CNNs appliqués à du texte.","Le padding encode les mots inconnus (hors vocabulaire) avec des zéros."],
+ok:1,
+fb:"Les batchs d'entraînement doivent avoir des dimensions uniformes pour les opérations matricielles. Les textes ont des longueurs variables → pad_sequences() ajoute des zéros (tokens de padding) pour que toutes les séquences aient maxlen=100. padding='post' ajoute à la fin (généralement préféré pour les RNN). padding='pre' ajoute au début. Les zéros sont ignorés via le paramètre mask_zero=True dans la couche Embedding."
+},
+{b:"Bloc 4 — Réseaux Récurrents & NLP",bi:3,n:48,
+text:"Qu'est-ce que l'architecture Transformer et pourquoi a-t-elle révolutionné le traitement du langage naturel ?",
+code:null,
+opts:["Le Transformer est une architecture RNN améliorée qui traite les séquences de façon bidirectionnelle.","Le Transformer utilise des mécanismes d'attention (self-attention) pour capturer les dépendances entre tous les éléments d'une séquence en parallèle — sans récurrence — permettant un entraînement massivement parallèle et de meilleures performances sur les longues séquences.","Le Transformer est une architecture CNN adaptée pour le texte — il traite les tokens comme des pixels.","Le Transformer est uniquement utilisé pour la traduction automatique — les RNN restent supérieurs pour les autres tâches NLP."],
+ok:1,
+fb:"Les Transformers (Vaswani et al., 2017 — 'Attention Is All You Need') remplacent la récurrence par l'attention : chaque token 'regarde' tous les autres tokens pour construire sa représentation — capturant les dépendances à longue distance sans le problème du vanishing gradient. Le traitement est parallèle (vs séquentiel pour les RNN) → entraînement massivement accéléré. BERT, GPT, T5, LLaMA... sont tous des Transformers. C'est l'architecture dominante en NLP depuis 2018."
+},
+{b:"Bloc 4 — Réseaux Récurrents & NLP",bi:3,n:49,
+text:"Quelles sont les prochaines étapes recommandées par NVIDIA DLI après le cours 'Fundamentals of Deep Learning' ?",
+code:null,
+opts:["Passer directement à la certification NCA-GENL (NVIDIA Certified Associate - Generative AI LLMs).","Des cours avancés comme : Image Segmentation, Modeling Time-Series with RNNs, Building Transformer-Based NLP Applications, Building Intelligent Recommender Systems, et Fundamentals of Deep Learning for Multi-GPUs.","Apprendre CUDA C++ pour programmer directement les GPU NVIDIA.","Utiliser uniquement PyTorch car TensorFlow/Keras ne sont plus maintenus."],
+ok:1,
+fb:"Le cours DLI Fundamentals of Deep Learning est le point de départ d'un parcours : les 'Next Steps' recommandés dans la documentation officielle incluent des cours spécialisés disponibles sur courses.nvidia.com : Getting Started with Image Segmentation, Modeling Time-Series Data with Recurrent Neural Networks in Keras, Building Transformer-Based NLP Applications, Building Intelligent Recommender Systems, et Fundamentals of Deep Learning for Multi-GPUs (entraînement distribué)."
+},
+// ─── QUESTIONS COMPLÉMENTAIRES — Notebooks manquants & vérification factuelle ───
+
+// Q50 — Assessment seuil 92% corrigé
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:50,
+text:"Dans le projet final 'fresh vs rotten fruit' du cours NVIDIA DLI (notebook 07_assessment), quel modèle pré-entraîné est utilisé et quel seuil faut-il atteindre ?",
+code:null,
+opts:["ResNet50 pré-entraîné sur ImageNet, seuil de 75%.","VGG16 pré-entraîné sur ImageNet (include_top=False) avec transfer learning — le seuil officiel est 92% d'accuracy sur la validation pour décrocher le certificat.","MobileNetV2 pré-entraîné, seuil de 80%.","CNN from scratch sans transfer learning, seuil de 85%."],
+ok:1,
+fb:"Le notebook 07_assessment.ipynb utilise VGG16 avec weights='imagenet' et include_top=False — exactement comme dans le notebook 05b (presidential doggy door). Le seuil officiel pour obtenir le certificat NVIDIA DLI est de 92% d'accuracy sur le jeu de validation. La data augmentation est recommandée pour atteindre ce niveau."
+},
+// NB01 — MNIST : normalisation
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:51,
+text:"Dans le notebook 01 (MNIST), pourquoi divise-t-on les valeurs de pixels par 255 ?",
+code:"x_train = x_train / 255\nx_valid = x_valid / 255",
+opts:["Pour convertir les images en niveaux de gris.","Pour normaliser les valeurs de pixels de [0, 255] vers [0, 1] — ce qui stabilise l'entraînement et accélère la convergence.","Pour compresser les images et réduire l'espace mémoire.","Pour augmenter le contraste avant l'extraction de features."],
+ok:1,
+fb:"Les pixels ont des valeurs entre 0 (noir) et 255 (blanc). Diviser par 255 normalise entre 0 et 1. C'est la première étape de prétraitement du cours DLI. Les réseaux de neurones convergent plus rapidement avec des entrées de faible magnitude — les gradients restent stables. Sans normalisation, les gradients peuvent être très grands et l'entraînement oscille ou diverge."
+},
+// NB01 — categorical encoding
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:52,
+text:"Pourquoi utilise-t-on to_categorical() sur les labels avant l'entraînement ?",
+code:"from tensorflow.keras.utils import to_categorical\ny_train = to_categorical(y_train, num_classes=10)",
+opts:["Pour transformer les labels texte en entiers.","Pour transformer les labels entiers en vecteurs binaires (one-hot) — évitant que le modèle interprète les classes comme des valeurs numériques ordonnées.","Pour normaliser les labels entre 0 et 1 pour les couches softmax.","Uniquement nécessaire pour les données texte, pas pour les images."],
+ok:1,
+fb:"Sans one-hot encoding, le modèle interpréterait '9 > 5 > 1' comme une relation numérique réelle — ce qui est faux pour des classes catégorielles. to_categorical(5, 10) → [0,0,0,0,0,1,0,0,0,0]. Cross-entropy loss calcule l'écart entre ce vecteur et la sortie softmax du modèle. Dans le cours DLI MNIST : 10 classes (chiffres 0-9)."
+},
+// NB01 — reshape dense
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:53,
+text:"Dans le notebook MNIST, pourquoi reshape-t-on les images de (28,28) en (784,) pour un réseau Dense ?",
+code:"x_train = x_train.reshape(-1, 784)",
+opts:["Pour réduire la mémoire utilisée.","Les couches Dense attendent un vecteur 1D — reshape transforme chaque image 2D (28×28) en un vecteur plat de 784 valeurs.","Pour appliquer la normalisation plus efficacement.","Keras ne supporte pas les tableaux 2D pour les couches Dense."],
+ok:1,
+fb:"Un réseau Dense fait des multiplications matricielles qui nécessitent un vecteur 1D. reshape(-1, 784) : le -1 = 'autant de lignes que nécessaire' (nombre d'exemples), 784 = 28×28. On perd l'information spatiale — c'est précisément pourquoi les CNN (notebook 03) sont plus adaptés aux images."
+},
+// NB02 — ASL dataset
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:54,
+text:"Dans le notebook 02 (ASL), comment le dataset est-il chargé et combien de classes contient-il ?",
+code:'train_df = pd.read_csv("data/asl_data/sign_mnist_train.csv")',
+opts:["Via tf.keras.datasets comme MNIST, 26 classes (A-Z).","En format CSV chargé avec Pandas — 24 classes (A-Z sauf J et Z qui nécessitent un mouvement et sont exclues).","Via flow_from_directory, 26 classes.","Via l'API DLI propriétaire, 20 classes."],
+ok:1,
+fb:"L'alphabet ASL contient 26 lettres, mais J et Z nécessitent un mouvement de la main — impossibles à représenter par une image statique. Le dataset contient donc 24 classes. Il est au format CSV (chaque ligne = image aplatie de 784 pixels + label). Pandas DataFrame est utilisé pour charger et manipuler les données — compétence réutilisée dans les notebooks suivants."
+},
+// NB03 — CNN reshape ASL
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:55,
+text:"Dans le notebook 03 (CNN sur ASL), pourquoi reshaper en (28,28,1) au lieu de (784,) ?",
+code:"x_train = x_train.reshape(-1, 28, 28, 1)",
+opts:["Format 3D plus compact que le format 1D.","Conv2D nécessite (hauteur, largeur, canaux) — le 1 représente le canal unique (niveaux de gris). Ce format préserve l'information spatiale exploitée par les convolutions.","Pour accélérer le chargement sur GPU.","Keras exige ce format uniquement pour les images couleur."],
+ok:1,
+fb:"Conv2D opère sur des données de forme (batch, hauteur, largeur, canaux). Le reshape en (28,28,1) : 28×28 pixels, 1 canal (niveaux de gris). Le '1' est obligatoire même en niveaux de gris. Sans ce reshape, Conv2D génère une erreur de forme. La version aplatie (784,) perd l'information spatiale que les CNN exploitent précisément."
+},
+// NB04b — Déploiement
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:56,
+text:"Dans le notebook 04b (déploiement), comment prépare-t-on une nouvelle image pour la passer au modèle ASL ?",
+code:'image = image_utils.load_img("b.png", color_mode="grayscale", target_size=(28,28))\nimage = image_utils.img_to_array(image)\nimage = image.reshape(1, 28, 28, 1)\nimage = image / 255',
+opts:["On charge avec NumPy.loadtxt() directement.","On charge avec load_img(), convertit en array, reshape au format attendu, et normalise (÷255) — exactement comme pendant l'entraînement.","Le modèle ajuste automatiquement l'image à la bonne taille.","On réentraîne le modèle sur chaque nouvelle image."],
+ok:1,
+fb:"Le prétraitement à l'inférence doit être identique à l'entraînement : même taille (28×28), même couleur (grayscale), même normalisation (÷255), même forme (1,28,28,1) — le 1 en première dimension = batch size d'une image. Oublier un seul step entraîne des prédictions erratiques. C'est une erreur fréquente des débutants."
+},
+// NB04b — Interprétation prédiction
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:57,
+text:"Après model.predict(image) sur le modèle ASL, comment obtient-on la lettre prédite ?",
+code:'prediction = model.predict(image)\nprint(np.argmax(prediction))',
+opts:["predict() retourne directement la lettre ASL.","predict() retourne un vecteur de 24 probabilités. np.argmax() retourne l'index de la probabilité maximale = l'index de la lettre dans le vocabulaire.","np.argmax() sélectionne la lettre la plus rare dans le dataset.","predict() retourne une valeur entre 0 et 1 représentant la confiance."],
+ok:1,
+fb:"model.predict(image) retourne un array de forme (1,24) — 24 probabilités. np.argmax(prediction) retourne l'index (0-23) de la probabilité la plus haute. Pour convertir en lettre : alphabets = 'abcdefghiklmnopqrstvwxy' (sans j et z), alphabets[np.argmax(prediction)] = la lettre. Pipeline complet : load_model → preprocess → predict → argmax → decode."
+},
+// NB05a — Doggy door basique
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:58,
+text:"Dans le notebook 05a, comment VGG16 pré-entraîné est-il utilisé pour la doggy door sans réentraîner le modèle ?",
+code:'model = VGG16(weights="imagenet")',
+opts:["On réentraîne VGG16 sur un dataset chien/non-chien.","VGG16 complet (include_top=True) prédit déjà 1000 classes ImageNet dont plusieurs races de chiens. decode_predictions() vérifie si une prédiction top-5 est une race de chien — aucun réentraînement.","VGG16 comme extracteur de features avec classifieur séparé.","On compare les embeddings avec une base de données de chiens."],
+ok:1,
+fb:"VGG16(weights='imagenet') avec include_top=True (défaut) charge le classifieur 1000 classes ImageNet. Parmi ces classes : Labrador, Poodle, German Shepherd... decode_predictions(model.predict(image), top=5) retourne les 5 meilleures prédictions avec labels humains. La doggy door s'ouvre si une prédiction est une race de chien. Zéro réentraînement — c'est le zero-shot use case."
+},
+// NB05b — Presidential doggy door
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:59,
+text:"Dans le notebook 05b, quel est l'objectif de la 'presidential doggy door' et comment est-il atteint ?",
+code:null,
+opts:["Détecter tous les chiens — VGG16 sans modification.","Reconnaître un chien spécifique parmi d'autres chiens — fine-tuning VGG16 avec quelques photos du chien cible, base gelée, classifieur binaire (mon chien / autre).","Détecter les présidents américains — fine-tuning sur visages.","Classifier l'humeur du chien (content/triste)."],
+ok:1,
+fb:"La presidential doggy door va plus loin que la 05a : la porte s'ouvre uniquement pour Bo (le chien d'Obama). Solution : VGG16(include_top=False) → gel de la base → classifieur binaire → entraînement avec quelques dizaines de photos. C'est le pattern exact de feature extraction / transfer learning réutilisé dans l'assessment final."
+},
+// NB06 — Headline generator
+{b:"Bloc 4 — Réseaux Récurrents & NLP",bi:3,n:60,
+text:"Dans le notebook 06, sur quelles données le LSTM est-il entraîné et quel est l'objectif ?",
+code:null,
+opts:["Articles Wikipedia pour générer des définitions.","Titres du New York Times — apprendre à prédire le prochain mot et générer du texte par autocomplétion séquentielle.","Tweets pour la classification de sentiment.","Code Python pour l'autocomplétion."],
+ok:1,
+fb:"Le notebook 06 entraîne un LSTM sur des titres du New York Times. Le modèle apprend la distribution statistique des mots dans des titres journalistiques. À l'inférence : on fournit un début de phrase → le modèle prédit le mot suivant → on l'ajoute et on prédit le suivant... Génération autorégressive séquentielle — la base des LLMs modernes (GPT utilise des Transformers avec le même principe)."
+},
+// Température LSTM
+{b:"Bloc 4 — Réseaux Récurrents & NLP",bi:3,n:61,
+text:"Dans le notebook 06, pourquoi utilise-t-on une température lors de la génération de texte ?",
+code:'preds = np.log(preds) / temperature\npreds = np.exp(preds) / np.sum(np.exp(preds))',
+opts:["La température accélère l'inférence.","La température contrôle la 'créativité' : basse (< 1) → texte conservateur et prévisible ; haute (> 1) → texte plus diversifié mais potentiellement incohérent.","La température normalise les probabilités à 1.","La température est uniquement utilisée pendant l'entraînement."],
+ok:1,
+fb:"temperature < 1 → distribution softmax plus pointue → toujours les mots les plus probables → texte répétitif. temperature > 1 → distribution plus plate → plus de diversité/créativité → risque d'incohérence. temperature = 1 → distribution originale. On le retrouve dans l'API ChatGPT comme paramètre 'temperature' — même concept."
+},
+// validation_data vs validation_split
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:62,
+text:"Dans model.fit(), quelle est la différence entre validation_data et validation_split ?",
+code:'# Option A\nmodel.fit(x_train, y_train, validation_data=(x_valid, y_valid))\n# Option B\nmodel.fit(x_train, y_train, validation_split=0.2)',
+opts:["validation_data est plus rapide.","validation_data utilise un jeu de validation explicitement fourni ; validation_split réserve automatiquement une fraction des données d'entraînement pour la validation.","validation_split fait de la cross-validation.","Les deux sont strictement identiques."],
+ok:1,
+fb:"validation_data=(x_valid, y_valid) : jeu de validation fourni manuellement — méthode recommandée. validation_split=0.2 : Keras réserve les derniers 20% de x_train — attention si le dataset n'est pas ordonné aléatoirement. Dans le cours DLI, MNIST et ASL fournissent déjà x_valid/y_valid séparés → on utilise validation_data."
+},
+// GlobalAveragePooling2D vs Flatten
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:63,
+text:"Qu'est-ce que GlobalAveragePooling2D et en quoi diffère-t-il de Flatten() dans le contexte du transfer learning ?",
+code:'x = GlobalAveragePooling2D()(base_model.output)  # (7,7,512) → (512,)\nx = Flatten()(base_model.output)                  # (7,7,512) → (25088,)',
+opts:["Produisent exactement le même résultat.","GAP calcule la moyenne spatiale de chaque canal (toujours 512 sorties) ; Flatten étend tout (7×7×512 = 25088). GAP produit moins de paramètres et est plus robuste à l'overfitting.","GAP uniquement compatible avec VGG16.","Flatten conserve plus d'information spatiale — préférable."],
+ok:1,
+fb:"GlobalAveragePooling2D : pour chaque canal, calcule la moyenne sur la dimension spatiale → (7,7,512) → (512,), indépendamment de la taille spatiale. Flatten → (25088,). GAP produit beaucoup moins de paramètres dans la couche Dense suivante (512 vs 25088 connexions/neurone) → moins d'overfitting. C'est pourquoi GAP est préféré dans le transfer learning moderne (ResNet, MobileNet, EfficientNet)."
+},
+// Nombre de filtres
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:64,
+text:"Quel est l'impact du nombre de filtres dans une couche Conv2D sur les capacités du modèle ?",
+code:'Conv2D(32, (3,3))   # 32 filtres\nConv2D(256, (3,3))  # 256 filtres',
+opts:["Plus de filtres = images de résolution plus haute.","Plus de filtres = plus de types de features détectés = plus de capacité mais plus de paramètres et risque d'overfitting sur petits datasets.","Plus de filtres = kernel size automatiquement plus grand.","Le nombre de filtres n'affecte pas les performances."],
+ok:1,
+fb:"Chaque filtre détecte un type de pattern différent (contour horizontal, texture...). 32 filtres : 32×(3×3×1+1) = 320 params pour niveaux de gris. 256 filtres : 256×28 = 7168 params. Plus de filtres = plus de diversité de features = plus de capacité. Mais plus de paramètres = plus de risque d'overfitting et plus de mémoire GPU. En pratique : commencer avec peu de filtres (32) et augmenter progressivement vers les couches profondes."
+},
+// Initialisation des poids
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:65,
+text:"Pourquoi n'initialise-t-on pas les poids d'un réseau de neurones à zéro ?",
+code:null,
+opts:["Les poids à zéro créent des valeurs trop petites pour les GPU.","Initialiser à zéro crée un problème de symétrie : tous les neurones calculent la même chose et reçoivent les mêmes gradients → impossible de briser la symétrie. On initialise aléatoirement (Glorot/He initialization).","Les poids à zéro causent une division par zéro dans backpropagation.","Keras n'accepte pas l'initialisation à zéro."],
+ok:1,
+fb:"Symétrie : si tous les poids sont identiques (zéro), tous les neurones d'une couche calculent exactement la même chose → mêmes gradients → mises à jour identiques → jamais de différenciation. Initialisation aléatoire (Glorot par défaut dans Keras, He pour ReLU) brise la symétrie et permet à chaque neurone d'apprendre des features différentes. Keras choisit automatiquement selon la fonction d'activation de la couche."
+},
+// Augmentation sur validation
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:66,
+text:"Lors de l'assessment final, quelle est la bonne pratique pour ImageDataGenerator sur train vs validation ?",
+code:'train_gen = ImageDataGenerator(rescale=1./255, rotation_range=10, ...)\nvalid_gen = ImageDataGenerator(rescale=1./255)',
+opts:["Même augmentation sur train et validation pour une évaluation cohérente.","La data augmentation s'applique UNIQUEMENT sur le train — la validation ne reçoit que la normalisation, pour une évaluation représentative et reproductible.","Normalisation uniquement sur la validation, pas sur le train.","L'augmentation est appliquée sur les deux mais avec des paramètres différents."],
+ok:1,
+fb:"Erreur fréquente : appliquer l'augmentation sur la validation. Le jeu de validation doit être représentatif des données réelles — non augmenté. Seule la normalisation (rescale ou preprocess_input) s'applique sur la validation. Des rotations/flips aléatoires sur la validation rendraient l'évaluation non reproductible et biaisée."
+},
+// Vanishing gradient LSTM (reformulation Q41 originale)
+{b:"Bloc 4 — Réseaux Récurrents & NLP",bi:3,n:67,
+text:"Pourquoi les RNN simples ont-ils du mal avec les longues séquences et comment le LSTM résout-il ce problème ?",
+code:null,
+opts:["Les RNN sont lents sur longues séquences — LSTM utilise un lr adaptatif.","Dans les RNN simples, les gradients diminuent exponentiellement lors de la backpropagation through time (vanishing gradient) — les dépendances à long terme sont perdues. Le LSTM utilise des gates (forget, input, output) et une cellule mémoire Cₜ pour contrôler sélectivement le flux d'information.","Vanishing gradient = problème uniquement CNN — RNN non affectés.","LSTM résout via batch normalization sur chaque pas de temps."],
+ok:1,
+fb:"Backpropagation through time (BPTT) dans les RNN : les gradients sont multipliés par la dérivée de tanh à chaque pas de temps → exponentielle → tend vers 0 → le début de la séquence est 'oublié'. LSTM : la cellule mémoire Cₜ a un chemin de gradient presque constant (forget gate ≈ 1 → gradient fluent). Les trois gates apprennent quoi garder/oublier/lire. Le GRU (Gated Recurrent Unit) est une variante simplifiée également efficace."
+},
+// Pipeline NLP notebook 06
+{b:"Bloc 4 — Réseaux Récurrents & NLP",bi:3,n:68,
+text:"Dans le notebook 06, quel est le pipeline complet de préparation du texte avant le LSTM ?",
+code:null,
+opts:["Texte brut → LSTM directement.","Tokenisation (mots → indices) → séquences → padding (longueur uniforme) → Embedding (indices → vecteurs denses) → LSTM.","Texte → TF-IDF → LSTM.","Texte → ASCII bytes → LSTM."],
+ok:1,
+fb:"Pipeline NLP complet du notebook 06 : 1) Tokenizer() : mots → indices (ex. 'president' → 47). 2) texts_to_sequences() : chaque titre → liste d'entiers. 3) pad_sequences(maxlen=100) : uniformise les longueurs. 4) Embedding(vocab_size, dim) : indices → vecteurs denses appris. 5) LSTM : traite la séquence d'embeddings et prédit le prochain token. Même pipeline de base que GPT — à la différence que GPT utilise des Transformers."
+},
+// Transformer
+{b:"Bloc 4 — Réseaux Récurrents & NLP",bi:3,n:69,
+text:"Qu'est-ce que l'architecture Transformer et pourquoi est-elle supérieure aux RNN sur les longues séquences ?",
+code:null,
+opts:["Transformer = RNN bidirectionnel amélioré.","Transformer utilise la self-attention pour capturer les dépendances entre tous les éléments en parallèle — sans récurrence. Traitement parallèle → entraînement accéléré, pas de vanishing gradient, meilleures performances sur longues séquences.","Transformer = CNN pour le texte.","Transformer uniquement pour la traduction automatique."],
+ok:1,
+fb:"Attention Is All You Need (2017) : chaque token 'attends' simultanément tous les autres tokens → dépendances à longue distance capturées directement (vs propagation séquentielle des RNN). Traitement parallèle → entraînement ~10x plus rapide sur GPU. Pas de vanishing gradient. BERT, GPT-4, LLaMA, Mistral... tous des Transformers. C'est l'architecture dominante en NLP depuis 2018."
+},
+// TensorFlow vs PyTorch
+{b:"Bloc 4 — Réseaux Récurrents & NLP",bi:3,n:70,
+text:"Quelle est la différence entre TensorFlow/Keras et PyTorch dans le contexte du cours NVIDIA DLI ?",
+code:null,
+opts:["TensorFlow pour la production, PyTorch uniquement pour la recherche.","Le cours DLI utilise TensorFlow/Keras (API haut niveau : Sequential, Dense, compile, fit). PyTorch est l'alternative principale avec un style plus impératif — les deux sont utilisés en industrie et recherche.","PyTorch plus rapide grâce à CUDA natif.","TensorFlow et PyTorch totalement incompatibles."],
+ok:1,
+fb:"Le cours NVIDIA DLI utilise TensorFlow 2.x avec Keras. Keras abstrait les détails bas niveau : Sequential, Dense, Conv2D, compile, fit. PyTorch (Meta) : plus populaire en recherche académique, style plus pythonique. En production industrielle : les deux sont très utilisés. TensorFlow avec Keras est préféré pour les déploiements production (TensorFlow Serving, TFLite pour mobile). Les concepts fondamentaux du DL sont indépendants du framework."
+},
+// model.summary()
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:71,
+text:"Qu'est-ce que model.summary() permet de vérifier avant l'entraînement ?",
+code:'# conv2d (Conv2D)  (None,26,26,32)  320\n# max_pooling2d    (None,13,13,32)  0\n# flatten          (None,5408)      0\n# dense            (None,128)       692352\n# dense_1          (None,24)        3096',
+opts:["Lance l'entraînement et affiche les métriques.","Affiche l'architecture complète : chaque couche, la forme de sortie et le nombre de paramètres — pour vérifier que les dimensions sont correctes avant l'entraînement.","Évalue les performances sur le jeu de test.","Utile uniquement pour le débogage."],
+ok:1,
+fb:"model.summary() est indispensable avant d'entraîner : on vérifie les dimensions de sortie (ex. Conv2D(32,(3,3)) sur 28×28 → 26×26×32 avec padding='valid'), le nombre total de paramètres (ici ~695k), et la cohérence des dimensions entre couches. Particulièrement critique en transfer learning pour s'assurer que la base pré-entraînée et les nouvelles couches sont compatibles."
+},
+// Kernel DLI shutdown
+{b:"Bloc 1 — Mécaniques du Deep Learning",bi:0,n:72,
+text:"Dans les notebooks DLI, à quoi sert app.kernel.do_shutdown(True) entre les notebooks ?",
+code:'import IPython\napp = IPython.Application.instance()\napp.kernel.do_shutdown(True)',
+opts:["Sauvegarde automatiquement le notebook.","Libère la mémoire GPU en redémarrant le kernel Python — nécessaire pour éviter les erreurs OOM (Out of Memory) lors du passage d'un notebook à un autre.","Soumet le notebook à NVIDIA pour évaluation.","Réinitialise les poids du modèle."],
+ok:1,
+fb:"Les GPU ont une VRAM limitée. Les notebooks DLI s'exécutent sur serveur GPU partagé NVIDIA. Le modèle et les données du notebook précédent restent en mémoire GPU → risque de OOM sur le notebook suivant. do_shutdown(True) redémarre le kernel Python, libérant toute la mémoire GPU. Commande explicitement présente dans les notebooks DLI entre chaque exercice."
+},
+// CNN vs Dense sur ASL
+{b:"Bloc 2 — Réseaux Convolutionnels & Vision",bi:1,n:73,
+text:"Dans le notebook 03 (CNN sur ASL), quel avantage concret le CNN apporte-t-il par rapport au Dense du notebook 02 ?",
+code:null,
+opts:["CNN plus rapide à entraîner car moins de couches.","CNN obtient meilleure accuracy sur validation grâce à l'exploitation de l'information spatiale — les convolutions détectent les patterns locaux des gestes indépendamment de leur position.","CNN traite des images de taille variable sans redimensionnement.","CNN nécessite moins de données car moins de paramètres."],
+ok:1,
+fb:"La progression pédagogique DLI : Dense simple (nb02) → bon sur train mais surapprentit. CNN (nb03) avec Conv2D + MaxPooling → meilleure validation grâce au parameter sharing et à la translation invariance. Les convolutions détectent les formes caractéristiques des gestes de la main (courbes des doigts, orientation) peu importe leur position dans l'image — avantage fondamental sur les pixels bruts."
+},
+// Vérification augmentation ASL
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:74,
+text:"Dans le notebook 04a (data augmentation ASL), pourquoi horizontal_flip=False est-il important pour les gestes ASL ?",
+code:'datagen = ImageDataGenerator(\n    rotation_range=10,\n    zoom_range=0.1,\n    horizontal_flip=False\n)',
+opts:["Pour accélérer le traitement des images.","Les gestes ASL ne sont pas symétriques — retourner horizontalement une lettre produit une autre lettre ou un geste invalide. horizontal_flip=False évite de créer des exemples d'entraînement incorrects.","Keras ne supporte pas horizontal_flip sur des images en niveaux de gris.","Horizontal_flip est inutile pour les petites images 28×28."],
+ok:1,
+fb:"En ASL, la lettre 'b' dextrogyrotation n'est pas la même que sa version miroir. Appliquer horizontal_flip=True créerait des exemples incorrects dans le dataset d'entraînement — le modèle apprendrait des associations fausses. Inspecter visuellement les images augmentées (plt.imshow) est une bonne pratique essentielle avant de lancer l'entraînement pour s'assurer que les transformations sont réalistes."
+},
+// assess — flow_from_directory structure
+{b:"Bloc 3 — Transfer Learning & Fine-tuning",bi:2,n:75,
+text:"Dans l'assessment final, quelle structure de dossiers est attendue par flow_from_directory() ?",
+code:'train_gen = datagen.flow_from_directory(\n    "data/fruits/train",\n    target_size=(224, 224),\n    class_mode="categorical"\n)',
+opts:["Toutes les images dans un seul dossier plat.","Des sous-dossiers par classe (data/fruits/train/fresh_apple/, data/fruits/train/rotten_apple/...) — les labels sont générés automatiquement depuis les noms de dossiers.","Un fichier CSV séparé avec les labels.","Les images déjà converties en arrays NumPy."],
+ok:1,
+fb:"flow_from_directory() s'attend à : data/fruits/train/classe_1/*.jpg, data/fruits/train/classe_2/*.jpg... Chaque sous-dossier = une classe. Les labels sont générés automatiquement depuis les noms de dossiers. target_size=(224,224) redimensionne toutes les images. class_mode='categorical' → labels one-hot. C'est la méthode standard pour charger de grands datasets d'images qui ne tiennent pas en mémoire."
+}
+];
+
+const BNAMES = [
+  "Mécaniques du Deep Learning",
+  "Réseaux Convolutionnels & Vision",
+  "Transfer Learning & Fine-tuning",
+  "Réseaux Récurrents & NLP"
+];
+const BTOTALS = [20,20,20,15];
+const LETTERS = ['A','B','C','D'];
+
+let S = {screen:'intro',cur:0,score:0,ans:false,bs:[0,0,0,0]};
+
+function pct(s,t){return t===0?0:Math.round(s/t*100);}
+
+function uh(){
+  const hs=document.getElementById('header-score');
+  const sub=document.getElementById('header-sub');
+  if(S.screen==='question'){
+    hs.style.display='block';
+    hs.textContent=S.score+' / '+S.cur+' ok';
+    sub.textContent='Q'+Q[S.cur].n+'/'+Q.length+' — '+Q[S.cur].b;
+  } else if(S.screen==='result'){
+    hs.style.display='none';
+    sub.textContent='Résultats finaux';
+  } else {
+    hs.style.display='none';
+    sub.textContent='QCM de positionnement — CYBERSTRUCT';
+  }
+}
+
+function intro(){
+  S.screen='intro'; uh();
+  document.getElementById('app').innerHTML=`
+  <div class="intro-card card-anim">
+    <div class="intro-title">NVIDIA DLI — Fundamentals of Deep Learning</div>
+    <div class="intro-sub">75 questions couvrant les 7 notebooks officiels du cours NVIDIA DLI, incluant MNIST, ASL, CNN, augmentation, doggy door, transfer learning, headline generator et l'assessment final. Mix théorie + code Python/Keras. Note : l'évaluation réelle est un coding assessment pratique (seuil 92%) — ce QCM prépare la partie conceptuelle.</div>
+    <div class="intro-stats">
+      <div class="intro-stat"><div class="intro-stat-val">75</div><div class="intro-stat-label">questions</div></div>
+      <div class="intro-stat"><div class="intro-stat-val">80%</div><div class="intro-stat-label">objectif visé</div></div>
+      <div class="intro-stat"><div class="intro-stat-val">~60 min</div><div class="intro-stat-label">durée estimée</div></div>
+    </div>
+    <div class="intro-blocs">
+      <div class="intro-blocs-title">Blocs du cours officiel (7 notebooks)</div>
+      ${[
+        ["1","Mécaniques du DL (MNIST, normalisation, loss, backprop, overfitting, Keras...)","18 q"],
+        ["2","Réseaux Convolutionnels & Vision (ASL, CNN, pooling, data augmentation, summary...)","18 q"],
+        ["3","Transfer Learning & Fine-tuning (doggy door, presidential, déploiement, assessment 92%...)","17 q"],
+        ["4","Réseaux Récurrents & NLP (headline generator, LSTM, embedding, Transformer, température...)","12 q"]
+      ].map(([n,name,q])=>`
+      <div class="intro-bloc-item">
+        <div class="intro-bloc-num">${n}</div>
+        <span>${name}</span>
+        <span class="intro-bloc-q">${q}</span>
+      </div>`).join('')}
+    </div>
+    <button class="btn-start" onclick="start()">Commencer le QCM</button>
+  </div>`;
+}
+
+function start(){
+  S={screen:'question',cur:0,score:0,ans:false,bs:[0,0,0,0]};
+  render();
+}
+
+function render(){
+  S.screen='question'; S.ans=false; uh();
+  const q=Q[S.cur];
+  const prog=Math.round(S.cur/Q.length*100);
+  document.getElementById('app').innerHTML=`
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" style="width:${prog}%"></div></div>
+    <div class="progress-labels"><span>Q${q.n} / ${Q.length}</span><span>${prog}%</span></div>
+  </div>
+  <div class="card card-anim">
+    <div class="bloc-badge">${q.b}</div>
+    <div class="question-text">${q.text}</div>
+    ${q.code?`<div class="code-block">${q.code}</div>`:''}
+    <div class="options" id="opts">
+      ${q.opts.map((o,i)=>`
+      <button class="option-btn" onclick="ans(${i})">
+        <span class="option-letter">${LETTERS[i]}</span>
+        <span>${o}</span>
+      </button>`).join('')}
+    </div>
+    <div id="fb"></div>
+    <div class="nav-row" id="nav" style="display:none">
+      <button class="btn-next" onclick="next()">${S.cur<Q.length-1?'Question suivante →':'Voir mes résultats →'}</button>
+    </div>
+  </div>`;
+}
+
+function ans(i){
+  if(S.ans)return;
+  S.ans=true;
+  const q=Q[S.cur];
+  const ok=i===q.ok;
+  if(ok){S.score++;S.bs[q.bi]++;}
+  document.querySelectorAll('.option-btn').forEach((b,j)=>{
+    b.disabled=true;
+    if(j===i&&ok)b.classList.add('correct');
+    if(j===i&&!ok)b.classList.add('wrong');
+    if(j===q.ok&&!ok)b.classList.add('reveal-correct');
+  });
+  document.getElementById('fb').innerHTML=`
+  <div class="feedback-box ${ok?'correct':'wrong'}">
+    <span class="feedback-label">${ok?'✓ Bonne réponse':'✗ Mauvaise réponse'}</span>${q.fb}
+  </div>`;
+  document.getElementById('nav').style.display='flex';
+  uh();
+}
+
+function next(){
+  S.cur++;
+  if(S.cur>=Q.length) result();
+  else render();
+}
+
+function result(){
+  S.screen='result'; uh();
+  const p=pct(S.score,Q.length);
+  let vt,vs;
+  if(p>=80){vt='Excellent — bonne maîtrise théorique du Deep Learning !';vs='background:var(--success-bg);border-color:var(--success-border);color:var(--success-text);';}
+  else if(p>=65){vt='Bon niveau — quelques notions à consolider avant le coding assessment.';vs='background:var(--warn-bg);border-color:var(--warn-border);color:var(--warn-text);';}
+  else{vt='Réviser les fondamentaux — reprendre les notebooks du cours NVIDIA DLI.';vs='background:var(--error-bg);border-color:var(--error-border);color:var(--error-text);';}
+  const bc=BNAMES.map((n,i)=>`
+  <div class="bloc-card">
+    <div class="bloc-card-name">${n}</div>
+    <div class="bloc-card-score">${S.bs[i]}/${BTOTALS[i]}<span class="bloc-card-pct">(${pct(S.bs[i],BTOTALS[i])}%)</span></div>
+  </div>`).join('');
+  document.getElementById('app').innerHTML=`
+  <div class="result-card card-anim">
+    <div class="result-pct">${p}%</div>
+    <div class="result-fraction">${S.score} / ${Q.length} bonnes réponses</div>
+    <div class="result-verdict" style="${vs}">${vt}</div>
+    <div class="bloc-grid">${bc}</div>
+    <div class="threshold-note">⚠ L'assessment NVIDIA DLI est un coding pratique (seuil 92% d'accuracy). Ce quiz évalue la partie théorique — objectif visé : 80%+ soit 60/75.</div>
+    <button class="btn-restart" onclick="restart()">Recommencer le QCM</button>
+  </div>`;
+}
+
+function restart(){
+  S={screen:'intro',cur:0,score:0,ans:false,bs:[0,0,0,0]};
+  intro();
+}
+
+intro();
+</script>
+</body>
+</html>
