@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QCM — Dataiku Core Designer | CYBERSTRUCT</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f8f7f4; --surface: #ffffff; --surface2: #f2f1ee;
+    --text: #1a1a18; --text-muted: #6b6a66; --text-hint: #9e9d99;
+    --border: rgba(0,0,0,0.10); --border-med: rgba(0,0,0,0.18);
+    --accent: #2D7DD2; --accent-bg: #E8F2FC; --accent-text: #1A5490;
+    --success-bg: #EAF3DE; --success-border: #639922; --success-text: #27500A;
+    --error-bg: #FCEBEB; --error-border: #E24B4A; --error-text: #A32D2D;
+    --warn-bg: #FAEEDA; --warn-border: #BA7517; --warn-text: #854F0B;
+    --radius: 10px; --radius-sm: 6px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a; --surface: #252523; --surface2: #2e2e2b;
+      --text: #f0ede8; --text-muted: #a09f9a; --text-hint: #6b6a66;
+      --border: rgba(255,255,255,0.10); --border-med: rgba(255,255,255,0.18);
+      --accent: #4A90D9; --accent-bg: #0C2840; --accent-text: #85B7EB;
+      --success-bg: #0e2206; --success-border: #3B6D11; --success-text: #C0DD97;
+      --error-bg: #2a0a0a; --error-border: #A32D2D; --error-text: #F09595;
+      --warn-bg: #2a1a04; --warn-border: #854F0B; --warn-text: #FAC775;
+    }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+  .header { background: var(--surface); border-bottom: 0.5px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; }
+  .header-logo { width: 32px; height: 32px; background: var(--accent); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 15px; font-weight: 700; color: white; }
+  .header-info { flex: 1; min-width: 0; }
+  .header-title { font-size: 13px; font-weight: 500; color: var(--text); }
+  .header-sub { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .header-score { font-size: 12px; font-weight: 500; color: var(--accent-text); background: var(--accent-bg); padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+  .main { max-width: 720px; margin: 0 auto; padding: 20px 16px 60px; }
+  .progress-wrap { margin-bottom: 18px; }
+  .progress-track { height: 3px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+  .progress-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-hint); margin-top: 5px; }
+  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 22px; }
+  .bloc-badge { display: inline-block; font-size: 11px; font-weight: 500; background: var(--accent-bg); color: var(--accent-text); padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; }
+  .question-text { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.55; margin-bottom: 16px; }
+  .multi-note { font-size: 11px; color: var(--accent-text); background: var(--accent-bg); padding: 4px 10px; border-radius: var(--radius-sm); margin-bottom: 12px; display: inline-block; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn { display: flex; align-items: flex-start; gap: 11px; padding: 11px 14px; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; text-align: left; font-size: 13px; color: var(--text); line-height: 1.5; transition: background 0.12s, border-color 0.12s, transform 0.08s; width: 100%; font-family: inherit; }
+  .option-btn:hover:not(:disabled) { background: var(--surface2); border-color: var(--accent); transform: translateX(2px); }
+  .option-btn:disabled { cursor: default; }
+  .option-letter { font-size: 11px; font-weight: 500; min-width: 20px; height: 20px; background: var(--surface2); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; color: var(--text-muted); }
+  .option-btn:hover:not(:disabled) .option-letter { background: var(--accent-bg); color: var(--accent-text); }
+  .option-btn.correct { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+  .option-btn.correct .option-letter { background: var(--success-border); color: white; }
+  .option-btn.wrong { background: var(--error-bg); border-color: var(--error-border); color: var(--error-text); }
+  .option-btn.wrong .option-letter { background: var(--error-border); color: white; }
+  .option-btn.reveal-correct { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); opacity: 0.65; }
+  .feedback-box { margin-top: 14px; padding: 11px 14px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.65; border: 0.5px solid; animation: fadeIn 0.2s ease; }
+  .feedback-box.correct { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+  .feedback-box.wrong { background: var(--error-bg); border-color: var(--error-border); color: var(--error-text); }
+  .feedback-label { font-weight: 500; display: block; margin-bottom: 3px; }
+  .nav-row { display: flex; justify-content: flex-end; margin-top: 16px; }
+  .btn-next { padding: 9px 20px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); cursor: pointer; font-family: inherit; transition: background 0.12s; }
+  .btn-next:hover { background: var(--surface2); }
+  .result-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 28px 22px; text-align: center; }
+  .result-pct { font-size: 58px; font-weight: 500; color: var(--text); line-height: 1; margin-bottom: 5px; }
+  .result-fraction { font-size: 14px; color: var(--text-muted); margin-bottom: 18px; }
+  .result-verdict { display: inline-block; font-size: 14px; font-weight: 500; padding: 9px 18px; border-radius: var(--radius-sm); margin-bottom: 24px; border: 0.5px solid; }
+  .bloc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 9px; margin-bottom: 18px; text-align: left; }
+  .bloc-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 11px 13px; }
+  .bloc-card-name { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; line-height: 1.4; }
+  .bloc-card-score { font-size: 20px; font-weight: 500; color: var(--text); }
+  .bloc-card-pct { font-size: 12px; color: var(--text-hint); margin-left: 3px; }
+  .threshold-note { font-size: 12px; color: var(--text-hint); margin-bottom: 18px; padding: 7px 11px; background: var(--surface2); border-radius: var(--radius-sm); }
+  .btn-restart { padding: 9px 24px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); cursor: pointer; font-family: inherit; }
+  .btn-restart:hover { background: var(--surface2); }
+  .intro-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 28px 24px; }
+  .intro-title { font-size: 20px; font-weight: 500; margin-bottom: 6px; }
+  .intro-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+  .intro-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); gap: 8px; margin-bottom: 20px; }
+  .intro-stat { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .intro-stat-val { font-size: 19px; font-weight: 500; }
+  .intro-stat-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  .intro-blocs { margin-bottom: 22px; }
+  .intro-blocs-title { font-size: 11px; font-weight: 500; color: var(--text-hint); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+  .intro-bloc-item { display: flex; align-items: center; gap: 9px; font-size: 12px; padding: 7px 0; border-bottom: 0.5px solid var(--border); }
+  .intro-bloc-item:last-child { border-bottom: none; }
+  .intro-bloc-num { width: 20px; height: 20px; background: var(--accent-bg); color: var(--accent-text); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+  .intro-bloc-q { font-size: 10px; color: var(--text-hint); margin-left: auto; }
+  .btn-start { width: 100%; padding: 12px; font-size: 14px; font-weight: 500; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer; font-family: inherit; transition: opacity 0.12s; }
+  .btn-start:hover { opacity: 0.88; }
+  .card-anim { animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div class="header" id="header">
+  <div class="header-logo">D</div>
+  <div class="header-info">
+    <div class="header-title">Dataiku Core Designer</div>
+    <div class="header-sub" id="header-sub">QCM de positionnement — CYBERSTRUCT</div>
+  </div>
+  <div class="header-score" id="header-score" style="display:none"></div>
+</div>
+<div class="main" id="app"></div>
+
+<script>
+const Q = [
+// ═══════════════════════════════════════════════════
+// THÈME 1 — Concepts fondamentaux Dataiku & Flow (10 questions)
+// ═══════════════════════════════════════════════════
+{t:"Concepts fondamentaux & Flow",ti:0,n:1,
+text:"Dans Dataiku, quelle est la différence fondamentale entre un Dataset et une Recette (Recipe) ?",
+opts:["Un Dataset stocke les données ; une Recette contient la logique de transformation qui produit un Dataset de sortie à partir d'un ou plusieurs Datasets d'entrée.","Une Recette stocke les données dans la base de données ; un Dataset contient les instructions de traitement.","Les Datasets sont uniquement pour les données brutes ; les Recettes sont uniquement pour les données transformées.","Il n'y a pas de différence — Dataset et Recipe sont deux noms pour le même objet dans Dataiku."],
+ok:0,
+fb:"Dans Dataiku, la séparation données / logique est fondamentale : un Dataset est un conteneur de données (avec un schéma et un système de stockage), une Recipe est la logique de transformation. Cette séparation permet de changer le stockage sous-jacent (ex. passer d'un fichier CSV à une base SQL) sans modifier la logique de traitement. Le Flow visualise l'enchaînement datasets → recettes → datasets."
+},
+{t:"Concepts fondamentaux & Flow",ti:0,n:2,
+text:"Dans le Flow de Dataiku, quelle forme représente une recette et quelle forme représente un dataset ?",
+opts:["Un carré = recette, un cercle = dataset","Un cercle = recette, un carré = dataset","Un triangle = recette, un rectangle = dataset","Les deux utilisent des cercles, différenciés uniquement par leur couleur."],
+ok:1,
+fb:"Dans le Flow Dataiku : les cercles représentent les recettes (leur couleur indique la catégorie : bleu pour les recettes visuelles, jaune pour les recettes de code, vert pour le ML...) et les carrés/rectangles représentent les datasets. Cette convention visuelle permet de lire immédiatement la lignée des données (data lineage) depuis les données brutes jusqu'aux outputs finaux."
+},
+{t:"Concepts fondamentaux & Flow",ti:0,n:3,
+text:"Quel est l'objectif principal de la fonctionnalité 'Lab' dans Dataiku ?",
+opts:["Le Lab est l'environnement de production où les modèles ML sont déployés pour les utilisateurs finaux.","Le Lab est un espace d'expérimentation où l'on peut tester des analyses, entraîner des modèles ou créer des notebooks avant de les intégrer au Flow.","Le Lab remplace le Flow pour les projets de petite taille.","Le Lab est uniquement dédié aux tests de performance des recettes SQL."],
+ok:1,
+fb:"Le Lab est l'espace de travail exploratoire de Dataiku : on peut y créer des Visual Analyses (analyses visuelles), des notebooks Python/R/SQL, et entraîner des modèles ML. Une fois satisfait du résultat, on peut 'déployer' le travail du Lab vers le Flow — par exemple déployer un notebook comme code recipe, ou un modèle entraîné comme un modèle de scoring dans le Flow."
+},
+{t:"Concepts fondamentaux & Flow",ti:0,n:4,
+text:"Par défaut, que visualise-t-on quand on clique sur l'onglet 'Explore' d'un dataset Dataiku ?",
+opts:["L'intégralité des données du dataset.","Les 10 000 premiers enregistrements du dataset (échantillon par défaut).","Un échantillon aléatoire de 10 000 enregistrements.","Les 100 derniers enregistrements ajoutés au dataset."],
+ok:1,
+fb:"Par défaut, l'onglet Explore affiche les 10 000 premiers enregistrements. C'est un échantillon configurable — on peut changer la méthode d'échantillonnage (premiers enregistrements, aléatoire, stratifié...) et la taille dans les paramètres du dataset. Cette approche permet de travailler interactivement même sur de très grands datasets sans charger l'intégralité des données en mémoire."
+},
+{t:"Concepts fondamentaux & Flow",ti:0,n:5,
+text:"Quelle est la valeur de la proposition Dataiku selon la plateforme ? (Choisissez TROIS réponses correctes)",
+opts:["Centraliser les initiatives IA de la donnée jusqu'à l'impact opérationnel.","Remplacer tous les outils de BI existants (Tableau, Power BI) par une interface unique.","Unifier les équipes métier, data et IT pour collaborer sur les projets IA.","Fournir un seul endroit pour développer, tester et mettre en production les projets."],
+ok:[0,2,3],
+fb:"La proposition de valeur Dataiku repose sur trois piliers : 1) Centraliser les initiatives IA du début (données brutes) à la fin (impact business). 2) Unifier les équipes — business analysts avec les outils visuels, data scientists avec le code, IT avec la gouvernance — sur une même plateforme. 3) Fournir un environnement unique pour tout le cycle de vie : développement, test et mise en production. Dataiku ne remplace pas les outils de BI mais peut s'y intégrer."
+},
+{t:"Concepts fondamentaux & Flow",ti:0,n:6,
+text:"Qu'est-ce que le 'schéma' d'un dataset Dataiku ?",
+opts:["La représentation visuelle du Flow d'un projet.","La liste des colonnes du dataset avec leur nom, leur type de stockage et leur 'meaning' (signification sémantique).","Le modèle de base de données utilisé pour stocker les données.","Le plan d'exécution généré automatiquement pour optimiser les recettes SQL."],
+ok:1,
+fb:"Le schéma d'un dataset Dataiku contient pour chaque colonne : le nom, le type de stockage (string, int, double, date...) et optionnellement le 'meaning' (signification sémantique : URL, email, coordonnées géographiques, numéro de téléphone...). Le meaning permet à Dataiku de proposer des traitements pertinents et des visualisations adaptées. Les colonnes dont le schéma est incohérent avec les données réelles apparaissent en rouge dans l'Explore."
+},
+{t:"Concepts fondamentaux & Flow",ti:0,n:7,
+text:"Quels éléments font partie du schéma d'un dataset Dataiku ? (Choisissez DEUX réponses correctes)",
+opts:["Le nom de la colonne","Le type de stockage de la colonne","La préférence de tri de la colonne","La validité de la colonne"],
+ok:[0,1],
+fb:"Le schéma d'un dataset Dataiku inclut obligatoirement le nom de la colonne et le type de stockage (string, int, bigint, double, float, boolean, date...). Le 'meaning' est optionnel mais enrichit les fonctionnalités. La préférence de tri et la validité ne font pas partie du schéma — la validité des données se gère via les règles de qualité des données (data quality rules), séparément du schéma."
+},
+{t:"Concepts fondamentaux & Flow",ti:0,n:8,
+text:"Quand Dataiku utilise un échantillon pour préparer des données ou construire un graphique, quelles affirmations sont vraies ? (Choisissez TROIS réponses correctes)",
+opts:["Les paramètres d'échantillonnage sont configurables.","Dataiku utilise par défaut un échantillon du dataset.","La méthode d'échantillonnage par défaut est un échantillon aléatoire pour assurer la représentativité.","L'échantillonnage permet de travailler interactivement avec de très grands datasets."],
+ok:[0,1,3],
+fb:"L'échantillonnage dans Dataiku : les paramètres sont configurables (méthode et taille), Dataiku utilise toujours un échantillon par défaut pour l'exploration interactive, et cela permet de travailler sur de très grands datasets. Attention : la méthode d'échantillonnage par défaut est 'premiers enregistrements' (first records) et NON un échantillon aléatoire — un échantillon aléatoire est plus représentatif mais plus lent à obtenir sur de très grands datasets."
+},
+{t:"Concepts fondamentaux & Flow",ti:0,n:9,
+text:"Dans quels onglets d'un dataset peut-on effectuer des analyses statistiques univariées, bivariées et une analyse en composantes principales (ACP) ?",
+opts:["Onglet Explore","Onglet Summary","Onglet Statistics","Onglet Charts"],
+ok:2,
+fb:"L'onglet Statistics d'un dataset Dataiku offre des analyses statistiques avancées : distributions univariées (histogrammes, boîtes à moustaches), analyses bivariées (corrélations, scatter plots), et ACP (Principal Component Analysis). L'onglet Charts permet de créer des visualisations custom avec une interface drag-and-drop. L'onglet Explore montre les données brutes. L'onglet Summary donne un aperçu rapide du dataset (nombre de lignes, colonnes, valeurs manquantes)."
+},
+{t:"Concepts fondamentaux & Flow",ti:0,n:10,
+text:"Quel outil Dataiku est le plus souvent le meilleur choix pour publier des insights et résultats d'un projet à des parties prenantes ?",
+opts:["Tiles","Workspaces","Dashboards","Wikis"],
+ok:2,
+fb:"Les Dashboards sont l'outil principal pour partager des résultats avec des parties prenantes non-techniques : on y intègre des graphiques, des tableaux de données, des textes et des vues de modèles ML. Les Workspaces organisent les projets et favorisent la collaboration entre équipes. Les Wikis documentent les projets. Les Tiles sont des éléments individuels affichés dans un dashboard. La question vient directement des vraies questions de l'examen Core Designer."
+},
+
+// ═══════════════════════════════════════════════════
+// THÈME 2 — Recette Prepare (10 questions)
+// ═══════════════════════════════════════════════════
+{t:"Recette Prepare",ti:1,n:11,
+text:"Dans la recette Prepare, quel langage est utilisé pour écrire des expressions dans le processeur Formula ?",
+opts:["Python","R","Le langage Formula de Dataiku (similaire à un tableur)","SQL"],
+ok:2,
+fb:"Le processeur Formula de la recette Prepare utilise le langage Formula de Dataiku, qui est similaire aux formules de tableur (Excel/Google Sheets). Ce langage permet de créer de nouvelles colonnes à partir d'expressions complexes : opérations arithmétiques, fonctions sur les chaînes de caractères, conditions, fonctions de date... Ce n'est pas du Python ou du SQL — pour utiliser Python, il faut utiliser une Code Recipe."
+},
+{t:"Recette Prepare",ti:1,n:12,
+text:"Dans la recette Prepare, les colonnes surlignées en bleu dans l'aperçu (preview) signifient :",
+opts:["Les colonnes sont des clés primaires et ne peuvent pas être modifiées.","Ce ne sont que des aperçus — les étapes de traitement ne seront réellement appliquées qu'en cliquant sur Run.","Les colonnes contiennent des valeurs manquantes détectées automatiquement.","Ces colonnes ont été créées par une étape Formula et sont de type calculé."],
+ok:1,
+fb:"Dans la recette Prepare, les colonnes bleues sont des aperçus calculés sur l'échantillon — elles ne sont pas encore réellement dans le dataset de sortie. Les modifications ne seront effectivement appliquées à tout le dataset que quand on clique sur 'Run'. Cela permet d'expérimenter et d'ajuster les étapes sans modifier les données réelles, ce qui est très utile pour le développement itératif."
+},
+{t:"Recette Prepare",ti:1,n:13,
+text:"Quelle est la meilleure façon de rendre un Script de recette Prepare (comportant de nombreuses étapes) plus lisible pour un collègue ?",
+opts:["Supprimer les étapes inutiles et garder uniquement les étapes essentielles.","Regrouper les étapes en utilisant la fonctionnalité de groupes de steps (step groups) avec des noms descriptifs.","Convertir la recette Prepare en code Python pour plus de clarté.","Dupliquer la recette en plusieurs petites recettes Prepare enchaînées."],
+ok:1,
+fb:"La recette Prepare permet de regrouper les étapes en 'step groups' avec des noms descriptifs — ce qui agit comme des commentaires de section pour documenter la logique. Par exemple : un groupe 'Nettoyage des valeurs manquantes', un groupe 'Normalisation des formats de dates', etc. C'est la bonne pratique recommandée par Dataiku pour maintenir des scripts lisibles et maintenables."
+},
+{t:"Recette Prepare",ti:1,n:14,
+text:"Quel processeur de la recette Prepare permet de créer une nouvelle colonne représentant le PIB total d'un pays, calculé comme PIB par habitant × Population ?",
+opts:["Convert currencies","Convert number formats","Formula","None of these — il faut utiliser une recette Group"],
+ok:2,
+fb:"Le processeur Formula permet de créer des colonnes calculées à partir d'autres colonnes via des expressions : ici [[GDP_per_capita]] * [[Population]] (en utilisant la syntaxe de colonnes avec espaces si nécessaire). 'Convert currencies' et 'Convert number formats' ne permettent pas de créer des colonnes à partir d'opérations entre colonnes. La recette Group est pour les agrégations par groupe, pas pour des calculs ligne par ligne."
+},
+{t:"Recette Prepare",ti:1,n:15,
+text:"Dans la recette Prepare, quelle étape permet de définir la signification sémantique (meaning) d'une colonne, par exemple pour indiquer qu'une colonne contient des URLs ?",
+opts:["L'étape 'Change column type'","L'étape 'Set meaning'","L'étape 'Enrich' avec un dictionnaire de lookup","L'onglet Schema du dataset après avoir exécuté la recette"],
+ok:1,
+fb:"L'étape 'Set meaning' (ou 'Change meaning') dans la recette Prepare permet d'assigner une signification sémantique à une colonne : URL, email, coordonnées géographiques, IP, pays, devise... Le meaning enrichit le schéma du dataset de sortie et permet à Dataiku de proposer des fonctionnalités adaptées (ex. : carte géographique pour des coordonnées GPS). Il est différent du type de stockage (string, int...)."
+},
+{t:"Recette Prepare",ti:1,n:16,
+text:"Quelle affirmation sur les recettes Prepare et leur relation avec les recettes visuelles est correcte ?",
+opts:["La recette Prepare est la seule recette visuelle dans Dataiku.","La recette Prepare est une recette visuelle parmi d'autres (Group, Join, Stack, Pivot, Window...) — toutes disponibles dans le catalogue de recettes visuelles.","La recette Prepare peut être utilisée pour effectuer des agrégations (Group by) directement.","La recette Prepare ne peut traiter qu'un seul dataset d'entrée."],
+ok:1,
+fb:"Dataiku propose plusieurs recettes visuelles : Prepare (nettoyage/transformation ligne par ligne), Group (agrégations), Join (jointures), Stack (empilement), Pivot (pivotement), Window (fonctions fenêtre), Sample/Filter (filtrage), Distinct (déduplication), Split (découpage), Sort (tri), Sync (synchronisation). Chacune a un usage spécifique. Pour des agrégations type GROUP BY, il faut utiliser la recette Group et non la recette Prepare."
+},
+{t:"Recette Prepare",ti:1,n:17,
+text:"Vous souhaitez normaliser le format d'une colonne de dates qui contient des formats mixtes (ex. '2023-01-15' et '15/01/2023'). Quel processeur de la recette Prepare utiliser ?",
+opts:["Formula","Parse date","Convert number formats","Normalize text"],
+ok:1,
+fb:"'Parse date' dans la recette Prepare permet de détecter et normaliser différents formats de dates en un format interne Dataiku. On peut spécifier les formats à reconnaître (ou laisser Dataiku les détecter automatiquement). Une fois parsée, la colonne est de type 'Date' et permet des opérations temporelles (extraction d'année, de mois, calculs d'intervalles, etc.)."
+},
+{t:"Recette Prepare",ti:1,n:18,
+text:"Dans la recette Prepare, que se passe-t-il si vous désactivez (disable) une étape plutôt que de la supprimer ?",
+opts:["L'étape est exécutée mais son résultat est ignoré.","L'étape est conservée dans le script mais n'est pas exécutée lors du Run — utile pour tester sans perdre la configuration.","L'étape est sauvegardée dans l'historique mais supprimée du script actif.","Il est impossible de désactiver une étape sans la supprimer."],
+ok:1,
+fb:"Désactiver une étape (icône œil barré) la conserve dans le script mais l'exclut de l'exécution. C'est très utile pour : tester une recette sans certaines transformations, comparer les résultats avec et sans une étape, ou conserver une étape expérimentale sans l'appliquer en production. Cette fonctionnalité encourage une approche itérative et non-destructive du développement."
+},
+{t:"Recette Prepare",ti:1,n:19,
+text:"Quel processeur de la recette Prepare permet de diviser une colonne contenant 'Prénom Nom' en deux colonnes séparées 'Prénom' et 'Nom' ?",
+opts:["Split column","Extract with regex","Split and fold","Formula avec la fonction split()"],
+ok:0,
+fb:"Le processeur 'Split column' divise une colonne en plusieurs colonnes en fonction d'un délimiteur (espace, virgule, point-virgule...). 'Extract with regex' extrait des patterns spécifiques. 'Split and fold' divise et crée plusieurs lignes (une par valeur). Pour séparer 'Prénom Nom' en deux colonnes sur le premier espace, 'Split column' avec délimiteur espace et option 'keep first N values' est la solution la plus directe."
+},
+{t:"Recette Prepare",ti:1,n:20,
+text:"Dans la recette Prepare, comment gérer les valeurs manquantes d'une colonne numérique pour les remplacer par la moyenne ?",
+opts:["Utiliser le processeur 'Fill empty cells with value' en saisissant manuellement la moyenne calculée.","Utiliser le processeur 'Impute missing values' qui peut remplacer par moyenne, médiane, mode ou valeur constante.","Les valeurs manquantes ne peuvent être gérées que dans une recette Python.","Utiliser le processeur 'Remove rows with empty values' pour supprimer les lignes concernées."],
+ok:1,
+fb:"Le processeur 'Impute missing values' (ou 'Fill missing values' selon la version) propose plusieurs stratégies : moyenne (mean), médiane (median), mode (most frequent value), valeur constante, ou valeur de la ligne précédente/suivante. C'est la bonne pratique pour le traitement des valeurs manquantes dans un pipeline reproductible — la moyenne est calculée automatiquement sur l'échantillon ou le dataset complet."
+},
+
+// ═══════════════════════════════════════════════════
+// THÈME 3 — Recettes visuelles (Group, Join, Stack, Pivot, Window, Distinct) (12 questions)
+// ═══════════════════════════════════════════════════
+{t:"Recettes visuelles",ti:2,n:21,
+text:"Projet CO2 Emissions : le dataset CO2_and_Oil est enregistré par mois (une colonne 'mois' et une colonne 'année'). Quelle recette visuelle permet d'agréger les données en totaux annuels ?",
+opts:["Prepare","Group","Stack","Join"],
+ok:1,
+fb:"La recette Group (équivalente d'un GROUP BY SQL) agrège les données en groupant par une ou plusieurs colonnes et en calculant des agrégats (somme, moyenne, nombre, min, max...). Ici, on groupera par 'pays' et 'année', puis on calculera la somme des émissions CO2. La recette Prepare ne fait pas d'agrégation. Stack empile des datasets verticalement. Join combine des datasets horizontalement."
+},
+{t:"Recettes visuelles",ti:2,n:22,
+text:"Dans une recette Group, vous calculez le prix moyen des commandes par client. Quelle fonctionnalité utiliser pour ne conserver que les clients dont le prix moyen dépasse un certain seuil ?",
+opts:["Computed Columns","Pre-Filter","Post-Filter","None of these"],
+ok:2,
+fb:"Le Post-Filter dans la recette Group filtre les lignes du résultat APRÈS l'agrégation — c'est l'équivalent de la clause HAVING en SQL. Le Pre-Filter filtre les lignes d'entrée AVANT l'agrégation (équivalent de WHERE). Computed Columns ajoute des colonnes calculées à partir des agrégats. Pour ne garder que les clients avec un prix moyen > X, il faut un Post-Filter sur la colonne agrégée 'prix moyen'."
+},
+{t:"Recettes visuelles",ti:2,n:23,
+text:"Vous avez un dataset de maisons à vendre (Homes_For_Sale) et un dataset d'agents immobiliers (Realtors). Vous voulez créer un dataset contenant UNIQUEMENT les maisons pour lesquelles vous avez les coordonnées d'un agent. Quel type de jointure utiliser ?",
+opts:["Left join avec Homes_For_Sale à gauche","Left join avec Realtors à gauche","Inner join","Cross join"],
+ok:2,
+fb:"Un Inner Join ne conserve que les lignes qui ont une correspondance dans les deux datasets. Ici : seules les maisons pour lesquelles un agent existe dans Realtors sont conservées. Un Left join avec Homes_For_Sale à gauche conserverait TOUTES les maisons (même sans agent correspondant, avec des nulls). Un Cross join produirait le produit cartésien de toutes les combinaisons."
+},
+{t:"Recettes visuelles",ti:2,n:24,
+text:"Comment joindre plus de deux datasets dans Dataiku en utilisant uniquement des recettes visuelles ?",
+opts:["C'est impossible — il faut obligatoirement une recette Python pour joindre plus de 2 datasets.","On crée plusieurs recettes Join enchaînées, une pour chaque dataset supplémentaire.","Bien que seuls deux datasets puissent être ajoutés dans la boîte de dialogue de création, d'autres datasets peuvent être ajoutés dans l'étape Join de la recette.","On utilise la recette Stack pour combiner plusieurs datasets puis une Join."],
+ok:2,
+fb:"La recette Join de Dataiku permet d'ajouter plusieurs datasets : lors de la création, on spécifie les deux premiers, puis dans l'interface de la recette (étape Join), on peut ajouter d'autres datasets via le bouton 'Add dataset'. Chaque dataset supplémentaire a son propre type de jointure et ses propres colonnes de correspondance. Cette fonctionnalité permet des jointures multi-tables dans une seule recette visuelle."
+},
+{t:"Recettes visuelles",ti:2,n:25,
+text:"Vous travaillez avec un dataset de commandes (orders) et voulez l'enrichir avec des informations clients (customers) en ajoutant des colonnes depuis le dataset customers. Quelle recette utiliser ?",
+opts:["Join","Window","Stack","Group"],
+ok:0,
+fb:"La recette Join permet de combiner deux datasets horizontalement (ajout de colonnes) en faisant correspondre les lignes selon une ou plusieurs clés. C'est l'équivalent d'un JOIN SQL. La recette Stack empile verticalement (ajout de lignes). Group agrège. Window calcule des fonctions sur des fenêtres de lignes. Pour enrichir un dataset avec des colonnes venant d'un autre dataset, Join est la bonne recette."
+},
+{t:"Recettes visuelles",ti:2,n:26,
+text:"Quelles sont les deux conditions ABSOLUMENT MINIMALES pour exécuter une recette Pivot ?",
+opts:["Une colonne pivot ET une colonne identifiant de ligne (row identifier)","Une colonne pivot ET au moins une agrégation pour remplir les colonnes pivotées","Une colonne identifiant de ligne ET au moins une agrégation","Un Pre-Filter ET une colonne pivot"],
+ok:0,
+fb:"La recette Pivot nécessite au minimum : 1) une colonne pivot (dont les valeurs distinctes deviendront les en-têtes de colonnes) et 2) une colonne identifiant de ligne (qui définit les lignes de l'output). Sans colonne pivot, impossible de savoir quelles colonnes créer. Sans row identifier, il n'y a qu'une seule ligne dans l'output. Les agrégations sont souvent nécessaires mais techniquement pas minimales si les données sont déjà agrégées."
+},
+{t:"Recettes visuelles",ti:2,n:27,
+text:"Quelle affirmation sur la recette Pivot est FAUSSE ?",
+opts:["Si aucune colonne identifiant de ligne n'est sélectionnée, il y a une seule ligne dans l'output.","Plusieurs colonnes peuvent être définies comme identifiants de ligne.","Le schéma du dataset de sortie ne peut pas être calculé avant la première exécution de la recette Pivot.","Les colonnes avec plus de 20 catégories ne peuvent pas être sélectionnées comme colonnes pivot."],
+ok:3,
+fb:"L'affirmation FAUSSE est la D : il n'y a pas de limite stricte à 20 catégories pour les colonnes pivot. Dataiku peut gérer des colonnes pivot avec de nombreuses valeurs distinctes (cependant des valeurs trop nombreuses peuvent créer un dataset de sortie très large). Les affirmations A, B et C sont vraies : sans row identifier → 1 ligne ; plusieurs row identifiers possibles ; le schéma Pivot ne peut être calculé qu'à l'exécution car les valeurs distinctes de la colonne pivot ne sont connues qu'après lecture des données."
+},
+{t:"Recettes visuelles",ti:2,n:28,
+text:"Quelle recette visuelle est la plus appropriée pour empiler verticalement deux datasets ayant le même schéma (ex. les ventes de janvier et les ventes de février) ?",
+opts:["Join","Stack","Pivot","Group"],
+ok:1,
+fb:"La recette Stack (UNION ALL en SQL) empile des datasets verticalement : elle prend plusieurs datasets en entrée et produit un seul dataset de sortie contenant toutes les lignes. Elle est idéale pour combiner des datasets de même structure (ex. données mensuelles à regrouper en une vue annuelle). La recette Join combine horizontalement (ajout de colonnes). Pivot et Group sont pour la transformation/agrégation."
+},
+{t:"Recettes visuelles",ti:2,n:29,
+text:"Quelles recettes visuelles NE contiennent PAS d'étape Pre-Filter ? (Choisissez DEUX réponses correctes)",
+opts:["Recette Window","Recette Prepare","Recette Pivot","Recette Sample/Filter"],
+ok:[1,3],
+fb:"Les recettes Prepare et Sample/Filter n'ont pas d'étape Pre-Filter car elles sont elles-mêmes des recettes de filtrage/transformation ligne par ligne — ajouter un Pre-Filter serait redondant. Les recettes d'agrégation (Group, Pivot, Window, Join) possèdent un Pre-Filter pour filtrer les données AVANT d'appliquer la transformation, ce qui est équivalent à une clause WHERE en SQL."
+},
+{t:"Recettes visuelles",ti:2,n:30,
+text:"Quelles affirmations sur la recette Window de Dataiku sont vraies ? (Choisissez DEUX réponses correctes)",
+opts:["Pour calculer correctement un rang (rank) pour chaque ligne, une colonne d'ordonnancement (Order column) doit être spécifiée.","Les trois définitions (Partitioning, Order, Window frame) doivent toutes être activées simultanément pour que la recette fonctionne.","Si plusieurs fenêtres sont définies, chacune doit utiliser les mêmes colonnes de partitionnement.","Les agrégations personnalisées dans l'étape Aggregations utilisent du code Python."],
+ok:[0,2],
+fb:"Deux affirmations sont vraies : 1) Pour calculer un rang (rank), une colonne d'ordonnancement est obligatoire. 2) Si plusieurs fenêtres sont définies dans la même recette Window, elles doivent toutes utiliser les mêmes colonnes de partitionnement. L'affirmation B est FAUSSE — les trois définitions ne doivent pas toutes être activées simultanément. L'affirmation D est FAUSSE — les agrégations personnalisées utilisent le langage Formula de Dataiku, pas Python."
+},
+{t:"Recettes visuelles",ti:2,n:31,
+text:"Si vous utilisez la recette Distinct sans calculer de comptage des lignes dédupliquées, combien de colonnes aura le dataset de sortie ?",
+opts:["Toujours 1 colonne (uniquement la colonne de déduplication).","Le même nombre de colonnes que le dataset d'entrée.","2 colonnes (la colonne de déduplication + une colonne count).","Cela dépend du nombre de doublons détectés."],
+ok:1,
+fb:"La recette Distinct sans comptage produit un dataset avec le même nombre de colonnes que l'entrée — simplement avec les lignes dupliquées supprimées. Si vous activez l'option 'Compute counts', une colonne supplémentaire de comptage est ajoutée. La déduplication peut porter sur toutes les colonnes (ligne entière en doublon) ou sur certaines colonnes spécifiques."
+},
+{t:"Recettes visuelles",ti:2,n:32,
+text:"Dans une recette Join, si le dataset d'entrée est stocké dans une base de données SQL, que permet de faire l'étape 'Computed Columns' ?",
+opts:["Créer des colonnes en utilisant Python","Créer des colonnes en utilisant des expressions SQL natives","Créer des colonnes en utilisant le langage Formula Dataiku","Aucune de ces options — Computed Columns n'est pas disponible pour les datasets SQL"],
+ok:1,
+fb:"Quand un dataset est stocké dans une base SQL, l'étape Computed Columns des recettes visuelles permet d'utiliser des expressions SQL natives — car Dataiku peut pousser le calcul directement dans la base (pushdown SQL). Pour des datasets stockés en filesystem, c'est le langage Formula Dataiku qui est utilisé. Cette distinction est importante pour optimiser les performances."
+},
+
+// ═══════════════════════════════════════════════════
+// THÈME 4 — Permissions & Gouvernance (6 questions)
+// ═══════════════════════════════════════════════════
+{t:"Permissions & Gouvernance",ti:3,n:33,
+text:"Lequel de ces éléments N'EST PAS un exemple de permission globale (instance-wide) dans Dataiku ?",
+opts:["Gérer les environnements de code (code environments)","Exporter des datasets","Créer des projets","Écrire du code"],
+ok:1,
+fb:"Les permissions globales (instance-wide) s'appliquent à l'ensemble de l'instance Dataiku : créer des projets, gérer les connexions, gérer les environnements de code, écrire du code, accéder à certaines fonctionnalités d'administration... 'Exporter des datasets' est une permission au niveau du PROJET (project-level permission), pas une permission globale — elle peut être accordée ou refusée par projet. Cette distinction est clé dans l'architecture de sécurité Dataiku."
+},
+{t:"Permissions & Gouvernance",ti:3,n:34,
+text:"Quelles informations sont modifiables pour un projet Dataiku lors de sa création et par la suite ? (Choisissez DEUX réponses correctes)",
+opts:["Nom du projet (Project Name)","Description du projet (Project Description)","Clé du projet (Project Key)","Nom du dossier du projet (Project Folder Name)"],
+ok:[0,1],
+fb:"Le nom du projet et la description sont modifiables à tout moment. La clé du projet (Project Key) est un identifiant unique généré à la création (souvent dérivé du nom) — elle ne peut PAS être modifiée après création car elle est utilisée dans les APIs, les chemins de fichiers et les références internes. Changer la clé nécessiterait de recréer le projet. La clé doit être soigneusement choisie dès le départ."
+},
+{t:"Permissions & Gouvernance",ti:3,n:35,
+text:"Quelle est la différence entre les permissions au niveau de l'instance et les permissions au niveau du projet dans Dataiku ?",
+opts:["Les permissions d'instance s'appliquent à tous les projets ; les permissions de projet sont spécifiques à un projet donné et gérées par le propriétaire du projet.","Les permissions d'instance sont uniquement pour les administrateurs Dataiku ; les permissions de projet sont pour tous les utilisateurs.","Il n'y a qu'un seul niveau de permissions dans Dataiku — tout est géré au niveau de l'instance.","Les permissions de projet remplacent toujours les permissions d'instance."],
+ok:0,
+fb:"Dataiku utilise un système de permissions à deux niveaux : Instance-level (gérées par l'admin Dataiku) — définissent ce qu'un groupe d'utilisateurs peut faire sur toute l'instance (créer des projets, écrire du code, gérer les connexions...). Project-level (gérées par le propriétaire du projet) — définissent les droits de chaque utilisateur/groupe sur un projet spécifique (lecture, écriture, exécution des recettes, administration du projet...)."
+},
+{t:"Permissions & Gouvernance",ti:3,n:36,
+text:"Qu'est-ce qu'une 'Connection' dans Dataiku et quel est son rôle dans la gouvernance des données ?",
+opts:["Une connexion est un lien hypertexte entre deux datasets dans le Flow.","Une connexion définit l'accès à un système de stockage (base SQL, S3, HDFS...) — elle est gérée par l'admin et abstraite pour les utilisateurs projets, séparant la configuration technique des accès data.","Une connexion est un protocole d'authentification entre Dataiku et les outils de BI.","Une connexion est un type de recette permettant de synchroniser deux datasets."],
+ok:1,
+fb:"Les Connections dans Dataiku définissent l'accès aux systèmes de stockage : bases de données SQL (PostgreSQL, MySQL, Snowflake...), stockages cloud (S3, GCS, Azure Blob), HDFS, systèmes de fichiers locaux... Elles sont configurées par l'administrateur Dataiku avec les credentials techniques. Les utilisateurs projets ne voient que le nom de la connexion, pas les détails techniques (host, port, password). Cela permet une séparation claire entre gouvernance IT et usage data."
+},
+{t:"Permissions & Gouvernance",ti:3,n:37,
+text:"Qu'est-ce que les 'Flow Zones' dans Dataiku et quel problème résout-il ?",
+opts:["Les Flow Zones chiffrent les données dans certaines zones géographiques pour la conformité RGPD.","Les Flow Zones organisent visuellement le Flow en regroupant les datasets et recettes par zone logique (ex. ingestion, préparation, ML) pour améliorer la lisibilité des projets complexes.","Les Flow Zones définissent des zones de sécurité réseau pour les connexions Dataiku.","Les Flow Zones sont des espaces de travail séparés pour chaque membre d'une équipe."],
+ok:1,
+fb:"Les Flow Zones permettent de segmenter visuellement le Flow d'un projet en groupes logiques : par exemple une zone 'Data Ingestion', une zone 'Data Preparation', une zone 'ML Training', une zone 'Output'. Cela améliore considérablement la lisibilité des projets complexes avec de nombreux datasets et recettes. On peut aussi contrôler les droits d'accès par zone dans les projets partagés."
+},
+{t:"Permissions & Gouvernance",ti:3,n:38,
+text:"Quels sont les éléments qu'on peut incorporer dans un projet depuis le Lab vers le Flow ? (Choisissez TROIS réponses correctes)",
+opts:["Déployer un graphique créé dans une Visual Analysis comme dataset de sortie.","Déployer un modèle entraîné pour le scoring dans le Flow.","Déployer un notebook comme Code Recipe dans le Flow.","Déployer directement un Dashboard vers un système de BI externe."],
+ok:[0,1,2],
+fb:"Le Lab dans Dataiku permet de travailler de façon exploratoire puis d'intégrer les résultats au Flow : 1) Un graphique/analyse visuelle peut être déployé comme un dataset de sortie. 2) Un modèle ML entraîné dans une Visual Analysis peut être déployé comme un nœud de scoring dans le Flow. 3) Un notebook (Python, R, SQL) peut être déployé comme une Code Recipe dans le Flow. Ces déploiements rendent le travail exploratoire reproductible et maintenable."
+},
+
+// ═══════════════════════════════════════════════════
+// THÈME 5 — Visualisation & Statistiques (6 questions)
+// ═══════════════════════════════════════════════════
+{t:"Visualisation & Statistiques",ti:4,n:39,
+text:"Quel type de graphique dans Dataiku est le plus approprié pour observer la distribution d'une colonne numérique découpée en intervalles de largeur égale ?",
+opts:["Scatter plot (nuage de points)","Box plot (boîte à moustaches)","Histogramme","Line chart (graphique en ligne)"],
+ok:2,
+fb:"L'histogramme découpe une variable numérique en intervalles (bins) de largeur égale et compte le nombre d'observations dans chaque intervalle — c'est exactement la définition de la distribution d'une variable découpée en bins. Le box plot montre la médiane, quartiles et outliers. Le scatter plot montre la relation entre deux variables. Le line chart montre l'évolution dans le temps."
+},
+{t:"Visualisation & Statistiques",ti:4,n:40,
+text:"Dans l'interface de création de graphiques de Dataiku, quel type de graphique est disponible parmi les suivants ?",
+opts:["Graphiques en chandelier (candlestick) pour les données boursières","Diagramme de Sankey pour les flux","Pivot table","Network graph pour les graphes de relation"],
+ok:2,
+fb:"Dataiku propose nativement : bar charts, line charts, scatter plots, histogrammes, box plots, pie charts, heatmaps, treemaps, et pivot tables. Les graphiques très spécialisés (candlestick, Sankey, network graphs) ne sont pas natifs mais peuvent être réalisés via des code recipes Python (matplotlib, plotly, altair...) ou des plugins. La pivot table est nativement disponible dans l'interface Charts."
+},
+{t:"Visualisation & Statistiques",ti:4,n:41,
+text:"Projet CO2 Emissions : dans le dataset qui classe les pays par émissions CO2 par habitant, quel pays était classé 10ème en 2008 ?",
+opts:["Qatar","Kuwait","UAE","Bahrain"],
+ok:0,
+fb:"D'après le dataset CO2 Emissions du cours officiel Dataiku, le Qatar était classé 10ème en émissions CO2 par habitant en 2008. Cette question teste directement la connaissance du projet CO2 Emissions qui est le projet pratique central de la certification Core Designer — une partie des questions de l'examen réel porte sur des résultats spécifiques de ce projet."
+},
+{t:"Visualisation & Statistiques",ti:4,n:42,
+text:"Quel pays avait les 5èmes émissions CO2 par habitant les plus élevées en 2010 dans le projet CO2 Emissions ?",
+opts:["Qatar","Kuwait","UAE","Australie"],
+ok:1,
+fb:"D'après le dataset CO2 Emissions Dataiku (year 2010, ranking by per capita), Kuwait était classé 5ème. Ces questions spécifiques sur les résultats du projet CO2 Emissions sont présentes dans l'examen réel — c'est pourquoi il est essentiel d'avoir vraiment réalisé le projet Hands-On et pas seulement lu la théorie. L'examen Core Designer combine questions conceptuelles et questions pratiques basées sur le projet."
+},
+{t:"Visualisation & Statistiques",ti:4,n:43,
+text:"Dans le projet CO2 Emissions, quelle est la médiane du PIB par habitant pour le dataset agrégeant les années 2008-2012 ?",
+opts:["Environ 5 000 $","Environ 8 000 $","Environ 12 000 $","Environ 20 000 $"],
+ok:1,
+fb:"D'après le dataset agrégé 2008-2012 du projet CO2 Emissions Dataiku, la médiane du PIB par habitant est approximativement 8 000 $. Cette valeur illustre la forte inégalité mondiale : la médiane est bien inférieure à la moyenne (tirée vers le haut par les pays très riches). Cette question, comme les précédentes sur les résultats du projet, est typique des vraies questions de l'examen Core Designer."
+},
+{t:"Visualisation & Statistiques",ti:4,n:44,
+text:"Quelle fonctionnalité Dataiku permet de créer des cartes géographiques interactives à partir de données de coordonnées GPS ou de codes pays ?",
+opts:["L'onglet Statistics avec l'analyse de composantes principales","L'onglet Charts avec le type de graphique 'Map' (carte géographique)","Un plugin géospatial spécifique à installer depuis le Plugin Store","La recette Prepare avec le processeur 'Geocode'"],
+ok:1,
+fb:"L'onglet Charts de Dataiku propose nativement des cartes géographiques (type 'Map') lorsque des colonnes avec le meaning 'Latitude/Longitude', 'Country', ou 'GeoPoint' sont disponibles. La carte peut afficher des points, des densités ou des choroplèthes. Dataiku propose aussi un cours dédié aux outils géospatiaux (Geospatial analytics) qui étend ces fonctionnalités avec des recettes spécifiques."
+},
+
+// ═══════════════════════════════════════════════════
+// THÈME 6 — Collaboration & Gestion de projet (6 questions)
+// ═══════════════════════════════════════════════════
+{t:"Collaboration & Gestion de projet",ti:5,n:45,
+text:"Quels outils Dataiku favorisent la collaboration entre membres d'une équipe sur un projet ? (Choisissez TROIS réponses correctes)",
+opts:["Flow Zones pour organiser visuellement le Flow","Tags pour catégoriser et rechercher les objets du projet","Wikis pour documenter le projet","Discussions (comments) sur les objets du projet"],
+ok:[0,1,2],
+fb:"Dataiku propose plusieurs outils de collaboration : Flow Zones (organisation visuelle), Tags (catégorisation des datasets/recettes/modèles pour la recherche), Wikis (documentation du projet avec du Markdown), Discussions (commentaires sur chaque objet du Flow), Dashboards (partage de résultats) et Workspaces (espace de collaboration inter-projets). Les discussions sont un outil de collaboration mais ne font pas partie des 3 principaux axes du cours de collaboration Dataiku."
+},
+{t:"Collaboration & Gestion de projet",ti:5,n:46,
+text:"Quelle est la différence entre un 'Projet' et un 'Workspace' dans Dataiku ?",
+opts:["Un Workspace est un projet avec plus de 100 datasets.","Un projet contient le Flow, les datasets et la logique de traitement d'une initiative data. Un Workspace est un espace inter-projets pour rassembler et partager des outputs (dashboards, datasets) de plusieurs projets.","Un Workspace remplace les projets dans les versions récentes de Dataiku.","Il n'y a pas de différence — ce sont deux termes pour le même concept."],
+ok:1,
+fb:"Dans Dataiku : un Projet est l'unité principale de travail — il contient le Flow, les datasets, les recettes, les modèles d'un cas d'usage spécifique. Un Workspace est un espace transverse qui agrège des éléments (dashboards, datasets, apps) de plusieurs projets pour créer une vue unifiée pour une équipe ou un usage métier. Les Workspaces facilitent le partage des résultats sans donner accès aux détails techniques du Flow."
+},
+{t:"Collaboration & Gestion de projet",ti:5,n:47,
+text:"Comment Dataiku gère-t-il le contrôle de version des projets ?",
+opts:["Dataiku ne propose pas de contrôle de version — il faut utiliser Git séparément.","Dataiku intègre nativement un système de versioning avec Git, permettant de commiter/pousser des changements et de gérer des branches depuis l'interface.","Dataiku sauvegarde automatiquement toutes les versions des datasets mais pas des recettes.","Le contrôle de version est uniquement disponible dans les éditions Enterprise de Dataiku."],
+ok:1,
+fb:"Dataiku intègre Git nativement : chaque projet peut être connecté à un dépôt Git (GitHub, GitLab, Bitbucket...). On peut commiter les modifications du projet (Flow, recettes, configurations), gérer des branches, et collaborer avec un workflow GitOps standard. Les datasets (données) ne sont pas versionnés dans Git — seule la logique (recettes, configurations) l'est, ce qui est la bonne pratique."
+},
+{t:"Collaboration & Gestion de projet",ti:5,n:48,
+text:"Qu'est-ce qu'un 'bundle' dans Dataiku et à quoi sert-il ?",
+opts:["Un bundle est un ensemble de plugins installés simultanément.","Un bundle est un export d'un projet (ou d'une partie) pour le déploiement sur une autre instance Dataiku (ex. de développement vers production).","Un bundle est un groupe de datasets regroupés dans une Flow Zone.","Un bundle est un format de fichier propriétaire Dataiku pour les exports de données."],
+ok:1,
+fb:"Un bundle dans Dataiku est un package d'export d'un projet pour le déploiement : il contient la définition du Flow (recettes, configurations) sans les données. On crée un bundle sur l'instance de développement, on le transfère sur l'instance de production, on l'importe. C'est le mécanisme standard de déploiement des projets Dataiku entre environnements (dev → staging → prod). Les données sont lues depuis les connexions de production."
+},
+{t:"Collaboration & Gestion de projet",ti:5,n:49,
+text:"Quelle fonctionnalité Dataiku permet d'automatiser l'exécution d'un pipeline (par exemple, recalculer tous les datasets chaque nuit à 2h) ?",
+opts:["Les Scenarios avec des triggers temporels (time-based triggers)","Les Pipelines avec scheduler intégré","Les Workflows avec des règles cron","Les Jobs avec des connexions planifiées"],
+ok:0,
+fb:"Les Scenarios dans Dataiku permettent d'automatiser l'exécution de pipelines : on définit des étapes (build datasets, train models, run recipes...) et des triggers (temporel avec cron, basé sur un événement, manuel, via API). Un scénario de type 'Rebuild all' avec un trigger 'Every day at 2:00 AM' est la configuration standard pour un pipeline de production nocturne. Les Scenarios font partie de la certification Advanced Designer."
+},
+{t:"Collaboration & Gestion de projet",ti:5,n:50,
+text:"Dans Dataiku, quelle est la signification du symbole ⚠️ (avertissement) sur un dataset dans le Flow ?",
+opts:["Le dataset contient des données sensibles (PII) détectées automatiquement.","Le dataset est vide ou n'a jamais été calculé (built) — il est 'not built' ou a un schéma qui ne correspond plus aux données réelles.","Le dataset utilise une connexion non disponible ou supprimée.","Le dataset a plus de 1 million de lignes et l'aperçu est limité."],
+ok:1,
+fb:"Un symbole d'avertissement sur un dataset dans le Flow indique généralement que le dataset n'est pas à jour ou présente un problème : dataset non construit (not built), schéma incohérent (les colonnes définies dans le schéma ne correspondent plus aux données réelles après une modification de recette), ou dataset vide. Les datasets dont le schéma est invalide s'affichent avec une couleur différente dans l'onglet Explore (colonnes en rouge)."
+}
+];
+
+const TNAMES = [
+  "Concepts fondamentaux & Flow",
+  "Recette Prepare",
+  "Recettes visuelles",
+  "Permissions & Gouvernance",
+  "Visualisation & Statistiques",
+  "Collaboration & Gestion de projet"
+];
+const TTOTALS = [10,10,12,6,6,6];
+const LETTERS = ['A','B','C','D'];
+
+let S = {screen:'intro', cur:0, score:0, ans:false, ts:[0,0,0,0,0,0]};
+
+function pct(s,t){return t===0?0:Math.round(s/t*100);}
+
+function uh(){
+  const hs=document.getElementById('header-score');
+  const sub=document.getElementById('header-sub');
+  if(S.screen==='question'){
+    hs.style.display='block';
+    hs.textContent=S.score+' / '+S.cur+' ok';
+    sub.textContent='Q'+Q[S.cur].n+'/'+Q.length+' — '+Q[S.cur].t;
+  } else if(S.screen==='result'){
+    hs.style.display='none';
+    sub.textContent='Résultats finaux';
+  } else {
+    hs.style.display='none';
+    sub.textContent='QCM de positionnement — CYBERSTRUCT';
+  }
+}
+
+function intro(){
+  S.screen='intro'; uh();
+  document.getElementById('app').innerHTML=`
+  <div class="intro-card card-anim">
+    <div class="intro-title">Dataiku Core Designer</div>
+    <div class="intro-sub">50 questions couvrant tous les thèmes de l'examen officiel Dataiku Core Designer, incluant des questions basées sur le projet CO2 Emissions. Seuil de passage officiel : 80% (24/30 à l'examen réel). Attention : certaines questions ont plusieurs bonnes réponses.</div>
+    <div class="intro-stats">
+      <div class="intro-stat"><div class="intro-stat-val">50</div><div class="intro-stat-label">questions</div></div>
+      <div class="intro-stat"><div class="intro-stat-val">80%</div><div class="intro-stat-label">seuil de passage</div></div>
+      <div class="intro-stat"><div class="intro-stat-val">~40 min</div><div class="intro-stat-label">durée estimée</div></div>
+    </div>
+    <div class="intro-blocs">
+      <div class="intro-blocs-title">Thèmes couverts</div>
+      ${[
+        ["1","Concepts fondamentaux & Flow (datasets, recettes, Lab, schéma...)","10 q"],
+        ["2","Recette Prepare (processors, Formula, preview, steps...)","10 q"],
+        ["3","Recettes visuelles (Group, Join, Stack, Pivot, Window, Distinct...)","12 q"],
+        ["4","Permissions & Gouvernance (instance vs projet, connexions, Flow Zones...)","6 q"],
+        ["5","Visualisation & Statistiques (Charts, histogrammes, projet CO2...)","6 q"],
+        ["6","Collaboration & Gestion de projet (Git, Scenarios, Bundles, Workspaces...)","6 q"]
+      ].map(([n,name,q])=>`
+      <div class="intro-bloc-item">
+        <div class="intro-bloc-num">${n}</div>
+        <span>${name}</span>
+        <span class="intro-bloc-q">${q}</span>
+      </div>`).join('')}
+    </div>
+    <button class="btn-start" onclick="start()">Commencer le QCM</button>
+  </div>`;
+}
+
+function start(){
+  S={screen:'question',cur:0,score:0,ans:false,ts:[0,0,0,0,0,0]};
+  render();
+}
+
+function render(){
+  S.screen='question'; S.ans=false; uh();
+  const q=Q[S.cur];
+  const prog=Math.round(S.cur/Q.length*100);
+  const isMulti=Array.isArray(q.ok);
+  document.getElementById('app').innerHTML=`
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" style="width:${prog}%"></div></div>
+    <div class="progress-labels"><span>Q${q.n} / ${Q.length}</span><span>${prog}%</span></div>
+  </div>
+  <div class="card card-anim">
+    <div class="bloc-badge">${q.t}</div>
+    ${isMulti?'<div class="multi-note">⚠ Plusieurs réponses correctes — sélectionnez toutes les bonnes réponses</div>':''}
+    <div class="question-text">${q.text}</div>
+    <div class="options" id="opts">
+      ${q.opts.map((o,i)=>`
+      <button class="option-btn" onclick="ans(${i})">
+        <span class="option-letter">${LETTERS[i]}</span>
+        <span>${o}</span>
+      </button>`).join('')}
+    </div>
+    <div id="fb"></div>
+    <div class="nav-row" id="nav" style="display:none">
+      <button class="btn-next" onclick="next()">${S.cur<Q.length-1?'Question suivante →':'Voir mes résultats →'}</button>
+    </div>
+  </div>`;
+}
+
+function ans(i){
+  if(S.ans)return;
+  S.ans=true;
+  const q=Q[S.cur];
+  const correctSet=Array.isArray(q.ok)?q.ok:[q.ok];
+  const ok=correctSet.includes(i);
+  const isCorrect=correctSet.length===1?ok:(i===correctSet[0]);
+  if(correctSet.length===1&&ok){S.score++;S.ts[q.ti]++;}
+  else if(correctSet.length>1&&correctSet.includes(i)){
+    // pour multi — on valide si premier correct cliqué
+    S.score++;S.ts[q.ti]++;
+  }
+  document.querySelectorAll('.option-btn').forEach((b,j)=>{
+    b.disabled=true;
+    if(correctSet.includes(j)) b.classList.add('reveal-correct');
+    if(j===i&&correctSet.includes(i)) b.classList.add('correct');
+    if(j===i&&!correctSet.includes(i)) b.classList.add('wrong');
+  });
+  document.getElementById('fb').innerHTML=`
+  <div class="feedback-box ${correctSet.includes(i)?'correct':'wrong'}">
+    <span class="feedback-label">${correctSet.includes(i)?'✓ Bonne réponse':'✗ Mauvaise réponse'}${correctSet.length>1?' (réponses correctes surlignées)':''}</span>
+    ${q.fb}
+  </div>`;
+  document.getElementById('nav').style.display='flex';
+  uh();
+}
+
+function next(){
+  S.cur++;
+  if(S.cur>=Q.length) result();
+  else render();
+}
+
+function result(){
+  S.screen='result'; uh();
+  const p=pct(S.score,Q.length);
+  let vt,vs;
+  if(p>=80){vt='Excellent — tu es prêt(e) pour la certification Dataiku Core Designer !';vs='background:var(--success-bg);border-color:var(--success-border);color:var(--success-text);';}
+  else if(p>=65){vt='Bon niveau — quelques thèmes à retravailler avant l\'examen.';vs='background:var(--warn-bg);border-color:var(--warn-border);color:var(--warn-text);';}
+  else{vt='En dessous du seuil — reprendre le learning path Core Designer sur academy.dataiku.com.';vs='background:var(--error-bg);border-color:var(--error-border);color:var(--error-text);';}
+  const bc=TNAMES.map((n,i)=>`
+  <div class="bloc-card">
+    <div class="bloc-card-name">${n}</div>
+    <div class="bloc-card-score">${S.ts[i]}/${TTOTALS[i]}<span class="bloc-card-pct">(${pct(S.ts[i],TTOTALS[i])}%)</span></div>
+  </div>`).join('');
+  document.getElementById('app').innerHTML=`
+  <div class="result-card card-anim">
+    <div class="result-pct">${p}%</div>
+    <div class="result-fraction">${S.score} / ${Q.length} bonnes réponses</div>
+    <div class="result-verdict" style="${vs}">${vt}</div>
+    <div class="bloc-grid">${bc}</div>
+    <div class="threshold-note">Seuil officiel Dataiku Core Designer : 80% (24/30 à l'examen réel) — soit 40/50 dans ce QCM</div>
+    <button class="btn-restart" onclick="restart()">Recommencer le QCM</button>
+  </div>`;
+}
+
+function restart(){
+  S={screen:'intro',cur:0,score:0,ans:false,ts:[0,0,0,0,0,0]};
+  intro();
+}
+
+intro();
+</script>
+</body>
+</html>
