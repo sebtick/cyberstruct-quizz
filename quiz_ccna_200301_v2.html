@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QCM — CCNA 200-301 v1.1 | CYBERSTRUCT</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f8f7f4; --surface: #ffffff; --surface2: #f2f1ee;
+    --text: #1a1a18; --text-muted: #6b6a66; --text-hint: #9e9d99;
+    --border: rgba(0,0,0,0.10); --border-med: rgba(0,0,0,0.18);
+    --accent: #0F6E56; --accent-bg: #E1F5EE; --accent-text: #085041;
+    --success-bg: #EAF3DE; --success-border: #639922; --success-text: #27500A;
+    --error-bg: #FCEBEB; --error-border: #E24B4A; --error-text: #A32D2D;
+    --warn-bg: #FAEEDA; --warn-border: #BA7517; --warn-text: #854F0B;
+    --code-bg: #1e1e1e; --code-text: #d4d4d4;
+    --radius: 10px; --radius-sm: 6px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a; --surface: #252523; --surface2: #2e2e2b;
+      --text: #f0ede8; --text-muted: #a09f9a; --text-hint: #6b6a66;
+      --border: rgba(255,255,255,0.10); --border-med: rgba(255,255,255,0.18);
+      --accent: #1D9E75; --accent-bg: #04342C; --accent-text: #5DCAA5;
+      --success-bg: #0e2206; --success-border: #3B6D11; --success-text: #C0DD97;
+      --error-bg: #2a0a0a; --error-border: #A32D2D; --error-text: #F09595;
+      --warn-bg: #2a1a04; --warn-border: #854F0B; --warn-text: #FAC775;
+    }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+  .header { background: var(--surface); border-bottom: 0.5px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; }
+  .header-logo { width: 32px; height: 32px; background: var(--accent); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .header-logo svg { width: 16px; height: 16px; fill: white; }
+  .header-info { flex: 1; min-width: 0; }
+  .header-title { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .header-sub { font-size: 11px; color: var(--text-muted); }
+  .header-score { font-size: 12px; font-weight: 500; color: var(--accent-text); background: var(--accent-bg); padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+  .main { max-width: 720px; margin: 0 auto; padding: 20px 16px 60px; }
+  .progress-wrap { margin-bottom: 18px; }
+  .progress-track { height: 3px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+  .progress-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-hint); margin-top: 5px; }
+  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 22px; margin-bottom: 14px; }
+  .bloc-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; background: var(--accent-bg); color: var(--accent-text); padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; }
+  .bloc-weight { font-size: 10px; opacity: 0.7; }
+  .question-text { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.55; margin-bottom: 14px; }
+  .code-block { background: var(--code-bg); color: var(--code-text); font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 12px; line-height: 1.6; padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 14px; overflow-x: auto; white-space: pre; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn { display: flex; align-items: flex-start; gap: 11px; padding: 11px 14px; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; text-align: left; font-size: 13px; color: var(--text); line-height: 1.5; transition: background 0.12s, border-color 0.12s, transform 0.08s; width: 100%; font-family: inherit; }
+  .option-btn:hover:not(:disabled) { background: var(--surface2); border-color: var(--accent); transform: translateX(2px); }
+  .option-btn:disabled { cursor: default; }
+  .option-letter { font-size: 11px; font-weight: 500; min-width: 20px; height: 20px; background: var(--surface2); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; color: var(--text-muted); }
+  .option-btn:hover:not(:disabled) .option-letter { background: var(--accent-bg); color: var(--accent-text); }
+  .option-btn.correct { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+  .option-btn.correct .option-letter { background: var(--success-border); color: white; }
+  .option-btn.wrong { background: var(--error-bg); border-color: var(--error-border); color: var(--error-text); }
+  .option-btn.wrong .option-letter { background: var(--error-border); color: white; }
+  .option-btn.reveal-correct { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); opacity: 0.65; }
+  .option-code { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 12px; background: rgba(0,0,0,0.06); padding: 1px 5px; border-radius: 3px; }
+  .feedback-box { margin-top: 14px; padding: 11px 14px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.65; border: 0.5px solid; animation: fadeIn 0.2s ease; }
+  .feedback-box.correct { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+  .feedback-box.wrong { background: var(--error-bg); border-color: var(--error-border); color: var(--error-text); }
+  .feedback-label { font-weight: 500; display: block; margin-bottom: 3px; }
+  .feedback-code { background: rgba(0,0,0,0.12); font-family: 'SF Mono','Fira Code','Consolas',monospace; font-size: 11px; padding: 6px 10px; border-radius: 4px; margin-top: 7px; white-space: pre; display: block; overflow-x: auto; }
+  .nav-row { display: flex; justify-content: flex-end; margin-top: 16px; }
+  .btn-next { padding: 9px 20px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); cursor: pointer; font-family: inherit; transition: background 0.12s; }
+  .btn-next:hover { background: var(--surface2); }
+  .result-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 28px 22px; text-align: center; }
+  .result-pct { font-size: 58px; font-weight: 500; color: var(--text); line-height: 1; margin-bottom: 5px; }
+  .result-fraction { font-size: 14px; color: var(--text-muted); margin-bottom: 18px; }
+  .result-verdict { display: inline-block; font-size: 14px; font-weight: 500; padding: 9px 18px; border-radius: var(--radius-sm); margin-bottom: 24px; border: 0.5px solid; }
+  .bloc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 9px; margin-bottom: 18px; text-align: left; }
+  .bloc-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 11px 13px; }
+  .bloc-card-name { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; line-height: 1.4; }
+  .bloc-card-score { font-size: 20px; font-weight: 500; color: var(--text); }
+  .bloc-card-pct { font-size: 12px; color: var(--text-hint); margin-left: 3px; }
+  .threshold-note { font-size: 12px; color: var(--text-hint); margin-bottom: 18px; padding: 7px 11px; background: var(--surface2); border-radius: var(--radius-sm); }
+  .btn-restart { padding: 9px 24px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); cursor: pointer; font-family: inherit; }
+  .btn-restart:hover { background: var(--surface2); }
+  .intro-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 28px 24px; }
+  .intro-title { font-size: 20px; font-weight: 500; margin-bottom: 6px; }
+  .intro-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+  .intro-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); gap: 8px; margin-bottom: 20px; }
+  .intro-stat { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .intro-stat-val { font-size: 19px; font-weight: 500; }
+  .intro-stat-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  .intro-blocs { margin-bottom: 22px; }
+  .intro-blocs-title { font-size: 11px; font-weight: 500; color: var(--text-hint); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+  .intro-bloc-item { display: flex; align-items: center; gap: 9px; font-size: 12px; padding: 7px 0; border-bottom: 0.5px solid var(--border); }
+  .intro-bloc-item:last-child { border-bottom: none; }
+  .intro-bloc-num { width: 20px; height: 20px; background: var(--accent-bg); color: var(--accent-text); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+  .intro-bloc-meta { display: flex; gap: 8px; margin-left: auto; flex-shrink: 0; }
+  .intro-bloc-q { font-size: 10px; color: var(--text-hint); }
+  .intro-bloc-w { font-size: 10px; color: var(--accent-text); font-weight: 500; background: var(--accent-bg); padding: 1px 6px; border-radius: 10px; }
+  .btn-start { width: 100%; padding: 12px; font-size: 14px; font-weight: 500; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer; font-family: inherit; transition: opacity 0.12s; }
+  .btn-start:hover { opacity: 0.88; }
+  .card-anim { animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div class="header" id="header">
+  <div class="header-logo">
+    <svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+  </div>
+  <div class="header-info">
+    <div class="header-title">CCNA 200-301 v1.1</div>
+    <div class="header-sub" id="header-sub">QCM de positionnement — CYBERSTRUCT</div>
+  </div>
+  <div class="header-score" id="header-score" style="display:none"></div>
+</div>
+<div class="main" id="app"></div>
+
+<script>
+const Q = [
+// ═══════════════════════════════════════════════════
+// DOMAINE 1 — Network Fundamentals (20%) — 15 questions
+// ═══════════════════════════════════════════════════
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:1,
+text:"Quelle couche du modèle OSI est responsable de l'adressage logique et du routage des paquets entre réseaux ?",
+code:null,
+opts:["Couche 2 — Data Link","Couche 3 — Network","Couche 4 — Transport","Couche 5 — Session"],
+ok:1,
+fb:"La couche 3 (Network) gère l'adressage logique (IP) et le routage inter-réseaux. La couche 2 gère l'adressage physique (MAC) et la commutation dans un même réseau. Un routeur opère en couche 3 ; un switch standard en couche 2."
+},
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:2,
+text:"Vous devez sous-réseauter 192.168.10.0/24 en 6 sous-réseaux de taille égale. Quel masque de sous-réseau utiliser ?",
+code:null,
+opts:["/25 (255.255.255.128)","/26 (255.255.255.192)","/27 (255.255.255.224)","/28 (255.255.255.240)"],
+ok:2,
+fb:"/27 donne 2³ = 8 sous-réseaux (on en a besoin de 6, donc 8 ≥ 6 ✓) avec 2⁵ - 2 = 30 hôtes utilisables chacun. /26 ne donne que 4 sous-réseaux (insuffisant). /28 donne 16 sous-réseaux mais seulement 14 hôtes. La formule est : nombre de bits d'hôtes empruntés = 2ⁿ ≥ nombre de sous-réseaux requis."
+},
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:3,
+text:"Quelle est l'adresse de broadcast du réseau 172.16.4.0/22 ?",
+code:null,
+opts:["172.16.4.255","172.16.5.255","172.16.7.255","172.16.6.255"],
+ok:2,
+fb:"/22 = 255.255.252.0 (22 bits réseau, 10 bits hôte). Méthode magic number sur le 3ème octet : 256 - 252 = 4 → les blocs dans le 3ème octet sont : .0.x, .4.x, .8.x... Le réseau 172.16.4.0/22 appartient au bloc qui démarre à .4, donc il couvre 172.16.4.0 → 172.16.7.255 (taille du bloc = 4 dans le 3ème octet × 256 dans le 4ème). L'adresse de broadcast = dernière adresse du bloc = 172.16.7.255."
+},
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:4,
+text:"Quelle différence fondamentale distingue TCP d'UDP ?",
+code:null,
+opts:[
+  "TCP est plus rapide car il n'utilise pas d'accusés de réception.",
+  "UDP fonctionne uniquement en IPv6 ; TCP est réservé à IPv4.",
+  "TCP établit une connexion fiable avec contrôle de flux et accusés de réception ; UDP envoie sans garantie de livraison ni ordre.",
+  "TCP opère en couche 3 ; UDP opère en couche 4."
+],
+ok:2,
+fb:"TCP (3-way handshake, accusés de réception, retransmission, contrôle de flux) garantit la livraison ordonnée — utilisé pour HTTP, FTP, SSH. UDP (sans connexion, sans garantie) privilégie la vitesse — utilisé pour DNS, DHCP, VoIP, streaming. Les deux opèrent en couche 4 (Transport)."
+},
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:5,
+text:"Quel type de câble fibre optique est recommandé pour une liaison backbone entre deux bâtiments distants de 10 km ?",
+code:null,
+opts:["Multimode OM3","Multimode OM4","Single-mode OS2","Câble UTP Cat 6A"],
+ok:2,
+fb:"La fibre single-mode (OS1/OS2) supporte des distances allant jusqu'à 40 à 80 km grâce à son cœur très fin (9µm) qui élimine la dispersion modale. La fibre multimode (OM3/OM4) est limitée à 300-400m pour 10 Gbps. L'UTP Cat 6A est limité à 100m. Pour 10 km, seul le single-mode convient."
+},
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:6,
+text:"Qu'est-ce qu'une adresse IPv6 link-local et comment est-elle générée ?",
+code:null,
+opts:[
+  "Une adresse routée globalement, commençant par 2000::/3.",
+  "Une adresse valide uniquement sur le lien local, commençant par FE80::/10, souvent auto-générée via EUI-64 ou SLAAC.",
+  "Une adresse de multicast réservée aux routeurs, commençant par FF02::.",
+  "Une adresse privée équivalente à 192.168.x.x en IPv4."
+],
+ok:1,
+fb:"Les adresses link-local (FE80::/10) sont auto-configurées sur chaque interface et ne sont jamais routées au-delà du lien local. Elles servent pour la découverte de voisins (NDP) et les communications entre routeurs OSPF/EIGRP. EUI-64 les génère à partir de l'adresse MAC de l'interface."
+},
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:7,
+text:"Un switch reçoit une trame destinée à une adresse MAC inconnue. Que fait-il ?",
+code:null,
+opts:[
+  "Il supprime la trame (drop) pour éviter les boucles.",
+  "Il envoie la trame uniquement au routeur par défaut.",
+  "Il diffuse la trame sur tous ses ports sauf celui de réception (flooding).",
+  "Il envoie une requête ARP pour trouver le destinataire."
+],
+ok:2,
+fb:"Le comportement par défaut d'un switch sur une adresse MAC inconnue est le flooding : il envoie la trame sur tous les ports actifs sauf le port source. Quand le destinataire répond, le switch apprend son adresse MAC et met à jour sa table CAM. Ce comportement est fondamental pour comprendre les attaques MAC flooding."
+},
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:8,
+text:"Quelle plage d'adresses IPv4 est réservée aux communications multicast ?",
+code:null,
+opts:["10.0.0.0 – 10.255.255.255","169.254.0.0 – 169.254.255.255","224.0.0.0 – 239.255.255.255","240.0.0.0 – 255.255.255.254"],
+ok:2,
+fb:"La plage 224.0.0.0/4 (classe D) est réservée au multicast IPv4. 224.0.0.0/24 est réservée aux protocoles de routage locaux (OSPF = 224.0.0.5/6, EIGRP = 224.0.0.10). 10.0.0.0/8 est une plage privée (RFC 1918). 169.254.0.0/16 est l'APIPA. 240.0.0.0/4 est réservée."
+},
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:9,
+text:"Quelle architecture réseau Cisco est caractérisée par trois niveaux : core, distribution et access ?",
+code:null,
+opts:["Architecture spine-leaf","Architecture two-tier (collapsed core)","Architecture three-tier hiérarchique","Architecture SOHO"],
+ok:2,
+fb:"L'architecture three-tier (core / distribution / access) est le modèle de référence Cisco pour les réseaux d'entreprise larges. Le core assure la commutation rapide entre sites ; la distribution applique les politiques (QoS, ACL, routage) ; l'access connecte les terminaux. Le spine-leaf est utilisé dans les datacenters modernes."
+},
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:10,
+text:"Sur un switch Cisco, la commande suivante est exécutée. Que signifie l'état 'err-disabled' sur un port ?",
+code:"SW1# show interfaces GigabitEthernet0/1\nGigabitEthernet0/1 is err-disabled",
+opts:[
+  "Le port est administrativement désactivé avec la commande shutdown.",
+  "Le port a été automatiquement désactivé par le switch suite à une violation (port-security, BPDU guard, etc.).",
+  "Le port n'a pas de câble connecté (no carrier).",
+  "Le port fonctionne en half-duplex, ce qui génère des erreurs."
+],
+ok:1,
+fb:"L'état err-disabled indique que le switch a automatiquement désactivé le port suite à une violation détectée : BPDU guard (réception d'un BPDU sur un port PortFast), port-security (dépassement du nombre de MAC autorisées), ou loop detection. Pour réactiver : shutdown puis no shutdown, ou activer errdisable recovery."
+},
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:11,
+text:"Quelle est la différence entre un switch Layer 2 et un switch Layer 3 ?",
+code:null,
+opts:[
+  "Un switch L3 est plus rapide car il utilise des ASICs plus récents.",
+  "Un switch L3 peut effectuer du routage IP entre VLANs en plus de la commutation — il dispose d'interfaces SVI routable.",
+  "Un switch L2 ne peut pas gérer les VLANs ; seul le switch L3 le peut.",
+  "Il n'y a pas de différence fonctionnelle, uniquement de prix."
+],
+ok:1,
+fb:"Un switch L3 intègre un moteur de routage matériel (hardware routing) en plus des fonctions de commutation. Il peut router entre VLANs via des SVIs (Switch Virtual Interfaces) sans passer par un routeur externe. C'est la solution utilisée dans les couches distribution et core. Un switch L2 commute uniquement en fonction des adresses MAC."
+},
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:12,
+text:"Quelle adresse IPv6 est l'équivalent de 127.0.0.1 en IPv4 ?",
+code:null,
+opts:["FE80::1","::1","FF02::1","2001:db8::1"],
+ok:1,
+fb:"::1 est l'adresse de loopback IPv6 (équivalent de 127.0.0.1). FE80::1 est une adresse link-local. FF02::1 est l'adresse multicast all-nodes. 2001:db8::/32 est la plage réservée à la documentation (RFC 3849)."
+},
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:13,
+text:"Quel protocole résout automatiquement une adresse IP en adresse MAC sur un réseau local Ethernet ?",
+code:null,
+opts:["RARP","DNS","ARP","ICMP"],
+ok:2,
+fb:"ARP (Address Resolution Protocol) permet à un hôte de trouver l'adresse MAC associée à une adresse IP sur le même réseau local. Il envoie un broadcast ARP Request ; le propriétaire de l'IP répond avec un ARP Reply unicast. En IPv6, ARP est remplacé par NDP (Neighbor Discovery Protocol)."
+},
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:14,
+text:"Qu'est-ce que la virtualisation de réseau VRF (Virtual Routing and Forwarding) ?",
+code:null,
+opts:[
+  "Une technologie de chiffrement du trafic entre routeurs virtuels.",
+  "Une technique permettant de créer plusieurs tables de routage indépendantes sur un même routeur physique.",
+  "Un protocole de routage dynamique pour les environnements virtualisés.",
+  "L'équivalent réseau des VLANs, mais pour les couches 3 et supérieures uniquement."
+],
+ok:1,
+fb:"VRF segmente un routeur physique en plusieurs routeurs virtuels, chacun avec sa propre table de routage, ses propres interfaces et son propre espace d'adressage — comme les VLANs pour la couche 3. Largement utilisé par les FAI pour le MPLS VPN et en entreprise pour isoler des flux (production vs. management)."
+},
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:15,
+text:"Un administrateur constate des erreurs de collision sur une interface. Quelle en est la cause la plus probable ?",
+code:"SW1# show interfaces Fa0/1\n  Full-duplex, 100Mb/s\n  Input errors: 0, CRC: 0\n  Output errors: 45, collisions: 312",
+opts:[
+  "La fibre est endommagée et doit être remplacée.",
+  "Il y a un mismatch duplex : l'un des équipements est en half-duplex tandis que l'autre est en full-duplex.",
+  "Le VLAN configuré sur ce port est incorrect.",
+  "Le port fonctionne à une vitesse trop élevée pour le câble utilisé."
+],
+ok:1,
+fb:"Les collisions sur un port full-duplex sont un indicateur classique de mismatch duplex. En full-duplex, les collisions ne devraient pas exister. Si l'équipement distant est en half-duplex (auto-négociation mal configurée), on obtient des late collisions et des erreurs de CRC. Solution : configurer duplex et speed manuellement des deux côtés."
+},
+
+// ═══════════════════════════════════════════════════
+// DOMAINE 2 — Network Access (20%) — 15 questions
+// ═══════════════════════════════════════════════════
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:16,
+text:"Quelle commande configure le port Fa0/1 d'un switch en port trunk 802.1Q ?",
+code:null,
+opts:[
+  "SW(config-if)# switchport mode trunk",
+  "SW(config-if)# switchport trunk encapsulation dot1q\nSW(config-if)# switchport mode trunk",
+  "SW(config-if)# trunk mode on",
+  "SW(config-if)# vlan trunk enable"
+],
+ok:1,
+fb:"Sur les switches Cisco qui supportent plusieurs encapsulations (ISL et 802.1Q), il faut d'abord définir l'encapsulation dot1q avant de passer en mode trunk. Sur les switches ne supportant que dot1q (ex. Catalyst 2960), la commande encapsulation n'est pas nécessaire — seul 'switchport mode trunk' suffit."
+},
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:17,
+text:"Quel est le rôle du VLAN natif sur un trunk 802.1Q ?",
+code:null,
+opts:[
+  "Le VLAN natif est le VLAN de gestion du switch ; il ne peut pas être utilisé pour le trafic utilisateur.",
+  "Le trafic du VLAN natif traverse le trunk sans étiquette (untagged). Par défaut c'est le VLAN 1.",
+  "Le VLAN natif contient les informations de sécurité du trunk (chiffrement 802.1Q).",
+  "Il n'existe pas de VLAN natif en 802.1Q, uniquement en ISL."
+],
+ok:1,
+fb:"Le VLAN natif (par défaut VLAN 1) est le seul VLAN dont les trames traversent le trunk sans tag 802.1Q. Une incompatibilité de VLAN natif des deux côtés du trunk génère des alertes CDP et peut créer des vulnérabilités de type VLAN hopping. Bonne pratique : changer le VLAN natif vers un VLAN dédié non utilisé."
+},
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:18,
+text:"Analysez la sortie suivante. Pourquoi PC1 (VLAN 10) ne peut-il pas pinguer PC2 (VLAN 20) ?",
+code:"SW1# show vlan brief\nVLAN Name        Status    Ports\n1    default      active    Fa0/1\n10   SALES        active    Fa0/2\n20   MARKETING    active    Fa0/3\n\nSW1# show ip interface brief\nVlan10   10.0.10.1   YES manual  up   up\nVlan20   10.0.20.1   YES manual  up   up\n\nSW1# show running-config | include ip routing\n(aucune sortie)",
+opts:[
+  "Les VLANs 10 et 20 ne sont pas dans la même plage d'adresses.",
+  "Le switch L3 n'a pas le routage IP activé (ip routing non configuré).",
+  "Les interfaces VLAN (SVI) ne sont pas dans le bon état.",
+  "Il manque une route statique entre les deux VLANs."
+],
+ok:1,
+fb:"Sur un switch L3 Cisco, le routage inter-VLAN via SVIs nécessite la commande globale 'ip routing'. Sans elle, le switch ne fait que de la commutation L2 même si les SVIs sont configurées. Les SVIs sont up/up, les adresses sont correctes — il manque uniquement 'ip routing' en configuration globale."
+},
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:19,
+text:"Qu'est-ce que le protocole STP (Spanning Tree Protocol) et quel problème résout-il ?",
+code:null,
+opts:[
+  "STP est un protocole de routage dynamique qui remplace OSPF dans les petits réseaux.",
+  "STP empêche les boucles de commutation en désactivant logiquement les liens redondants tout en maintenant la redondance physique.",
+  "STP chiffre les communications entre switches pour prévenir les attaques MitM.",
+  "STP optimise la bande passante en agrégeant plusieurs liens physiques en un seul lien logique."
+],
+ok:1,
+fb:"Sans STP, des boucles de commutation provoqueraient des broadcast storms (tempêtes de diffusion) qui satureraient le réseau en quelques secondes. STP élit un root bridge, calcule les chemins les plus courts et met les ports redondants en état blocking. Rapid PVST+ (802.1w) est la version moderne utilisée dans les réseaux Cisco actuels."
+},
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:20,
+text:"Un port configuré avec PortFast reçoit un BPDU. Quel est le comportement du switch si BPDU Guard est activé ?",
+code:null,
+opts:[
+  "Le switch ignore le BPDU car PortFast est prioritaire.",
+  "Le port entre en état err-disabled immédiatement.",
+  "Le port revient en mode STP normal et participe à l'élection du root bridge.",
+  "Le switch envoie une alerte SNMP mais maintient le port actif."
+],
+ok:1,
+fb:"BPDU Guard protège les ports PortFast contre la connexion d'un switch non autorisé. Si un BPDU est reçu, le port passe en err-disabled immédiatement — évitant toute modification de la topologie STP. C'est une mesure de sécurité essentielle sur tous les ports d'accès (face aux utilisateurs). Réactivation : errdisable recovery ou shutdown/no shutdown."
+},
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:21,
+text:"Quelle commande permet de vérifier les VLANs autorisés sur un trunk Cisco ?",
+code:null,
+opts:[
+  "show vlan brief",
+  "show interfaces trunk",
+  "show trunk allowed",
+  "show switchport trunk"
+],
+ok:1,
+fb:"'show interfaces trunk' affiche pour chaque port trunk : le mode, l'encapsulation, l'état, le VLAN natif, les VLANs autorisés, les VLANs actifs dans la spanning tree. 'show vlan brief' montre les VLANs existants et leurs ports d'accès mais pas les trunks."
+},
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:22,
+text:"Qu'est-ce que l'EtherChannel LACP et quel avantage apporte-t-il ?",
+code:null,
+opts:[
+  "LACP est un protocole de routage qui équilibre la charge entre plusieurs routeurs.",
+  "LACP agrège plusieurs liens physiques en un seul lien logique pour augmenter la bande passante et assurer la redondance.",
+  "LACP chiffre le trafic entre deux switches pour sécuriser le trunk.",
+  "LACP est le protocole Cisco propriétaire d'agrégation de liens — l'équivalent ouvert est PAgP."
+],
+ok:1,
+fb:"LACP (802.3ad) est le standard ouvert d'agrégation de liens. Il négocie dynamiquement la création d'un EtherChannel entre deux équipements. Avantages : bande passante cumulée (2x, 4x, 8x liens), redondance automatique si un lien tombe, STP voit un seul lien logique. PAgP est le protocole propriétaire Cisco avec le même objectif."
+},
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:23,
+text:"Un AP (Access Point) autonome diffère d'un AP en mode lightweight principalement parce que :",
+code:null,
+opts:[
+  "L'AP autonome ne supporte pas le Wi-Fi 6 (802.11ax) contrairement au lightweight.",
+  "L'AP autonome gère localement toute sa configuration ; l'AP lightweight est contrôlé centralement par un WLC (Wireless LAN Controller).",
+  "L'AP lightweight est plus puissant car il exécute le protocole CAPWAP en hardware.",
+  "L'AP autonome utilise WPA3 ; l'AP lightweight utilise WPA2."
+],
+ok:1,
+fb:"En mode lightweight, l'AP délègue toute la gestion (authentification, roaming, RF management, politique de sécurité) au WLC via le tunnel CAPWAP. L'AP autonome (standalone) gère tout localement — adapté aux petits déploiements. En entreprise, l'architecture centralisée (lightweight + WLC) facilite le déploiement à grande échelle et la mobilité des clients."
+},
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:24,
+text:"Pourquoi Telnet est-il déconseillé pour l'administration des équipements réseau ?",
+code:null,
+opts:[
+  "Telnet n'est pas supporté sur les équipements Cisco récents.",
+  "Telnet chiffre les données mais pas les mots de passe.",
+  "Telnet transmet toutes les données en clair, y compris les mots de passe.",
+  "Telnet utilise le port 22, souvent bloqué par les firewalls d'entreprise."
+],
+ok:2,
+fb:"Telnet (port 23) transmet tout en clair — identifiants, commandes, sorties. Un attaquant qui capture le trafic avec Wireshark voit tout. SSH (port 22) chiffre la session complète avec des algorithmes asymétriques (RSA, ECDSA) pour l'échange de clés et symétriques (AES) pour le chiffrement du flux. SSH est la seule méthode acceptable pour l'administration à distance."
+},
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:25,
+text:"Quelle commande configure une SVI (Switch Virtual Interface) pour le VLAN 100 sur un switch Cisco ?",
+code:null,
+opts:[
+  "SW(config)# interface vlan 100\nSW(config-if)# ip address 10.0.100.1 255.255.255.0\nSW(config-if)# no shutdown",
+  "SW(config)# vlan 100\nSW(config-vlan)# ip address 10.0.100.1 255.255.255.0",
+  "SW(config)# interface fa0/1.100\nSW(config-subif)# encapsulation dot1q 100",
+  "SW(config)# ip vlan 100 address 10.0.100.1/24"
+],
+ok:0,
+fb:"Une SVI se crée avec 'interface vlan X', puis on lui assigne une IP et on l'active avec 'no shutdown'. Sur un switch L3 avec 'ip routing', la SVI sert de gateway pour le VLAN. La sous-interface (interface fa0/1.100) est utilisée sur un routeur pour le router-on-a-stick, pas sur un switch."
+},
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:26,
+text:"Quel protocole Cisco permet la découverte automatique des équipements voisins et révèle des informations comme le hostname, le modèle et les IPs ?",
+code:null,
+opts:["LLDP (802.1ab)","CDP (Cisco Discovery Protocol)","STP (Spanning Tree Protocol)","NDP (Neighbor Discovery Protocol)"],
+ok:1,
+fb:"CDP (Cisco Discovery Protocol) est un protocole propriétaire Cisco de couche 2. Il envoie périodiquement des annonces sur tous les ports et révèle : hostname, plateforme, version IOS, adresses IP, capacités. Très utile pour cartographier le réseau mais dangereux si activé sur les ports face aux utilisateurs (fuite d'informations). LLDP est l'équivalent standard ouvert."
+},
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:27,
+text:"Analysez cette sortie. Quel problème est indiqué et comment le résoudre ?",
+code:"SW1# show interfaces trunk\nPort    Mode     Encap  Status    Native vlan\nGi0/1   on       802.1q trunking  1\n\nSW2# show interfaces trunk\nPort    Mode     Encap  Status    Native vlan\nGi0/1   on       802.1q trunking  10\n\n%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch on GigabitEthernet0/1 (1), with SW2 GigabitEthernet0/1 (10).",
+opts:[
+  "Les deux switches utilisent des versions d'IOS incompatibles.",
+  "Le VLAN natif est différent des deux côtés du trunk (VLAN 1 vs VLAN 10) — risque de VLAN hopping.",
+  "L'encapsulation 802.1Q n'est pas supportée sur l'un des switches.",
+  "Le trunk est désactivé car les VLANs ne correspondent pas."
+],
+ok:1,
+fb:"Un native VLAN mismatch est un problème de sécurité (VLAN hopping possible) ET un problème de connectivité (les trames untagged du VLAN 1 arrivent sur SW2 et sont interprétées comme appartenant au VLAN 10). Solution : aligner le VLAN natif des deux côtés avec 'switchport trunk native vlan X'. Bonne pratique : utiliser un VLAN dédié non utilisé (ex. VLAN 999)."
+},
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:28,
+text:"Qu'est-ce que DHCP Snooping et pourquoi est-il important ?",
+code:null,
+opts:[
+  "DHCP Snooping est un protocole qui accélère l'attribution des adresses IP en préchargeant les baux.",
+  "DHCP Snooping protège contre les serveurs DHCP non autorisés en ne faisant confiance qu'aux ports 'trusted' pour les réponses DHCP.",
+  "DHCP Snooping chiffre les échanges DHCP pour prévenir l'interception des adresses IP.",
+  "DHCP Snooping est requis pour que DHCP fonctionne sur les switches managés Cisco."
+],
+ok:1,
+fb:"Sans DHCP Snooping, un attaquant peut connecter un faux serveur DHCP et distribuer de fausses IPs/gateway (man-in-the-middle). DHCP Snooping configure les ports 'trusted' (vers les serveurs DHCP légitimes) et 'untrusted' (ports utilisateurs). Les réponses DHCP reçues sur des ports untrusted sont bloquées. Prérequis pour Dynamic ARP Inspection."
+},
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:29,
+text:"Combien de canaux Wi-Fi non chevauchants existent en 2,4 GHz (802.11b/g/n) ?",
+code:null,
+opts:["2 canaux (1 et 13)","3 canaux (1, 6 et 11)","5 canaux (1, 3, 6, 9 et 11)","13 canaux (tous non chevauchants)"],
+ok:1,
+fb:"En 2,4 GHz, chaque canal occupe 22 MHz de bande. Avec un espacement de 25 MHz entre canaux centraux, seuls les canaux 1, 6 et 11 (en Europe/Amérique) sont non chevauchants. C'est pourquoi les réseaux Wi-Fi denses en 2,4 GHz souffrent d'interférences. La bande 5 GHz offre beaucoup plus de canaux non chevauchants (jusqu'à 24 en 802.11ac)."
+},
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:30,
+text:"Quelle commande active Port Security sur une interface et limite à 2 adresses MAC maximum ?",
+code:null,
+opts:[
+  "SW(config-if)# port-security maximum 2",
+  "SW(config-if)# switchport port-security\nSW(config-if)# switchport port-security maximum 2",
+  "SW(config-if)# switchport access security mac-count 2",
+  "SW(config-if)# security port-security max 2"
+],
+ok:1,
+fb:"Port Security requiert : 1) que le port soit en mode access ou trunk (pas en mode dynamic), 2) 'switchport port-security' pour l'activer, 3) les options maximum, violation et mac-address. L'action en cas de violation par défaut est 'shutdown' (err-disabled). Les options sont aussi : restrict (drop + log) et protect (drop silencieux)."
+},
+
+// ═══════════════════════════════════════════════════
+// DOMAINE 3 — IP Connectivity (25%) — 18 questions
+// ═══════════════════════════════════════════════════
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:31,
+text:"Analysez cette table de routage. Vers quelle interface sera routé un paquet destiné à 10.0.5.100 ?",
+code:"R1# show ip route\nGateway of last resort is 0.0.0.0 to network 0.0.0.0\n\nC    10.0.1.0/24 is directly connected, Gi0/0\nS    10.0.0.0/8 [1/0] via 10.0.1.2\nO    10.0.5.0/24 [110/20] via 10.0.1.3, Gi0/0\nS*   0.0.0.0/0 [1/0] via 192.168.1.1",
+opts:[
+  "Via 10.0.1.2 (route statique 10.0.0.0/8)",
+  "Via 10.0.1.3 (route OSPF 10.0.5.0/24)",
+  "Via 192.168.1.1 (route par défaut)",
+  "Le paquet est droppé car la route est ambiguë."
+],
+ok:1,
+fb:"Le routeur applique le principe du Longest Prefix Match. 10.0.5.100 correspond à : /8 (10.0.0.0/8) ET /24 (10.0.5.0/24). Le préfixe le plus long (/24) gagne — la route OSPF via 10.0.1.3. La route statique /8 et la route par défaut /0 sont moins spécifiques et donc ignorées pour cette destination."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:32,
+text:"Quelle est la distance administrative (AD) d'OSPF sur un routeur Cisco ?",
+code:null,
+opts:["AD = 1 (statique)","AD = 90 (EIGRP interne)","AD = 110 (OSPF)","AD = 120 (RIP)"],
+ok:2,
+fb:"Les distances administratives Cisco à connaître : Connected = 0, Static = 1, EIGRP internal = 90, OSPF = 110, IS-IS = 115, RIP = 120, EIGRP external = 170, iBGP = 200. Une AD plus faible est préférable. Si OSPF et RIP annoncent la même destination, OSPF (110) gagne sur RIP (120)."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:33,
+text:"Quelle commande configure une route statique par défaut sur R1 pointant vers 192.168.1.254 ?",
+code:null,
+opts:[
+  "R1(config)# ip route 0.0.0.0 0.0.0.0 192.168.1.254",
+  "R1(config)# ip default-route 192.168.1.254",
+  "R1(config)# ip route default 192.168.1.254",
+  "R1(config)# ip route 255.255.255.255 0.0.0.0 192.168.1.254"
+],
+ok:0,
+fb:"La route par défaut (gateway of last resort) se configure avec 'ip route 0.0.0.0 0.0.0.0 next-hop'. Le réseau 0.0.0.0/0 (quad-zero route) correspond à toutes les destinations non trouvées dans la table de routage. Pour la redistribuer dans OSPF : 'default-information originate' sous le processus OSPF."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:34,
+text:"Dans OSPF, quel rôle joue le Router ID et comment est-il déterminé ?",
+code:null,
+opts:[
+  "Le Router ID est l'adresse IP du lien le plus rapide ; il change dynamiquement selon la charge.",
+  "Le Router ID identifie uniquement le routeur dans la base LSDB ; il n'affecte pas les adjacences.",
+  "Le Router ID est un identifiant unique 32-bit : priorité à la valeur configurée manuellement, sinon la plus haute IP de loopback, sinon la plus haute IP d'interface active.",
+  "Le Router ID est toujours 1.1.1.1 par défaut sur les routeurs Cisco."
+],
+ok:2,
+fb:"L'ordre de priorité du Router ID OSPF : 1) Valeur configurée manuellement (router-id X.X.X.X), 2) Plus haute IP d'interface loopback active, 3) Plus haute IP d'interface physique active. Un Router ID stable (loopback ou manuel) est recommandé en production. Changer le Router ID nécessite un 'clear ip ospf process' pour prendre effet."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:35,
+text:"Analysez cette sortie OSPF. Pourquoi l'adjacence OSPF n'est-elle pas établie entre R1 et R2 ?",
+code:"R1# show ip ospf neighbor\n(no output)\n\nR1# show ip ospf interface Gi0/0\n  Internet Address 10.0.0.1/30, Area 0\n  Timer intervals: Hello 10, Dead 40\n\nR2# show ip ospf interface Gi0/0\n  Internet Address 10.0.0.2/30, Area 0\n  Timer intervals: Hello 5, Dead 20",
+opts:[
+  "Les deux routeurs sont dans des zones OSPF différentes.",
+  "Les adresses IP ne sont pas dans le même sous-réseau.",
+  "Les timers Hello/Dead sont différents entre R1 et R2 — ils doivent être identiques pour former une adjacence.",
+  "Il manque la commande 'network' sous le processus OSPF."
+],
+ok:2,
+fb:"OSPF exige que les timers Hello et Dead soient identiques sur les deux voisins pour établir une adjacence. R1 a Hello=10/Dead=40 ; R2 a Hello=5/Dead=20. Solution : aligner les timers avec 'ip ospf hello-interval X' et 'ip ospf dead-interval Y' sur l'interface. Autres causes fréquentes de non-adjacence : subnet mismatch, area mismatch, authentication, MTU mismatch."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:36,
+text:"Quelle est la différence entre une route flottante (floating static) et une route statique normale ?",
+code:null,
+opts:[
+  "Une route flottante disparaît de la table après un reboot.",
+  "Une route flottante a une AD plus élevée que la route dynamique qu'elle doit supplanter, n'apparaissant dans la table que si la route dynamique disparaît.",
+  "Une route flottante change automatiquement de next-hop selon la disponibilité.",
+  "Une route flottante est une route statique configurée sur une interface loopback."
+],
+ok:1,
+fb:"Une route flottante a une AD délibérément élevée (ex. AD=200 pour supplanter OSPF AD=110). Tant que la route OSPF est présente, elle prend la priorité. Si OSPF tombe, la route flottante devient active. Exemple : ip route 0.0.0.0 0.0.0.0 10.0.0.2 200. Utile pour la redondance WAN (lien principal OSPF, lien backup statique flottant)."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:37,
+text:"Quel est le rôle du DR (Designated Router) dans OSPF sur un réseau broadcast multi-accès ?",
+code:null,
+opts:[
+  "Le DR est le routeur qui distribue les routes OSPF vers les autres protocoles de routage.",
+  "Le DR réduit le nombre d'adjacences en servant de point central pour la synchronisation des LSDB : tous les autres routeurs s'adjacentent uniquement avec le DR et le BDR.",
+  "Le DR est le routeur avec la plus forte charge CPU, désigné pour équilibrer le calcul SPF.",
+  "Le DR effectue l'authentification OSPF pour tous les routeurs du segment."
+],
+ok:1,
+fb:"Sans DR/BDR, N routeurs sur un même segment formeraient N*(N-1)/2 adjacences complètes. Avec DR/BDR, chaque routeur forme uniquement 2 adjacences (DR et BDR). Le DR est élu selon : priorité OSPF la plus haute (défaut 1), puis Router ID le plus élevé. L'élection est non-préemptive — changer la priorité n'a d'effet qu'après un 'clear ip ospf process'."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:38,
+text:"Qu'est-ce qu'un FHRP (First Hop Redundancy Protocol) et quel problème résout-il ?",
+code:null,
+opts:[
+  "Un FHRP est un protocole de routage pour les petits réseaux domestiques.",
+  "Un FHRP fournit une passerelle virtuelle redondante aux hôtes du réseau, en cas de panne du routeur actif.",
+  "Un FHRP équilibre la charge entre plusieurs liens WAN redondants.",
+  "Un FHRP est le protocole utilisé par les ISP pour annoncer les routes BGP."
+],
+ok:1,
+fb:"Les FHRPs (HSRP, VRRP, GLBP) permettent à plusieurs routeurs de partager une adresse IP virtuelle utilisée comme gateway par les hôtes. Si le routeur actif tombe, le routeur standby prend le relais en quelques secondes sans reconfiguration des clients. HSRP est Cisco propriétaire ; VRRP (RFC 3768) est le standard ouvert ; GLBP ajoute l'équilibrage de charge."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:39,
+text:"Comment configurer une route hôte statique vers 10.10.10.50 via l'interface Gi0/1 ?",
+code:null,
+opts:[
+  "R(config)# ip route 10.10.10.50 255.255.255.255 GigabitEthernet0/1",
+  "R(config)# ip route 10.10.10.50 255.255.255.0 GigabitEthernet0/1",
+  "R(config)# ip route host 10.10.10.50 GigabitEthernet0/1",
+  "R(config)# ip route 10.10.10.0 255.255.255.255 GigabitEthernet0/1"
+],
+ok:0,
+fb:"Une route hôte utilise un masque /32 (255.255.255.255) pour cibler une IP précise. 'ip route 10.10.10.50 255.255.255.255 GigabitEthernet0/1' crée une route statique vers un hôte unique. Utile pour des besoins spécifiques (gestion out-of-band, exceptions de routage). On peut aussi spécifier un next-hop IP à la place ou en plus de l'interface de sortie."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:40,
+text:"Lors du calcul OSPF SPF, quelle métrique est utilisée par défaut sur Cisco ?",
+code:null,
+opts:[
+  "Le nombre de sauts (hops) vers la destination.",
+  "La bande passante × délai de l'interface (comme EIGRP).",
+  "Le coût = 100 Mbps / bande passante de l'interface.",
+  "Le délai de propagation mesuré dynamiquement entre voisins."
+],
+ok:2,
+fb:"Le coût OSPF Cisco = bande passante de référence / bande passante de l'interface (en bps). La référence par défaut est 10⁸ bps (100 Mbps). Exemples : FastEthernet 100 Mbps → 10⁸/10⁸ = coût 1. Serial 64 kbps → 10⁸/64 000 = coût 1562. Problème : GigabitEthernet (10⁹), 10GbE et 100GbE donnent tous coût 1 car le résultat est < 1 et tronqué à 1. Solution : 'auto-cost reference-bandwidth 10000' (pour référencer en 10 Gbps) sous le processus OSPF — à appliquer sur TOUS les routeurs de la zone de manière cohérente."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:41,
+text:"Qu'est-ce qu'une adjacence OSPF 'FULL' signifie ?",
+code:"R1# show ip ospf neighbor\nNeighbor ID  Pri  State    Dead Time  Interface\n2.2.2.2      1    FULL/DR  00:00:38   GigabitEthernet0/0",
+opts:[
+  "Le routeur voisin est surchargé (FULL CPU) et ne peut plus traiter les LSAs.",
+  "Les deux routeurs ont synchronisé complètement leurs bases LSDB et partagent la même vision de la topologie.",
+  "L'interface est en full-duplex, ce qui est requis pour OSPF.",
+  "FULL indique que le voisin est le DR élu pour ce segment."
+],
+ok:1,
+fb:"L'état FULL/DR signifie que : 1) l'adjacence est complète (les LSDB sont synchronisées — état FULL), 2) ce voisin est le Designated Router du segment (DR). Les états OSPF sont : DOWN → INIT → 2WAY → EXSTART → EXCHANGE → LOADING → FULL. Une adjacence bloquée en EXSTART/EXCHANGE indique souvent un problème de MTU."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:42,
+text:"Quelle commande vérifie qu'une route IPv6 statique a bien été ajoutée à la table de routage ?",
+code:null,
+opts:[
+  "show ipv6 route static",
+  "show ip route ipv6",
+  "show ipv6 table static",
+  "debug ipv6 routing"
+],
+ok:0,
+fb:"'show ipv6 route' affiche la table de routage IPv6. 'show ipv6 route static' filtre uniquement les routes statiques. L'équivalent IPv4 est 'show ip route static'. En IPv6, les routes statiques se configurent avec 'ipv6 route prefix/len {next-hop | interface}' et nécessitent que 'ipv6 unicast-routing' soit activé globalement."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:43,
+text:"Quel est le comportement du routeur si deux routes vers la même destination ont des ADs identiques mais des métriques différentes ?",
+code:null,
+opts:[
+  "Le routeur installe les deux routes et équilibre la charge (ECMP ou unequal load balancing).",
+  "Le routeur choisit la route avec la métrique la plus faible.",
+  "Le routeur rejette les deux routes et attend une convergence.",
+  "La route apprise en premier est conservée ; la seconde est ignorée."
+],
+ok:1,
+fb:"Quand deux routes ont la même AD (même protocole), le routeur compare les métriques et installe celle avec la métrique la plus faible. Si les métriques sont égales (ECMP — Equal Cost Multi-Path), le routeur installe les deux routes et équilibre la charge. EIGRP permet également le load balancing inégal (unequal-cost) avec la commande 'variance'."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:44,
+text:"Qu'est-ce que la summarization de routes (route summarization) et quel avantage apporte-t-elle ?",
+code:null,
+opts:[
+  "La summarization chiffre les routes pour les protéger pendant le transit.",
+  "La summarization regroupe plusieurs préfixes contigus en un préfixe agrégé plus court, réduisant la taille des tables de routage et améliorant la convergence.",
+  "La summarization est uniquement utilisée en BGP pour les routes internet.",
+  "La summarization augmente la précision du routage en découpant les grandes plages en plus petits sous-réseaux."
+],
+ok:1,
+fb:"La summarization (agrégation) réduit la taille des tables de routage, accélère la convergence (moins de LSAs OSPF) et cache l'instabilité interne. Exemple : 10.0.0.0/24, 10.0.1.0/24, 10.0.2.0/24, 10.0.3.0/24 → résumé en 10.0.0.0/22. En OSPF, la summarization inter-area se fait sur les ABR ; la summarization externe sur les ASBR."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:45,
+text:"Quelle est la différence entre une route connected et une route local dans la table de routage Cisco IOS ?",
+code:"R1# show ip route\nC    192.168.1.0/24 is directly connected, Gi0/0\nL    192.168.1.1/32 is directly connected, Gi0/0",
+opts:[
+  "Connected désigne les réseaux externes ; Local désigne les réseaux internes.",
+  "Connected représente le réseau du lien ; Local représente l'adresse IP spécifique de l'interface (/32).",
+  "Local est une route temporaire qui disparaît après le redémarrage.",
+  "Il n'y a pas de différence, elles sont affichées en double par souci de clarté."
+],
+ok:1,
+fb:"Introduites dans IOS 12.4(6)T, les routes Local (/32 ou /128 en IPv6) représentent l'adresse IP exacte de l'interface du routeur. Elles permettent au routeur de recevoir les paquets lui étant adressés directement. Connected représente le réseau entier du lien. Les deux apparaissent automatiquement à la configuration d'une interface."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:46,
+text:"Comment vérifier rapidement les voisins OSPF et l'état des adjacences sur un routeur Cisco ?",
+code:null,
+opts:[
+  "show ip ospf database",
+  "show ip ospf neighbor",
+  "show ip protocols",
+  "debug ip ospf adj"
+],
+ok:1,
+fb:"'show ip ospf neighbor' est la commande de diagnostic OSPF de base : elle affiche le Router ID du voisin, sa priorité, son état (2WAY, EXSTART, FULL...), le timer Dead, et l'interface. 'show ip ospf database' affiche la LSDB. 'show ip protocols' donne un aperçu des protocoles de routage actifs. 'debug ip ospf adj' trace les événements d'adjacence en temps réel."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:47,
+text:"Qu'est-ce qu'une route 'O IA' dans la table de routage OSPF ?",
+code:"R1# show ip route ospf\nO    10.1.1.0/24 [110/20] via 10.0.0.2\nO IA 172.16.0.0/16 [110/65] via 10.0.0.2",
+opts:[
+  "O IA désigne une route OSPF apprise via un protocole externe (redistribution BGP).",
+  "O IA désigne une route inter-area OSPF — apprise d'une autre zone via un ABR.",
+  "O IA désigne une route OSPF avec un coût supérieur à 64.",
+  "O IA indique que la route est apprise via un tunnel IPSec."
+],
+ok:1,
+fb:"Les codes de routes OSPF : O = intra-area (même zone), O IA = inter-area (apprise d'une autre zone via ABR), O E1/E2 = external (redistribuée depuis un autre protocole via ASBR). Les routes O sont les plus fiables ; O IA vient ensuite ; O E2 (coût fixe externe) et O E1 (coût cumulatif) sont les moins préférées."
+},
+{d:"Domaine 3 — IP Connectivity",dw:"25%",di:2,n:48,
+text:"Quel mécanisme IPv6 permet à un hôte de s'auto-configurer une adresse globale sans serveur DHCPv6 ?",
+code:null,
+opts:[
+  "ARP (Address Resolution Protocol)",
+  "SLAAC (Stateless Address Autoconfiguration) via les Router Advertisements ICMPv6",
+  "APIPA (Automatic Private IP Addressing)",
+  "EUI-48 (Extended Unique Identifier)"
+],
+ok:1,
+fb:"SLAAC (RFC 4862) permet à un hôte de construire son adresse IPv6 globale à partir du préfixe annoncé dans les Router Advertisements (RA) du routeur local, combiné à son identifiant d'interface (EUI-64 ou aléatoire). C'est la méthode standard de configuration automatique IPv6 — aucun serveur requis. NDP (ICMPv6) remplace ARP et DHCP pour la découverte de voisins."
+},
+
+// ═══════════════════════════════════════════════════
+// DOMAINE 4 — IP Services (10%) — 7 questions
+// ═══════════════════════════════════════════════════
+{d:"Domaine 4 — IP Services",dw:"10%",di:3,n:49,
+text:"Quelle commande configure R1 comme client NTP pointant vers le serveur 10.0.0.100 ?",
+code:null,
+opts:[
+  "R1(config)# ntp server 10.0.0.100",
+  "R1(config)# ntp client 10.0.0.100",
+  "R1(config)# clock ntp-server 10.0.0.100",
+  "R1(config)# service ntp 10.0.0.100"
+],
+ok:0,
+fb:"'ntp server @IP' configure l'équipement comme client NTP pointant vers ce serveur. Pour configurer un routeur comme serveur NTP : 'ntp master [stratum]'. La vérification se fait avec 'show ntp associations' et 'show ntp status'. NTP synchronise l'horloge des équipements — indispensable pour la corrélation des logs et les certificats TLS."
+},
+{d:"Domaine 4 — IP Services",dw:"10%",di:3,n:50,
+text:"Quelle est la différence entre NAT statique et NAT dynamique avec pool ?",
+code:null,
+opts:[
+  "NAT statique est plus sécurisé car il chiffre les adresses ; NAT dynamique ne chiffre pas.",
+  "NAT statique mappe une IP privée à une IP publique fixe de façon permanente ; NAT dynamique assigne temporairement une IP publique depuis un pool.",
+  "NAT dynamique supporte l'IPv6 ; NAT statique est limité à l'IPv4.",
+  "NAT statique nécessite un serveur DHCP ; NAT dynamique fonctionne sans DHCP."
+],
+ok:1,
+fb:"NAT statique : mapping 1-pour-1 permanent (10.0.0.10 → 203.0.113.10) — utilisé pour exposer des serveurs internes. NAT dynamique : mapping temporaire depuis un pool d'IPs publiques — quand toutes les IPs du pool sont utilisées, les nouvelles connexions sont rejetées. PAT (Port Address Translation / NAT overload) mappe plusieurs IPs privées vers une seule IP publique via les ports — c'est le NAT couramment utilisé."
+},
+{d:"Domaine 4 — IP Services",dw:"10%",di:3,n:51,
+text:"Quelle est la différence entre SNMP v2c et SNMPv3 ?",
+code:null,
+opts:[
+  "SNMPv2c supporte IPv6 ; SNMPv3 est limité à IPv4.",
+  "SNMPv3 ajoute l'authentification (MD5/SHA) et le chiffrement (AES/DES) absents de SNMPv2c.",
+  "SNMPv2c utilise des MIBs plus récentes que SNMPv3.",
+  "SNMPv3 est plus lent car il chiffre toutes les données de gestion."
+],
+ok:1,
+fb:"SNMPv1 et v2c utilisent uniquement une 'community string' en clair pour l'authentification — vulnérable à l'interception. SNMPv3 introduit : USM (User Security Model) avec authentification HMAC-MD5/SHA, chiffrement DES/AES, et protection contre le rejeu. En production, SNMPv3 avec chiffrement est la seule option acceptable pour la gestion réseau sécurisée."
+},
+{d:"Domaine 4 — IP Services",dw:"10%",di:3,n:52,
+text:"Quel niveau de sévérité Syslog correspond aux messages d'urgence les plus critiques ?",
+code:null,
+opts:["Niveau 0 (Emergency)","Niveau 4 (Warning)","Niveau 7 (Debug)","Niveau 3 (Error)"],
+ok:0,
+fb:"Les 8 niveaux Syslog (RFC 5424) : 0=Emergency, 1=Alert, 2=Critical, 3=Error, 4=Warning, 5=Notice, 6=Informational, 7=Debug. Plus le niveau est bas, plus c'est grave. Moyen mnémotechnique : 'Every Awesome Cisco Engineer Will Need Icecream Daily'. En production, on configure souvent 'logging trap informational' (level 6) pour capturer suffisamment d'infos sans saturer les logs."
+},
+{d:"Domaine 4 — IP Services",dw:"10%",di:3,n:53,
+text:"Quelle commande configure R1 pour relayer les requêtes DHCP du réseau 10.0.1.0/24 vers le serveur DHCP 10.0.100.10 ?",
+code:"R1 est le routeur de la couche access avec Gi0/0 côté clients (10.0.1.0/24)",
+opts:[
+  "R1(config-if)# ip dhcp-relay 10.0.100.10 (sur l'interface Gi0/0)",
+  "R1(config-if)# ip helper-address 10.0.100.10 (sur l'interface Gi0/0)",
+  "R1(config)# dhcp relay 10.0.100.10",
+  "R1(config)# service dhcp-relay 10.0.100.10"
+],
+ok:1,
+fb:"'ip helper-address' se configure sur l'interface côté clients (Gi0/0). Il relaie non seulement les broadcasts DHCP mais aussi d'autres protocoles UDP (TFTP, DNS, TFTP, etc.). Sans DHCP relay, les broadcasts DHCP ne franchiraient pas le routeur car les routeurs ne forwarde pas les broadcasts par défaut."
+},
+{d:"Domaine 4 — IP Services",dw:"10%",di:3,n:54,
+text:"Quel protocole permet à un équipement réseau de transférer sa configuration ou son IOS via le réseau ?",
+code:null,
+opts:["SSH","TFTP","HTTP","FTP avec chiffrement TLS"],
+ok:1,
+fb:"TFTP (Trivial File Transfer Protocol, port 69 UDP) est utilisé pour transférer les fichiers IOS, configurations, et licences sur les équipements Cisco. Il est simple (pas d'authentification, pas de chiffrement) et fonctionne sur UDP. FTP (port 21 TCP) est une alternative avec authentification mais sans chiffrement natif. En production, SCP (SSH-based) est préférable pour la sécurité."
+},
+{d:"Domaine 4 — IP Services",dw:"10%",di:3,n:55,
+text:"Qu'est-ce que QoS DSCP et pourquoi est-il important dans les réseaux modernes ?",
+code:null,
+opts:[
+  "DSCP (Differentiated Services Code Point) est un champ de l'en-tête IP qui marque les paquets pour prioriser certains types de trafic (voix, vidéo) sur les liens saturés.",
+  "DSCP est un protocole de chiffrement QoS utilisé dans les réseaux MPLS.",
+  "DSCP remplace le champ TTL dans l'en-tête IPv6 pour la gestion de la qualité de service.",
+  "DSCP est uniquement applicable au trafic multicast."
+],
+ok:0,
+fb:"DSCP utilise les 6 bits de poids fort du champ DS (ancien TOS) de l'en-tête IP pour marquer les paquets selon leur priorité. Valeurs clés : EF (Expedited Forwarding, 46) pour la voix, AF4x pour la vidéo, BE (Best Effort, 0) pour le trafic normal. Classification + marquage → queuing → policing/shaping → scheduling. Indispensable pour garantir la qualité vocale (VoIP) et vidéo sur les WAN."
+},
+
+// ═══════════════════════════════════════════════════
+// DOMAINE 5 — Security Fundamentals (15%) — 11 questions
+// ═══════════════════════════════════════════════════
+{d:"Domaine 5 — Security Fundamentals",dw:"15%",di:4,n:56,
+text:"Quelle est la différence entre une ACL standard et une ACL étendue sur Cisco IOS ?",
+code:null,
+opts:[
+  "L'ACL standard filtre uniquement le trafic entrant ; l'ACL étendue filtre uniquement le trafic sortant.",
+  "L'ACL standard filtre uniquement sur l'IP source ; l'ACL étendue filtre sur IP source/destination, protocole et ports.",
+  "L'ACL étendue est numérotée de 1 à 99 ; l'ACL standard de 100 à 199.",
+  "L'ACL standard supporte IPv6 ; l'ACL étendue est limitée à IPv4."
+],
+ok:1,
+fb:"ACLs standard (1-99, 1300-1999) : filtrent uniquement l'IP source → placer au plus près de la destination. ACLs étendues (100-199, 2000-2699) : filtrent IP source + destination + protocole (TCP/UDP/ICMP) + ports → placer au plus près de la source. Règle : 'Standard = Source, Extended = Everything'. Les ACLs nommées offrent les mêmes fonctionnalités avec plus de lisibilité."
+},
+{d:"Domaine 5 — Security Fundamentals",dw:"15%",di:4,n:57,
+text:"Analysez cette ACL. Quel trafic est autorisé et lequel est bloqué ?",
+code:"R1(config)# ip access-list extended FILTER\nR1(config-ext-nacl)# permit tcp 192.168.1.0 0.0.0.255 any eq 80\nR1(config-ext-nacl)# permit tcp 192.168.1.0 0.0.0.255 any eq 443\nR1(config-ext-nacl)# deny ip any any log\n\nR1(config-if)# ip access-group FILTER in",
+opts:[
+  "Tout le trafic du réseau 192.168.1.0/24 est autorisé.",
+  "HTTP (80) et HTTPS (443) depuis 192.168.1.0/24 vers n'importe quelle destination sont autorisés ; tout autre trafic est bloqué et journalisé.",
+  "HTTP et HTTPS sont bloqués ; le reste est autorisé.",
+  "L'ACL n'a aucun effet car le mot-clé 'log' neutralise les règles deny."
+],
+ok:1,
+fb:"L'ACL traite les règles dans l'ordre. Règle 1 : autorise le TCP port 80 depuis 192.168.1.0/24. Règle 2 : autorise le TCP port 443 depuis 192.168.1.0/24. Règle 3 : bloque tout et logge. Le masque générique 0.0.0.255 (wildcard) = inverse du masque 255.255.255.0. Rappel : il existe un 'deny ip any any' implicite en fin de toute ACL — l'ajouter explicitement avec 'log' est une bonne pratique pour la visibilité."
+},
+{d:"Domaine 5 — Security Fundamentals",dw:"15%",di:4,n:58,
+text:"Quelle commande sécurise l'accès à une ligne VTY en n'autorisant que SSH (pas Telnet) ?",
+code:null,
+opts:[
+  "R(config-line)# transport input ssh",
+  "R(config-line)# no telnet\nR(config-line)# allow ssh",
+  "R(config)# service ssh only",
+  "R(config-line)# protocol ssh"
+],
+ok:0,
+fb:"La configuration complète pour SSH sécurisé sur VTY : hostname et domaine configurés, clés RSA générées (crypto key generate rsa modulus 2048), version SSH forcée (ip ssh version 2), puis sur les lignes VTY : 'transport input ssh' et 'login local'. Sans 'transport input ssh', Telnet reste accessible en parallèle de SSH."
+},
+{d:"Domaine 5 — Security Fundamentals",dw:"15%",di:4,n:59,
+text:"Quelle est la différence entre TACACS+ et RADIUS pour l'authentification des équipements réseau ?",
+code:null,
+opts:[
+  "TACACS+ est standard ouvert ; RADIUS est propriétaire Cisco.",
+  "TACACS+ sépare authentification, autorisation et comptabilité (AAA) et chiffre tout le payload ; RADIUS combine auth+autor et chiffre uniquement le mot de passe.",
+  "RADIUS utilise TCP port 49 ; TACACS+ utilise UDP ports 1812/1813.",
+  "TACACS+ est utilisé pour les utilisateurs finaux ; RADIUS pour les administrateurs réseau."
+],
+ok:1,
+fb:"TACACS+ (Cisco, TCP 49) : chiffre l'intégralité du paquet, sépare strictement les fonctions AAA (granularité maximale pour la gestion réseau). RADIUS (standard RFC, UDP 1812/1813) : chiffre uniquement le mot de passe, combine authentification et autorisation dans un seul échange — préféré pour l'accès utilisateur (Wi-Fi 802.1X, VPN). En entreprise, Cisco ISE implémente les deux."
+},
+{d:"Domaine 5 — Security Fundamentals",dw:"15%",di:4,n:60,
+text:"Qu'est-ce que Dynamic ARP Inspection (DAI) et quel type d'attaque prévient-il ?",
+code:null,
+opts:[
+  "DAI inspecte et chiffre dynamiquement les messages ARP pour éviter leur interception.",
+  "DAI valide les messages ARP en les comparant à la table de liaisons DHCP Snooping, prévenant les attaques ARP spoofing / ARP poisoning.",
+  "DAI remplace ARP par NDP pour améliorer la sécurité des communications IPv4.",
+  "DAI bloque tous les messages ARP sur les ports untrusted pour forcer l'utilisation d'ARP statique."
+],
+ok:1,
+fb:"ARP spoofing permet à un attaquant d'empoisonner le cache ARP des victimes pour intercepter leur trafic (MitM). DAI utilise la table DHCP Snooping comme référence : si une réponse ARP (IP=10.0.0.5, MAC=aa:bb:cc) ne correspond pas à un bail DHCP connu, elle est droppée. Prérequis : DHCP Snooping doit être activé avant DAI."
+},
+{d:"Domaine 5 — Security Fundamentals",dw:"15%",di:4,n:61,
+text:"Quel protocole de sécurité Wi-Fi est recommandé pour les déploiements entreprise actuels ?",
+code:null,
+opts:["WEP (Wired Equivalent Privacy)","WPA (Wi-Fi Protected Access) avec TKIP","WPA2-Enterprise avec 802.1X et AES-CCMP","WPA2-Personal avec PSK partagé pour tous les utilisateurs"],
+ok:2,
+fb:"WEP est cassable en quelques minutes. WPA/TKIP a des vulnérabilités connues. WPA2-Enterprise avec 802.1X authentifie chaque utilisateur individuellement via un serveur RADIUS, génère des clés de session uniques (CCMP/AES) et offre la révocation individuelle d'accès. WPA2-PSK (clé partagée) est acceptable pour les petits réseaux mais problématique en entreprise car changer la clé requiert de reconfigurer tous les clients. WPA3 est la norme la plus récente."
+},
+{d:"Domaine 5 — Security Fundamentals",dw:"15%",di:4,n:62,
+text:"Quelle est la différence entre un VPN IPSec site-à-site et un VPN IPSec d'accès à distance ?",
+code:null,
+opts:[
+  "Un VPN site-à-site chiffre uniquement les emails ; un VPN d'accès à distance chiffre tout le trafic.",
+  "Un VPN site-à-site connecte en permanence deux réseaux fixes (deux sites d'entreprise) ; un VPN d'accès à distance connecte un utilisateur nomade au réseau d'entreprise.",
+  "Un VPN site-à-site utilise SSL/TLS ; un VPN d'accès à distance utilise IPSec.",
+  "Un VPN site-à-site est limité à 10 connexions simultanées."
+],
+ok:1,
+fb:"VPN site-à-site : tunnel permanent entre deux routeurs/firewalls (ex. siège et agence) — transparent pour les utilisateurs. VPN d'accès à distance (Remote Access) : connexion à la demande d'un client (Cisco AnyConnect, etc.) vers un concentrateur VPN — authentification individuelle. IPSec peut être utilisé pour les deux ; SSL/TLS VPN est souvent préféré pour le remote access (pas de client spécifique, fonctionne derrière NAT)."
+},
+{d:"Domaine 5 — Security Fundamentals",dw:"15%",di:4,n:63,
+text:"Qu'est-ce qu'une attaque par VLAN hopping et comment la prévenir ?",
+code:null,
+opts:[
+  "Une attaque qui exploite les failles de STP pour devenir root bridge et intercepter le trafic.",
+  "Une attaque qui permet à un attaquant d'envoyer du trafic dans un VLAN auquel il ne devrait pas avoir accès, en exploitant le mode trunk dynamique ou le native VLAN.",
+  "Une attaque DDoS qui sature les tables CAM des switches avec de fausses adresses MAC.",
+  "Une attaque qui exploite les vulnérabilités DHCP pour changer le VLAN d'un hôte."
+],
+ok:1,
+fb:"Le VLAN hopping exploite : 1) le switch spoofing (l'attaquant négocie un trunk DTP avec le switch) ou 2) le double tagging (exploite le native VLAN pour envoyer vers un autre VLAN). Préventions : désactiver DTP ('switchport nonegotiate'), changer le native VLAN vers un VLAN dédié non utilisé, utiliser 'switchport mode access' sur tous les ports utilisateurs."
+},
+{d:"Domaine 5 — Security Fundamentals",dw:"15%",di:4,n:64,
+text:"Quelle commande Cisco configure un mot de passe chiffré pour l'accès enable ?",
+code:null,
+opts:[
+  "R(config)# enable password monmotdepasse",
+  "R(config)# enable secret monmotdepasse",
+  "R(config)# service password-encryption",
+  "R(config)# enable password encryption monmotdepasse"
+],
+ok:1,
+fb:"'enable secret' utilise MD5 (type 5) ou SHA-256 (type 9) pour hacher le mot de passe — il n'apparaît jamais en clair dans la config. 'enable password' stocke le mot de passe en clair ou avec un chiffrement faible (type 7, réversible). 'service password-encryption' chiffre les mots de passe en type 7 mais c'est facilement déchiffrable — à combiner avec 'enable secret'. Toujours préférer 'enable secret'."
+},
+{d:"Domaine 5 — Security Fundamentals",dw:"15%",di:4,n:65,
+text:"Qu'est-ce que AAA (Authentication, Authorization, Accounting) dans le contexte réseau ?",
+code:null,
+opts:[
+  "Un protocole de chiffrement à trois phases pour sécuriser les communications.",
+  "Un framework qui contrôle qui peut accéder au réseau (auth), ce qu'il peut faire (autor), et trace toutes les actions (accounting).",
+  "Une suite de trois pare-feux redondants pour la haute disponibilité.",
+  "Un standard IEEE pour l'authentification sur les réseaux Wi-Fi d'entreprise."
+],
+ok:1,
+fb:"AAA est le framework fondamental de la sécurité réseau : Authentication (qui es-tu ? — identité vérifiée), Authorization (que peux-tu faire ? — droits accordés), Accounting (qu'as-tu fait ? — journalisation). Implémenté via TACACS+ ou RADIUS, avec un serveur centralisé (Cisco ISE, FreeRADIUS). En IOS : 'aaa new-model' active le framework AAA."
+},
+{d:"Domaine 5 — Security Fundamentals",dw:"15%",di:4,n:66,
+text:"Quelle affirmation sur les ACLs IPv4 Cisco est correcte ?",
+code:null,
+opts:[
+  "Une ACL peut être appliquée plusieurs fois en entrée sur la même interface.",
+  "Les règles ACL sont évaluées dans l'ordre ; la première correspondance arrête l'évaluation.",
+  "Une ACL appliquée en sortie (out) filtre le trafic avant qu'il entre dans l'interface.",
+  "Il est possible d'appliquer deux ACLs du même type (ex. deux ACLs 'in') sur la même interface."
+],
+ok:1,
+fb:"Les ACLs Cisco utilisent le principe 'first match' : dès qu'une règle correspond, elle est appliquée et l'évaluation s'arrête. C'est pourquoi l'ordre des règles est critique — mettre les règles les plus spécifiques en premier. Une seule ACL par interface par direction (in ou out). Une ACL 'in' filtre le trafic à son entrée dans le routeur ; une ACL 'out' filtre avant qu'il sorte."
+},
+
+// ═══════════════════════════════════════════════════
+// DOMAINE 6 — Automation & Programmability (10%) — 6 questions
+// ═══════════════════════════════════════════════════
+{d:"Domaine 6 — Automation & Programmability",dw:"10%",di:5,n:67,
+text:"Quelle est la différence fondamentale entre un réseau traditionnel et un réseau SDN (Software-Defined Networking) ?",
+code:null,
+opts:[
+  "Un réseau SDN est plus rapide car il utilise des switches 100Gb ; les réseaux traditionnels sont limités à 10Gb.",
+  "Dans un SDN, le plan de contrôle est centralisé et séparé du plan de données distribué sur les équipements ; dans un réseau traditionnel, les deux sont couplés sur chaque équipement.",
+  "Le SDN utilise uniquement des équipements virtuels ; les réseaux traditionnels utilisent du matériel physique.",
+  "Le SDN remplace IP par un nouveau protocole d'adressage plus efficace."
+],
+ok:1,
+fb:"L'architecture SDN sépare le control plane (décisions de routage, centralisé dans le contrôleur) du data plane (forwarding des paquets, distribué sur les équipements). Le contrôleur communique avec les équipements via des APIs southbound (OpenFlow, NETCONF, RESTCONF). Les APIs northbound exposent les services aux applications. Cisco SD-Access et SD-WAN sont des implémentations propriétaires."
+},
+{d:"Domaine 6 — Automation & Programmability",dw:"10%",di:5,n:68,
+text:"Qu'est-ce qu'une API REST et quels verbes HTTP utilise-t-elle pour les opérations CRUD ?",
+code:null,
+opts:[
+  "REST est un protocole de chiffrement réseau ; il utilise GET, POST, DELETE et PATCH pour les échanges sécurisés.",
+  "REST est un style architectural pour les APIs web ; GET=Read, POST=Create, PUT/PATCH=Update, DELETE=Delete.",
+  "REST est l'acronyme de Reliable Encrypted Secure Transfer ; il remplace HTTPS dans les architectures SDN.",
+  "REST utilise uniquement le verbe POST pour toutes les opérations, avec le type d'action spécifié dans le body."
+],
+ok:1,
+fb:"REST (REpresentational State Transfer) est un style architectural sans état utilisant HTTP. Correspondance CRUD : Create=POST, Read=GET, Update=PUT (complet) / PATCH (partiel), Delete=DELETE. Les données sont échangées en JSON ou XML. Les APIs REST sont utilisées par Cisco DNA Center (DNAC), Meraki, et NSO pour l'automatisation réseau. Authentication : Basic Auth, Token (Bearer), OAuth."
+},
+{d:"Domaine 6 — Automation & Programmability",dw:"10%",di:5,n:69,
+text:"Comment Ansible se différencie-t-il de Puppet et Chef pour la gestion de configuration réseau ?",
+code:null,
+opts:[
+  "Ansible est plus rapide car il est écrit en C ; Puppet et Chef sont écrits en Ruby.",
+  "Ansible est agentless (sans agent sur les équipements cibles) et utilise SSH/NETCONF ; Puppet et Chef nécessitent un agent installé sur chaque nœud.",
+  "Ansible supporte uniquement les équipements Cisco ; Puppet et Chef sont multi-constructeurs.",
+  "Ansible utilise Python ; Puppet utilise YAML ; Chef utilise JSON pour définir les configurations."
+],
+ok:1,
+fb:"Ansible (Red Hat) : agentless, playbooks YAML, push-based, utilise SSH/NETCONF/API → idéal pour les équipements réseau (modules ios_config, nxos_vlan, etc.). Puppet et Chef nécessitent un agent sur chaque nœud géré — difficile à déployer sur des switches/routeurs. Terraform (HashiCorp) est orienté infrastructure-as-code pour le provisionnement cloud. Le CCNA v1.1 a remplacé Puppet/Chef par Ansible/Terraform."
+},
+{d:"Domaine 6 — Automation & Programmability",dw:"10%",di:5,n:70,
+text:"Identifiez la structure JSON suivante. Quelle valeur retourne network_devices[1].hostname ?",
+code:'{\n  "network_devices": [\n    {\n      "hostname": "R1",\n      "ip": "10.0.0.1",\n      "role": "core"\n    },\n    {\n      "hostname": "SW1",\n      "ip": "10.0.0.2",\n      "role": "access"\n    }\n  ]\n}',
+opts:['"R1"','"SW1"','"10.0.0.2"','null (index invalide)'],
+ok:1,
+fb:"En JSON, les tableaux sont indexés à partir de 0. network_devices[0] = le premier objet {hostname:R1, ip:10.0.0.1, role:core}. network_devices[1] = le deuxième objet {hostname:SW1, ip:10.0.0.2, role:access}. Donc network_devices[1].hostname = 'SW1'. Connaître la structure JSON est essentiel pour exploiter les APIs REST des contrôleurs réseau (DNA Center, Meraki Dashboard API)."
+},
+{d:"Domaine 6 — Automation & Programmability",dw:"10%",di:5,n:71,
+text:"Quel est le rôle de l'IA prédictive dans les opérations réseau modernes (NetOps) ?",
+code:null,
+opts:[
+  "L'IA prédictive remplace complètement les administrateurs réseau pour toutes les tâches de configuration.",
+  "L'IA prédictive analyse les données historiques de performance pour anticiper les pannes, anomalies de trafic et dégradations avant qu'elles n'impactent les utilisateurs.",
+  "L'IA prédictive est uniquement utilisée pour optimiser les routes BGP sur internet.",
+  "L'IA prédictive chiffre le trafic réseau en fonction des patterns de menaces détectés."
+],
+ok:1,
+fb:"L'IA prédictive dans les réseaux (Cisco DNA Center Assurance, ThousandEyes) analyse des téraoctets de télémétrie réseau pour : détecter des anomalies comportementales, prédire les pannes matérielles, optimiser les performances Wi-Fi, et recommander des actions correctives. Elle complète (mais ne remplace pas) les administrateurs réseau. Le CCNA v1.1 inclut explicitement les concepts d'IA/ML en NetworkOps."
+},
+{d:"Domaine 6 — Automation & Programmability",dw:"10%",di:5,n:72,
+text:"Qu'est-ce que NETCONF et en quoi diffère-t-il de la gestion traditionnelle via CLI ?",
+code:null,
+opts:[
+  "NETCONF est un protocole de chiffrement réseau remplaçant SSH pour la gestion sécurisée.",
+  "NETCONF est un protocole standardisé (RFC 6241) utilisant XML/YANG pour la configuration et la supervision programmatique des équipements, à la place des commandes CLI textuelles.",
+  "NETCONF est l'interface graphique web de Cisco DNA Center pour la gestion des équipements.",
+  "NETCONF est un protocole de routage de nouvelle génération développé par l'IETF."
+],
+ok:1,
+fb:"NETCONF (RFC 6241) utilise SSH comme transport, XML comme encodage et les modèles YANG comme schémas de données. Il offre des transactions atomiques (commit/rollback), une validation de configuration et une séparation configuration/état. RESTCONF (RFC 8040) est une version REST de NETCONF. Ces protocoles permettent l'automatisation programmatique là où le scraping de CLI est fragile et non scalable."
+},
+
+// ═══════════════════════════════════════════════════
+// QUESTIONS COMPLÉMENTAIRES — Notions manquantes du blueprint v1.1
+// ═══════════════════════════════════════════════════
+
+// D1 — PoE
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:73,
+text:"Qu'est-ce que le PoE (Power over Ethernet) et quelles normes IEEE définissent ses différents niveaux de puissance ?",
+code:null,
+opts:[
+  "PoE alimente les équipements réseau via le câble coaxial ; IEEE 802.3af (15W), 802.3at (30W) et 802.3bt (90W).",
+  "PoE alimente des équipements (téléphones IP, caméras, AP) via les paires inutilisées du câble UTP ; IEEE 802.3af (15,4W max), 802.3at/PoE+ (30W max) et 802.3bt/PoE++ (90W max).",
+  "PoE est une technologie propriétaire Cisco transmettant données et alimentation sur fibre multimode.",
+  "PoE alimente uniquement les switches via un câble dédié ; les terminaux ne peuvent pas être alimentés par PoE."
+],
+ok:1,
+fb:"PoE (IEEE 802.3) permet d'alimenter des équipements via le câble Ethernet UTP sans alimentation secteur dédiée. 802.3af (PoE) : 15,4W par port — suffisant pour les téléphones IP et petits APs. 802.3at (PoE+) : 30W — pour les APs Wi-Fi 6 et caméras PTZ. 802.3bt (PoE++) : jusqu'à 90W — pour les écrans et équipements multi-radio. Le switch PoE doit avoir un budget d'alimentation suffisant pour tous ses ports."
+},
+
+// D1 — Vérification IP client OS
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:74,
+text:"Quelle commande permet de vérifier la configuration IP (adresse, masque, passerelle) sur un poste Windows depuis l'invite de commandes ?",
+code:null,
+opts:[
+  "ipconfig /all",
+  "ifconfig -a",
+  "show ip interface brief",
+  "netstat -r"
+],
+ok:0,
+fb:"Sur Windows : 'ipconfig /all' affiche toutes les interfaces avec leur IP, masque, passerelle, DNS, et adresse MAC. Sur Linux/macOS : 'ip addr' (ou 'ifconfig -a' sur les systèmes anciens) et 'ip route' pour la table de routage. Sur IOS Cisco : 'show ip interface brief'. Connaître ces commandes sur les trois OS est explicitement requis dans le blueprint CCNA v1.1 (section 1.10)."
+},
+
+// D1 — Conteneurs et virtualisation
+{d:"Domaine 1 — Network Fundamentals",dw:"20%",di:0,n:75,
+text:"Quelle est la différence principale entre la virtualisation serveur (hyperviseur) et les conteneurs (Docker) ?",
+code:null,
+opts:[
+  "Les conteneurs sont plus sécurisés car chacun possède son propre noyau OS isolé.",
+  "La virtualisation crée des VMs avec un OS complet par instance ; les conteneurs partagent le noyau de l'OS hôte et isolent uniquement les processus applicatifs — ils sont plus légers et démarrent en secondes.",
+  "Les hyperviseurs fonctionnent uniquement sur bare-metal ; les conteneurs nécessitent obligatoirement une VM.",
+  "Les conteneurs remplacent les VMs dans tous les cas d'usage réseau et sécurité."
+],
+ok:1,
+fb:"Virtualisation (VMware ESXi, Hyper-V, KVM) : chaque VM embarque un OS complet (noyau + userspace) → isolation forte, démarrage en minutes, overhead important. Conteneurs (Docker, Podman) : partagent le noyau de l'hôte, n'isolent que l'espace utilisateur → légers (Mo vs Go), démarrage en secondes, overhead minimal. En réseau, NFV (Network Function Virtualization) déploie des fonctions réseau (firewall, routeur) en VM ou conteneurs."
+},
+
+// D2 — Root guard / Loop guard
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:76,
+text:"Quelle est la différence entre Root Guard et Loop Guard dans Spanning Tree ?",
+code:null,
+opts:[
+  "Root Guard empêche un port de devenir root port ; Loop Guard empêche un port designated de devenir root bridge.",
+  "Root Guard empêche un switch non autorisé de devenir root bridge en bloquant les BPDUs supérieurs reçus sur ce port ; Loop Guard empêche les boucles sur les ports qui cessent de recevoir des BPDUs.",
+  "Root Guard et Loop Guard sont synonymes — les deux protègent contre les boucles STP.",
+  "Root Guard s'applique aux ports d'accès ; Loop Guard s'applique uniquement aux ports trunk."
+],
+ok:1,
+fb:"Root Guard (activé sur les ports designated face aux switches non autorisés) : si un BPDU supérieur est reçu, le port passe en root-inconsistent (bloqué) et empêche le switch de devenir root bridge. Loop Guard (activé sur les ports root/alternate) : si les BPDUs cessent d'arriver (lien unidirectionnel), le port passe en loop-inconsistent au lieu de passer en forwarding — évitant une boucle. Ces deux features sont complémentaires à BPDU Guard."
+},
+
+// D2 — Gestion accès réseau (cloud managed)
+{d:"Domaine 2 — Network Access",dw:"20%",di:1,n:77,
+text:"Qu'est-ce que la gestion d'équipements réseau 'cloud managed' (ex. Cisco Meraki) par rapport à une gestion on-premise traditionnelle ?",
+code:null,
+opts:[
+  "La gestion cloud nécessite que tous les équipements soient virtuels ; impossible avec du matériel physique.",
+  "Dans la gestion cloud managed, la configuration et la supervision sont centralisées dans le cloud via un tableau de bord web, sans contrôleur on-premise — le matériel se configure automatiquement à son allumage (zero-touch provisioning).",
+  "La gestion cloud managed chiffre toujours le trafic des utilisateurs sans configuration supplémentaire.",
+  "La gestion cloud est réservée aux entreprises de plus de 500 employés."
+],
+ok:1,
+fb:"Cisco Meraki (et SD-WAN cloud managed) centralise toute la gestion dans le cloud : dashboard web accessible partout, zero-touch provisioning (l'équipement télécharge sa config à l'activation), visibilité unifiée sur tous les sites. Avantages : déploiement simplifié, mises à jour automatiques, pas de contrôleur physique. Inconvénient : dépendance à la connectivité cloud. Le blueprint CCNA v1.1 (2.8) mentionne explicitement la gestion 'cloud managed'."
+},
+
+// D4 — Configuration NAT inside source
+{d:"Domaine 4 — IP Services",dw:"10%",di:3,n:78,
+text:"Quelle séquence de commandes configure correctement le PAT (NAT overload) sur R1 pour que tout le réseau 192.168.1.0/24 sorte sur l'interface Gi0/1 (côté internet) ?",
+code:"Gi0/0 = interface LAN (192.168.1.0/24)\nGi0/1 = interface WAN (IP publique)",
+opts:[
+  "R1(config)# ip nat inside source list 1 interface Gi0/1 overload\nR1(config)# access-list 1 permit 192.168.1.0 0.0.0.255\nR1(config-if Gi0/0)# ip nat inside\nR1(config-if Gi0/1)# ip nat outside",
+  "R1(config)# ip nat overload 192.168.1.0/24 interface Gi0/1\nR1(config-if Gi0/1)# ip nat outside",
+  "R1(config)# ip nat source 192.168.1.0 255.255.255.0 overload Gi0/1",
+  "R1(config-if Gi0/0)# ip nat inside 192.168.1.0/24\nR1(config-if Gi0/1)# ip nat outside overload"
+],
+ok:0,
+fb:"La configuration PAT requiert 4 étapes : 1) ACL définissant les sources à traduire, 2) commande 'ip nat inside source list X interface Y overload', 3) 'ip nat inside' sur l'interface LAN, 4) 'ip nat outside' sur l'interface WAN. Le mot-clé 'overload' active le PAT (plusieurs IPs privées → une IP publique + ports différents). Vérification : 'show ip nat translations' et 'show ip nat statistics'."
+},
+
+// D4 — SSH configuration complète
+{d:"Domaine 4 — IP Services",dw:"10%",di:3,n:79,
+text:"Quelle est la séquence complète pour activer SSH v2 sur un routeur Cisco IOS ?",
+code:null,
+opts:[
+  "R(config)# ip ssh version 2\nR(config)# line vty 0 4\nR(config-line)# transport input ssh",
+  "R(config)# hostname R1\nR(config)# ip domain-name cyberstruct.local\nR(config)# crypto key generate rsa modulus 2048\nR(config)# ip ssh version 2\nR(config)# username admin secret P@ssw0rd\nR(config)# line vty 0 4\nR(config-line)# transport input ssh\nR(config-line)# login local",
+  "R(config)# service ssh enable\nR(config)# ssh version 2\nR(config-line)# login ssh",
+  "R(config)# crypto ssh rsa 2048\nR(config)# ip ssh activate"
+],
+ok:1,
+fb:"SSH sur IOS nécessite dans l'ordre : 1) hostname configuré (pas 'Router'), 2) ip domain-name (pour générer les clés RSA), 3) crypto key generate rsa modulus 2048 (minimum 768 bits pour SSHv2), 4) ip ssh version 2 (forcer SSHv2, désactiver SSHv1), 5) compte local avec 'username X secret Y', 6) sur les VTY : transport input ssh + login local. Sans hostname ou domain-name, la génération de clés RSA échoue."
+},
+
+// D5 — Threats/vulnerabilities/exploits
+{d:"Domaine 5 — Security Fundamentals",dw:"15%",di:4,n:80,
+text:"Dans le contexte de la sécurité réseau CCNA, quelle est la différence entre une vulnérabilité, une menace et un exploit ?",
+code:null,
+opts:[
+  "Ce sont trois termes synonymes désignant les mêmes concepts de sécurité.",
+  "La vulnérabilité est la faiblesse du système ; la menace est un agent susceptible de l'exploiter ; l'exploit est le code ou technique qui tire parti de la vulnérabilité pour compromettre le système.",
+  "La menace est toujours un acteur externe ; une vulnérabilité est toujours logicielle ; un exploit est toujours matériel.",
+  "Une vulnérabilité est uniquement détectable par un pentest ; une menace est uniquement détectable par un SIEM."
+],
+ok:1,
+fb:"Vulnérabilité : faiblesse dans un système (bug logiciel, mauvaise configuration, absence de patch). Menace : entité ou événement pouvant exploiter une vulnérabilité (attaquant, malware, catastrophe). Exploit : technique ou code spécifique qui tire parti d'une vulnérabilité pour compromettre un système (ex. Metasploit module pour EternalBlue). Mitigation : réduire la vulnérabilité (patch), la menace (formation) ou l'impact (segmentation, backup). Ces trois termes sont explicitement dans le blueprint CCNA v1.1 section 5.1."
+},
+
+// D5 — Password policy / MFA / biométrie
+{d:"Domaine 5 — Security Fundamentals",dw:"15%",di:4,n:81,
+text:"Selon les bonnes pratiques Cisco pour la sécurité des mots de passe, laquelle de ces affirmations est correcte ?",
+code:null,
+opts:[
+  "Un mot de passe de 8 caractères avec complexité (majuscules + chiffres) est suffisant pour les équipements réseau en production.",
+  "Les politiques de mots de passe robustes incluent : longueur minimale (12+ caractères), complexité, rotation régulière, et le recours à des alternatives comme le MFA, les certificats numériques ou la biométrie pour réduire la dépendance aux mots de passe.",
+  "Stocker les mots de passe en type 7 (service password-encryption) offre une protection suffisante pour les équipements de production.",
+  "Le MFA est uniquement applicable pour les utilisateurs finaux, pas pour l'administration des équipements réseau."
+],
+ok:1,
+fb:"Le blueprint CCNA v1.1 (5.4) couvre : complexité des mots de passe (longueur, caractères spéciaux), politique de rotation, et alternatives : MFA (authentification multi-facteurs), certificats numériques (authentification sans mot de passe via PKI), biométrie. En IOS : 'security passwords min-length 12' impose une longueur minimale. Le type 7 (service password-encryption) est reversible — toujours utiliser 'enable secret' (type 5/9) pour les mots de passe critiques."
+},
+
+// D6 — Overlay/Underlay/Fabric
+{d:"Domaine 6 — Automation & Programmability",dw:"10%",di:5,n:82,
+text:"Dans une architecture SDN Cisco SD-Access, que désignent les termes Underlay, Overlay et Fabric ?",
+code:null,
+opts:[
+  "Underlay = réseau logiciel virtuel, Overlay = réseau physique de base, Fabric = protocole de chiffrement.",
+  "Underlay = infrastructure réseau physique (switches, routeurs, liens) ; Overlay = réseau virtuel superposé utilisant l'encapsulation (VXLAN) ; Fabric = combinaison underlay + overlay géré par le contrôleur (Cisco DNA Center).",
+  "Underlay, Overlay et Fabric sont trois noms différents pour désigner la même couche de commutation.",
+  "Underlay = couche WAN, Overlay = couche LAN, Fabric = couche DMZ dans l'architecture three-tier."
+],
+ok:1,
+fb:"Dans SDN/SD-Access : Underlay = réseau physique de transport (IP routed access avec IS-IS), fournit la connectivité de base. Overlay = réseau virtuel superposé via VXLAN (encapsulation des trames L2 dans des paquets UDP) — permet la mobilité des VLANs et la segmentation sans contrainte physique. Fabric = l'ensemble underlay + overlay orchestré par le contrôleur (DNA Center), vu comme un système unifié. APIs Northbound (vers applications) et Southbound (vers équipements) sont les interfaces du contrôleur."
+}
+];
+
+const DNAMES = [
+  "Network Fundamentals","Network Access","IP Connectivity",
+  "IP Services","Security Fundamentals","Automation & Programmability"
+];
+const DTOTALS = [18,17,18,9,13,7];
+const LETTERS = ['A','B','C','D'];
+
+let S = {screen:'intro',cur:0,score:0,ans:false,ds:[0,0,0,0,0,0]};
+
+function pct(s,t){return t===0?0:Math.round(s/t*100);}
+
+function uh(){
+  const hs=document.getElementById('header-score');
+  const sub=document.getElementById('header-sub');
+  if(S.screen==='question'){
+    hs.style.display='block';
+    hs.textContent=S.score+' / '+S.cur+' ok';
+    sub.textContent='Q'+Q[S.cur].n+'/'+Q.length+' — '+Q[S.cur].d;
+  } else if(S.screen==='result'){
+    hs.style.display='none';
+    sub.textContent='Résultats finaux';
+  } else {
+    hs.style.display='none';
+    sub.textContent='QCM de positionnement — CYBERSTRUCT';
+  }
+}
+
+function intro(){
+  S.screen='intro'; uh();
+  document.getElementById('app').innerHTML=`
+  <div class="intro-card card-anim">
+    <div class="intro-title">CCNA 200-301 v1.1</div>
+    <div class="intro-sub">72 questions couvrant les 6 domaines officiels Cisco, pondérées selon le blueprint de l'examen réel. Mix théorie + scénarios CLI pour M2 Infra/Réseau. Seuil de passage estimé : 825/1000 (~80%).</div>
+    <div class="intro-stats">
+      <div class="intro-stat"><div class="intro-stat-val">82</div><div class="intro-stat-label">questions</div></div>
+      <div class="intro-stat"><div class="intro-stat-val">~80%</div><div class="intro-stat-label">seuil estimé</div></div>
+      <div class="intro-stat"><div class="intro-stat-val">~70 min</div><div class="intro-stat-label">durée estimée</div></div>
+      <div class="intro-stat"><div class="intro-stat-val">6</div><div class="intro-stat-label">domaines officiels</div></div>
+    </div>
+    <div class="intro-blocs">
+      <div class="intro-blocs-title">Domaines Cisco 200-301 v1.1</div>
+      ${[
+        ["1","Network Fundamentals (OSI, subnetting, IPv6, PoE, virtualisation...)","18 q","20%"],
+        ["2","Network Access (VLANs, STP, EtherChannel, Wi-Fi, Root/Loop Guard...)","17 q","20%"],
+        ["3","IP Connectivity (routage, OSPF, FHRP, SLAAC, static routes...)","18 q","25%"],
+        ["4","IP Services (NAT/PAT, NTP, DHCP relay, SNMP, Syslog, SSH, QoS...)","9 q","10%"],
+        ["5","Security Fundamentals (ACL, VPN, AAA, TACACS+, passwords, exploits...)","13 q","15%"],
+        ["6","Automation & Programmability (SDN, REST, Ansible, JSON, NETCONF, Fabric...)","7 q","10%"]
+      ].map(([n,name,q,w])=>`
+      <div class="intro-bloc-item">
+        <div class="intro-bloc-num">${n}</div>
+        <span>${name}</span>
+        <div class="intro-bloc-meta">
+          <span class="intro-bloc-q">${q}</span>
+          <span class="intro-bloc-w">${w}</span>
+        </div>
+      </div>`).join('')}
+    </div>
+    <button class="btn-start" onclick="start()">Commencer le QCM</button>
+  </div>`;
+}
+
+function start(){
+  S={screen:'question',cur:0,score:0,ans:false,ds:[0,0,0,0,0,0]};
+  render();
+}
+
+function render(){
+  S.screen='question'; S.ans=false; uh();
+  const q=Q[S.cur];
+  const prog=Math.round(S.cur/Q.length*100);
+  document.getElementById('app').innerHTML=`
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" style="width:${prog}%"></div></div>
+    <div class="progress-labels"><span>Q${q.n} / ${Q.length}</span><span>${prog}%</span></div>
+  </div>
+  <div class="card card-anim">
+    <div class="bloc-badge">${q.d} <span class="bloc-weight">${q.dw}</span></div>
+    <div class="question-text">${q.text}</div>
+    ${q.code?`<div class="code-block">${q.code}</div>`:''}
+    <div class="options" id="opts">
+      ${q.opts.map((o,i)=>`
+      <button class="option-btn" onclick="ans(${i})">
+        <span class="option-letter">${LETTERS[i]}</span>
+        <span>${o}</span>
+      </button>`).join('')}
+    </div>
+    <div id="fb"></div>
+    <div class="nav-row" id="nav" style="display:none">
+      <button class="btn-next" onclick="next()">${S.cur<Q.length-1?'Question suivante →':'Voir mes résultats →'}</button>
+    </div>
+  </div>`;
+}
+
+function ans(i){
+  if(S.ans)return;
+  S.ans=true;
+  const q=Q[S.cur];
+  const ok=i===q.ok;
+  if(ok){S.score++;S.ds[q.di]++;}
+  document.querySelectorAll('.option-btn').forEach((b,j)=>{
+    b.disabled=true;
+    if(j===i&&ok)b.classList.add('correct');
+    if(j===i&&!ok)b.classList.add('wrong');
+    if(j===q.ok&&!ok)b.classList.add('reveal-correct');
+  });
+  document.getElementById('fb').innerHTML=`
+  <div class="feedback-box ${ok?'correct':'wrong'}">
+    <span class="feedback-label">${ok?'✓ Bonne réponse':'✗ Mauvaise réponse'}</span>
+    ${q.fb}
+  </div>`;
+  document.getElementById('nav').style.display='flex';
+  uh();
+}
+
+function next(){
+  S.cur++;
+  if(S.cur>=Q.length) result();
+  else render();
+}
+
+function result(){
+  S.screen='result'; uh();
+  const p=pct(S.score,Q.length);
+  let vt,vs;
+  if(p>=80){vt='Excellent — niveau suffisant pour passer l\'examen CCNA !';vs='background:var(--success-bg);border-color:var(--success-border);color:var(--success-text);';}
+  else if(p>=65){vt='Bon niveau — quelques lacunes à combler avant l\'examen.';vs='background:var(--warn-bg);border-color:var(--warn-border);color:var(--warn-text);';}
+  else{vt='En dessous du seuil — reprendre les domaines en difficulté.';vs='background:var(--error-bg);border-color:var(--error-border);color:var(--error-text);';}
+  const bc=DNAMES.map((n,i)=>`
+  <div class="bloc-card">
+    <div class="bloc-card-name">${n}</div>
+    <div class="bloc-card-score">${S.ds[i]}/${DTOTALS[i]}<span class="bloc-card-pct">(${pct(S.ds[i],DTOTALS[i])}%)</span></div>
+  </div>`).join('');
+  document.getElementById('app').innerHTML=`
+  <div class="result-card card-anim">
+    <div class="result-pct">${p}%</div>
+    <div class="result-fraction">${S.score} / ${Q.length} bonnes réponses</div>
+    <div class="result-verdict" style="${vs}">${vt}</div>
+    <div class="bloc-grid">${bc}</div>
+    <div class="threshold-note">Seuil estimé CCNA : ~80% (825/1000 score pondéré Cisco) — soit 66/82 dans ce QCM</div>
+    <button class="btn-restart" onclick="restart()">Recommencer le QCM</button>
+  </div>`;
+}
+
+function restart(){
+  S={screen:'intro',cur:0,score:0,ans:false,ds:[0,0,0,0,0,0]};
+  intro();
+}
+
+intro();
+</script>
+</body>
+</html>
