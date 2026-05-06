@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QCM — DP-700 Microsoft Fabric Data Engineer | CYBERSTRUCT</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f8f7f4; --surface: #ffffff; --surface2: #f2f1ee;
+    --text: #1a1a18; --text-muted: #6b6a66; --text-hint: #9e9d99;
+    --border: rgba(0,0,0,0.10); --border-med: rgba(0,0,0,0.18);
+    --accent: #0078D4; --accent-bg: #EBF3FB; --accent-text: #004E8C;
+    --success-bg: #EAF3DE; --success-border: #639922; --success-text: #27500A;
+    --error-bg: #FCEBEB; --error-border: #E24B4A; --error-text: #A32D2D;
+    --warn-bg: #FAEEDA; --warn-border: #BA7517; --warn-text: #854F0B;
+    --code-bg: #1e1e1e; --code-text: #d4d4d4;
+    --radius: 10px; --radius-sm: 6px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a; --surface: #252523; --surface2: #2e2e2b;
+      --text: #f0ede8; --text-muted: #a09f9a; --text-hint: #6b6a66;
+      --border: rgba(255,255,255,0.10); --border-med: rgba(255,255,255,0.18);
+      --accent: #4FA3E0; --accent-bg: #002850; --accent-text: #70B8F0;
+      --success-bg: #0e2206; --success-border: #3B6D11; --success-text: #C0DD97;
+      --error-bg: #2a0a0a; --error-border: #A32D2D; --error-text: #F09595;
+      --warn-bg: #2a1a04; --warn-border: #854F0B; --warn-text: #FAC775;
+    }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+  .header { background: var(--surface); border-bottom: 0.5px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; }
+  .header-logo { width: 32px; height: 32px; background: var(--accent); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; font-weight: 700; color: white; letter-spacing: -0.5px; }
+  .header-info { flex: 1; min-width: 0; }
+  .header-title { font-size: 13px; font-weight: 500; color: var(--text); }
+  .header-sub { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .header-score { font-size: 12px; font-weight: 500; color: var(--accent-text); background: var(--accent-bg); padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+  .main { max-width: 720px; margin: 0 auto; padding: 20px 16px 60px; }
+  .progress-wrap { margin-bottom: 18px; }
+  .progress-track { height: 3px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+  .progress-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-hint); margin-top: 5px; }
+  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 22px; }
+  .domain-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; background: var(--accent-bg); color: var(--accent-text); padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; }
+  .domain-weight { font-size: 10px; opacity: 0.7; }
+  .question-text { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.55; margin-bottom: 14px; }
+  .code-block { background: var(--code-bg); color: var(--code-text); font-family: 'SF Mono','Fira Code','Consolas',monospace; font-size: 12px; line-height: 1.7; padding: 14px 16px; border-radius: var(--radius-sm); margin-bottom: 14px; overflow-x: auto; white-space: pre; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn { display: flex; align-items: flex-start; gap: 11px; padding: 11px 14px; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; text-align: left; font-size: 13px; color: var(--text); line-height: 1.5; transition: background 0.12s, border-color 0.12s, transform 0.08s; width: 100%; font-family: inherit; }
+  .option-btn:hover:not(:disabled) { background: var(--surface2); border-color: var(--accent); transform: translateX(2px); }
+  .option-btn:disabled { cursor: default; }
+  .option-letter { font-size: 11px; font-weight: 500; min-width: 20px; height: 20px; background: var(--surface2); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; color: var(--text-muted); }
+  .option-btn:hover:not(:disabled) .option-letter { background: var(--accent-bg); color: var(--accent-text); }
+  .option-btn.correct { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+  .option-btn.correct .option-letter { background: var(--success-border); color: white; }
+  .option-btn.wrong { background: var(--error-bg); border-color: var(--error-border); color: var(--error-text); }
+  .option-btn.wrong .option-letter { background: var(--error-border); color: white; }
+  .option-btn.reveal-correct { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); opacity: 0.65; }
+  .feedback-box { margin-top: 14px; padding: 11px 14px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.65; border: 0.5px solid; animation: fadeIn 0.2s ease; }
+  .feedback-box.correct { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+  .feedback-box.wrong { background: var(--error-bg); border-color: var(--error-border); color: var(--error-text); }
+  .feedback-label { font-weight: 500; display: block; margin-bottom: 3px; }
+  .nav-row { display: flex; justify-content: flex-end; margin-top: 16px; }
+  .btn-next { padding: 9px 20px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); cursor: pointer; font-family: inherit; transition: background 0.12s; }
+  .btn-next:hover { background: var(--surface2); }
+  .result-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 28px 22px; text-align: center; }
+  .result-pct { font-size: 58px; font-weight: 500; color: var(--text); line-height: 1; margin-bottom: 5px; }
+  .result-fraction { font-size: 14px; color: var(--text-muted); margin-bottom: 18px; }
+  .result-verdict { display: inline-block; font-size: 14px; font-weight: 500; padding: 9px 18px; border-radius: var(--radius-sm); margin-bottom: 24px; border: 0.5px solid; }
+  .bloc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 9px; margin-bottom: 18px; text-align: left; }
+  .bloc-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 11px 13px; }
+  .bloc-card-name { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; line-height: 1.4; }
+  .bloc-card-score { font-size: 20px; font-weight: 500; color: var(--text); }
+  .bloc-card-pct { font-size: 12px; color: var(--text-hint); margin-left: 3px; }
+  .threshold-note { font-size: 12px; color: var(--text-hint); margin-bottom: 18px; padding: 7px 11px; background: var(--surface2); border-radius: var(--radius-sm); }
+  .btn-restart { padding: 9px 24px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); cursor: pointer; font-family: inherit; }
+  .btn-restart:hover { background: var(--surface2); }
+  .intro-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 28px 24px; }
+  .intro-title { font-size: 20px; font-weight: 500; margin-bottom: 6px; }
+  .intro-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+  .intro-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); gap: 8px; margin-bottom: 20px; }
+  .intro-stat { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .intro-stat-val { font-size: 19px; font-weight: 500; }
+  .intro-stat-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  .intro-blocs { margin-bottom: 22px; }
+  .intro-blocs-title { font-size: 11px; font-weight: 500; color: var(--text-hint); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+  .intro-bloc-item { display: flex; align-items: center; gap: 9px; font-size: 12px; padding: 7px 0; border-bottom: 0.5px solid var(--border); }
+  .intro-bloc-item:last-child { border-bottom: none; }
+  .intro-bloc-num { width: 20px; height: 20px; background: var(--accent-bg); color: var(--accent-text); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+  .intro-bloc-meta { display: flex; gap: 8px; margin-left: auto; flex-shrink: 0; }
+  .intro-bloc-q { font-size: 10px; color: var(--text-hint); }
+  .intro-bloc-w { font-size: 10px; color: var(--accent-text); font-weight: 500; background: var(--accent-bg); padding: 1px 6px; border-radius: 10px; }
+  .btn-start { width: 100%; padding: 12px; font-size: 14px; font-weight: 500; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer; font-family: inherit; transition: opacity 0.12s; }
+  .btn-start:hover { opacity: 0.88; }
+  .card-anim { animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div class="header" id="header">
+  <div class="header-logo">DP<br>700</div>
+  <div class="header-info">
+    <div class="header-title">DP-700 — Microsoft Fabric Data Engineer Associate</div>
+    <div class="header-sub" id="header-sub">QCM de positionnement — CYBERSTRUCT</div>
+  </div>
+  <div class="header-score" id="header-score" style="display:none"></div>
+</div>
+<div class="main" id="app"></div>
+
+<script>
+const Q = [
+// ═══════════════════════════════════════════════════
+// DOMAINE 1 — Implement and manage an analytics solution (30-35%) — 25 questions
+// ═══════════════════════════════════════════════════
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:1,
+text:"Qu'est-ce que Microsoft Fabric et comment diffère-t-il des services Azure Synapse et Azure Data Factory utilisés séparément ?",
+code:null,
+opts:["Fabric est uniquement une interface graphique pour gérer Azure Synapse Analytics.","Fabric est une plateforme analytique SaaS unifiée qui intègre dans un seul environnement l'ingestion (Data Factory), le stockage (OneLake), le traitement (Spark/SQL), le temps réel (Real-Time Intelligence) et le BI (Power BI) — avec un tenant partagé et une facturation à la capacité.","Fabric remplace uniquement Power BI et n'a pas de fonctionnalités de data engineering.","Fabric est une version open-source d'Azure Synapse Analytics."],
+ok:1,
+fb:"Microsoft Fabric est une plateforme SaaS (Software-as-a-Service) qui unifie en un seul produit : Data Engineering (Lakehouse, Spark), Data Factory (pipelines, dataflows), Data Warehouse, Real-Time Intelligence (Eventstream, Eventhouse/KQL), Data Science et Power BI. Tout repose sur OneLake (un seul data lake par organisation). La facturation se fait à la capacité Fabric (F-SKU ou P-SKU). L'avantage principal : plus de copie de données entre services, moins de friction entre équipes."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:2,
+text:"Qu'est-ce qu'un Workspace dans Microsoft Fabric et quel est son rôle dans l'organisation des ressources ?",
+code:null,
+opts:["Un Workspace est un cluster Spark dédié à un projet.","Un Workspace est une unité logique d'organisation et de collaboration dans Fabric — il contient les items (Lakehouses, Warehouses, notebooks, pipelines...) et définit les accès, la capacité assignée et le contexte de gouvernance.","Un Workspace est uniquement utilisé pour les rapports Power BI.","Un Workspace est un espace de stockage dans OneLake."],
+ok:1,
+fb:"Un Workspace dans Fabric est l'unité de déploiement et de collaboration : il regroupe tous les items d'un projet ou d'une équipe (Lakehouse, Warehouse, notebooks, pipelines, rapports...), définit les droits d'accès (Admin, Member, Contributor, Viewer), est associé à une Fabric Capacity (F2 → F2048), et peut être connecté à Git pour la gestion de version. Chaque Workspace a son propre espace dans OneLake."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:3,
+text:"Quelle est la différence entre un Lakehouse et un Data Warehouse dans Microsoft Fabric ?",
+code:null,
+opts:["Le Lakehouse combine stockage de fichiers (Delta/Parquet sur OneLake) et tables SQL via un endpoint SQL automatique — adapté aux données semi-structurées et aux workloads Spark. Le Warehouse est un entrepôt de données SQL complet avec T-SQL, optimisé pour les requêtes analytiques complexes et le modèle dimensionnel.","Le Lakehouse stocke uniquement des données structurées ; le Warehouse stocke uniquement des données non structurées.","Le Warehouse peut uniquement être interrogé avec KQL ; le Lakehouse avec PySpark.","Le Lakehouse est deprecated dans Fabric — seul le Warehouse est recommandé."],
+ok:0,
+fb:"Lakehouse : repose sur Delta Lake sur OneLake, accessible via Spark (notebooks), SQL endpoint (lecture seule T-SQL) et APIs. Idéal pour les données brutes, semi-structurées, les transformations Spark et les medallion architectures (Bronze/Silver/Gold). Warehouse : entrepôt SQL complet avec DDL/DML complets (T-SQL), optimisé pour les requêtes ad hoc complexes, le modèle en étoile et la consommation par Power BI. Les deux coexistent souvent dans une architecture Fabric."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:4,
+text:"Qu'est-ce que OneLake dans Microsoft Fabric et quel est son rôle central ?",
+code:null,
+opts:["OneLake est un service de sauvegarde pour les données Fabric.","OneLake est le data lake unique et unifié de l'organisation dans Fabric — toutes les données de tous les workspaces sont stockées dans OneLake au format Delta/Parquet, accessibles via les APIs ADLS Gen2. Un seul OneLake par tenant, pas de silos.","OneLake est le service de métadonnées uniquement — les données réelles sont dans Azure Blob Storage.","OneLake est disponible uniquement pour les workspaces avec une capacité F64 ou plus."],
+ok:1,
+fb:"OneLake est l'équivalent de OneDrive mais pour les données d'entreprise : un seul data lake unifié par tenant Microsoft 365, compatible ADLS Gen2 (API ABFSS), stockage en Delta Lake. Tous les items Fabric (Lakehouse tables, Warehouse tables) stockent leurs données dans OneLake. Les Shortcuts permettent de référencer des données externes (ADLS, S3, GCS) sans les copier. OneLake est la fondation architecturale qui élimine les silos de données entre services."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:5,
+text:"Quels sont les 4 rôles d'accès disponibles dans un Workspace Fabric et quels droits accordent-ils ?",
+code:null,
+opts:["Owner, Editor, Viewer, Guest — avec des droits décroissants.","Admin (gestion complète du workspace), Member (créer/modifier les items), Contributor (modifier les items mais pas les partager), Viewer (lecture seule des items) — droits décroissants.","Reader, Writer, Executor, Administrator — mappés sur les rôles Azure RBAC.","Il n'existe que deux rôles dans Fabric : Admin et User."],
+ok:1,
+fb:"Les 4 rôles Workspace Fabric : Admin — peut gérer l'accès, modifier les paramètres et supprimer le workspace. Member — peut partager, modifier et créer tous les items. Contributor — peut créer et modifier les items mais ne peut pas les partager ou gérer les accès. Viewer — peut uniquement lire les items (pas les modifier). Ces rôles sont au niveau workspace. Il existe aussi des permissions au niveau item (pour partager un rapport spécifique par exemple)."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:6,
+text:"Comment configure-t-on le contrôle de version (version control) pour un Workspace Fabric ?",
+code:null,
+opts:["En activant 'Auto-save' dans les paramètres du workspace.","En utilisant le service Azure Backup pour sauvegarder les métadonnées.","En connectant le workspace à un dépôt Git (Azure DevOps ou GitHub) via les paramètres du workspace — Fabric synchronise les items (notebooks, pipelines, définitions...) avec les branches Git.","Le contrôle de version est automatique dans Fabric et ne nécessite pas de configuration."],
+ok:2,
+fb:"Fabric intègre Git nativement (Azure DevOps Repos ou GitHub). Configuration : Workspace Settings → Git integration → connect to a repo + branch. Les items Fabric sont exportés au format JSON/YAML dans le repo. On peut commiter des changements, créer des branches pour les développements et faire des PRs. Les items supportés : notebooks, pipelines, dataflows, lakehouse definitions, reports... Les données (tables) ne sont pas versionnées — uniquement les définitions."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:7,
+text:"Qu'est-ce qu'un Deployment Pipeline dans Microsoft Fabric et à quoi sert-il ?",
+code:null,
+opts:["Un Deployment Pipeline est un outil de CI/CD qui déploie automatiquement les notebooks Spark sur un cluster.","Un Deployment Pipeline Fabric permet de promouvoir des items (rapports, datasets, lakehouses...) entre environnements (Development → Test → Production) de façon contrôlée, avec une interface visuelle pour comparer et déployer les changements.","Un Deployment Pipeline remplace les pipelines de données pour l'orchestration des flux.","Un Deployment Pipeline est uniquement disponible pour les items Power BI."],
+ok:1,
+fb:"Les Deployment Pipelines Fabric (anciennement Power BI Deployment Pipelines) permettent de gérer le cycle de vie des items analytiques : 3 étapes (Dev → Test → Prod), comparaison visuelle des différences entre étapes, déploiement sélectif ou complet, et règles de déploiement pour modifier les connexions selon l'environnement (ex. changer la connexion DB de Dev à Prod). Complémentaire à Git pour la gestion du cycle de vie."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:8,
+text:"Quand choisir un Dataflow Gen2 plutôt qu'un Pipeline ou un Notebook pour l'orchestration des transformations ?",
+code:null,
+opts:["Toujours utiliser Dataflow Gen2 — c'est la solution la plus performante dans Fabric.","Dataflow Gen2 (Power Query) est idéal pour les utilisateurs non-développeurs avec des transformations visuelles (drag-and-drop), de petits à moyens volumes et la connectivité à de nombreuses sources. Un Pipeline est préférable pour l'orchestration complexe, les dépendances entre tâches et le contrôle d'erreurs. Un Notebook est préférable pour les transformations complexes en PySpark/SQL.","Notebook uniquement pour le ML, Pipeline pour tout le reste.","Dataflow Gen2 n'existe plus dans les versions récentes de Fabric."],
+ok:1,
+fb:"Choix selon le cas d'usage : Dataflow Gen2 (Power Query M) → transformations visuelles, non-codeurs, connecteurs natifs (200+ sources), petits/moyens volumes, idéal pour les data analysts. Pipeline → orchestration et séquençage de multiples activités (notebooks, dataflows, copies, procédures stockées...), gestion des erreurs, paramètres dynamiques, triggers temporels/événementiels. Notebook (PySpark/SQL) → transformations complexes, ML, grands volumes, logique métier avancée."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:9,
+text:"Comment implémenter la Row-Level Security (RLS) dans un Lakehouse Fabric pour limiter l'accès aux données selon le rôle de l'utilisateur ?",
+code:null,
+opts:["Dans un Lakehouse, la RLS se configure dans le modèle sémantique Power BI associé (via DAX filters sur les rôles) ou via les Object-Level Security sur le SQL Endpoint. Une approche alternative est d'utiliser des vues SQL avec des filtres dynamiques basés sur USERNAME().","La RLS est uniquement disponible dans le Warehouse, pas dans le Lakehouse.","La RLS se configure dans les paramètres du Workspace directement.","On créé des datasets séparés par rôle dans Power BI pour simuler la RLS."],
+ok:0,
+fb:"Dans Fabric, plusieurs couches de sécurité : Workspace roles (niveau workspace), Item permissions (niveau item), SQL Endpoint permissions (niveau objet SQL : tables, vues, schémas), et RLS/Column-Level Security (CLS) via le modèle sémantique ou les vues SQL. Pour la RLS dans le Lakehouse : créer des vues SQL avec WHERE user = USERNAME() ou configurer les rôles RLS dans le modèle sémantique Power BI. OneLake Security permet aussi de contrôler l'accès au niveau dossier/fichier."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:10,
+text:"Qu'est-ce que le Dynamic Data Masking (DDM) dans Microsoft Fabric et quel est son cas d'usage ?",
+code:null,
+opts:["Le DDM chiffre les données sensibles au repos dans OneLake.","Le DDM masque les données sensibles (ex. numéros de carte, emails) dans les résultats de requêtes SQL pour les utilisateurs non autorisés, sans modifier les données réelles en stockage — les administrateurs voient les vraies données.","Le DDM supprime définitivement les données sensibles selon les règles RGPD.","Le DDM est uniquement disponible dans Azure SQL Database, pas dans Fabric."],
+ok:1,
+fb:"Le Dynamic Data Masking dans Fabric (Warehouse et SQL Endpoint du Lakehouse) masque les colonnes sensibles à la volée lors de l'exécution des requêtes SQL : les utilisateurs non privilégiés voient des valeurs masquées (ex. 'XXXX' pour les numéros de carte, les premiers caractères d'un email). La syntaxe : ALTER TABLE dbo.Customers ALTER COLUMN CreditCard ADD MASKED WITH (FUNCTION = 'partial(0,\"XXXX\",4)'). Les données réelles dans OneLake restent inchangées."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:11,
+text:"Qu'est-ce qu'une Sensitivity Label dans Microsoft Fabric et quel est son rôle ?",
+code:null,
+opts:["Une Sensitivity Label est une étiquette de priorité pour les pipelines de données.","Une Sensitivity Label (étiquette de sensibilité Microsoft Purview) classe les données selon leur niveau de confidentialité (Public, Internal, Confidential, Highly Confidential...) et peut appliquer des protections automatiques (chiffrement, watermark) sur les exports et rapports.","Une Sensitivity Label définit le niveau de priorité d'exécution d'un notebook dans Fabric.","Les Sensitivity Labels sont uniquement disponibles dans Power BI, pas dans les Lakehouses."],
+ok:1,
+fb:"Les Sensitivity Labels dans Fabric sont intégrées avec Microsoft Purview Information Protection. Elles permettent de classifier les items Fabric (rapports, datasets, lakehouses...) selon le niveau de sensibilité des données. Une fois appliquée, l'étiquette hérite aux exports (Excel, PDF...) et peut déclencher des politiques de protection automatiques (chiffrement, DLP). L'administrateur Fabric configure les labels disponibles dans l'Admin Portal. Elles font partie de la gouvernance des données."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:12,
+text:"Qu'est-ce que l'Endorsement d'un item dans Microsoft Fabric ?",
+code:null,
+opts:["L'Endorsement est une validation par un pair avant de déployer un notebook en production.","L'Endorsement est un processus de chiffrement des données sensibles.","L'Endorsement permet de marquer un item (dataset, rapport, lakehouse...) comme 'Promoted' (recommandé par l'équipe) ou 'Certified' (validé par un administrateur) — pour aider les utilisateurs à identifier les ressources fiables et officielles.","L'Endorsement permet de verrouiller un item en lecture seule pour éviter les modifications accidentelles."],
+ok:2,
+fb:"L'Endorsement dans Fabric a deux niveaux : Promoted — l'équipe propriétaire marque l'item comme recommandé (badge P). Certified — un administrateur certifie que l'item respecte les standards de qualité de l'organisation (badge C). Les items endorsés apparaissent en priorité dans les recherches et le Data Hub. C'est un mécanisme de gouvernance léger pour guider les utilisateurs vers les données officielles vs les données expérimentales."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:13,
+text:"Comment configurer un trigger basé sur les événements (event-based trigger) dans un Pipeline Fabric ?",
+code:null,
+opts:["En créant une Azure Function qui appelle l'API REST Fabric.","En configurant un trigger de type 'Storage event' qui déclenche le pipeline quand un nouveau fichier arrive dans un dossier OneLake/ADLS, ou un trigger 'Custom event' via Azure Event Grid.","Les triggers événementiels ne sont pas supportés dans Fabric — uniquement les triggers temporels (schedule).","En utilisant une Power Automate flow connectée au pipeline."],
+ok:1,
+fb:"Fabric Pipelines supporte plusieurs types de triggers : Schedule (cron expression), Storage event (nouveau fichier dans ADLS/OneLake), Custom event (via Azure Event Grid). Pour un storage event trigger : le pipeline se déclenche automatiquement quand un blob est créé ou supprimé dans un conteneur spécifié. C'est essentiel pour les architectures event-driven où les données arrivent de façon imprévisible (ex. fichiers déposés par des partenaires)."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:14,
+text:"Qu'est-ce que la Fabric Capacity et comment impacte-t-elle les performances ?",
+code:null,
+opts:["La Capacity est le nombre maximum d'utilisateurs simultanés autorisés.","La Fabric Capacity (exprimée en Compute Units — CUs) définit la puissance de calcul disponible pour tous les workloads du tenant. Une capacité plus élevée (F2 à F2048) permet plus de concurrence et de meilleures performances. Les workloads consomment des CUs — si la capacité est dépassée, les travaux sont mis en file d'attente.","La Capacity est uniquement liée au stockage dans OneLake.","La Capacity ne peut pas être modifiée après la création du tenant Fabric."],
+ok:1,
+fb:"La Fabric Capacity détermine les ressources de calcul disponibles. Elle est exprimée en Compute Units (CUs) : F2 (2 CUs) → F2048 (2048 CUs). Les SKUs sont mappés sur les anciens Power BI Premium SKUs (P1 = F8). En cas de surcharge (throttling), Fabric met en file d'attente les travaux. La Capacity peut être scalée dynamiquement et pausée (pour arrêter la facturation). Les CUs non utilisés sont lissés dans le temps (smoothing) pour absorber les pics."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:15,
+text:"Comment configurer les paramètres Spark d'un Workspace pour optimiser les performances des notebooks ?",
+code:null,
+opts:["Les paramètres Spark ne peuvent être modifiés que depuis le portail Azure.","Les paramètres Spark sont globaux pour tout le tenant et ne peuvent pas être configurés par workspace.","Dans Workspace Settings → Data Engineering/Science → Spark compute : on peut configurer le pool Spark par défaut (taille des nœuds, nombre de nœuds min/max), le runtime Spark (version), les bibliothèques de l'environnement (packages pip), et les variables d'environnement.","On configure les paramètres Spark uniquement dans le code PySpark via spark.conf.set()."],
+ok:2,
+fb:"Fabric permet de configurer les Spark settings au niveau workspace : Starter Pool (pool par défaut) vs Custom Pool (pool dédié). Runtime Spark : Fabric Runtime 1.2 (Spark 3.4), Runtime 1.3 (Spark 3.5). Environnements Fabric : packages pip, dépendances Conda, variables d'env — associés à un workspace ou un notebook spécifique. High Concurrency mode pour partager les ressources Spark entre sessions. Ces paramètres impactent directement les temps de démarrage et les performances."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:16,
+text:"Qu'est-ce qu'un Shortcut dans Microsoft Fabric et quels sont ses cas d'usage ?",
+code:null,
+opts:["Un Shortcut est un alias pour renommer un Lakehouse dans Fabric.","Un Shortcut est un pointeur virtuel vers des données stockées dans OneLake, ADLS Gen2, S3, GCS ou Dataverse — sans copier les données. Les données restent dans leur source native mais sont accessibles depuis Fabric comme si elles étaient dans OneLake.","Un Shortcut est un lien vers un dashboard Power BI partagé.","Un Shortcut nécessite une copie physique des données dans OneLake pour fonctionner."],
+ok:1,
+fb:"Les Shortcuts dans Fabric permettent d'accéder à des données externes sans les copier (zero-copy). Sources supportées : OneLake (cross-workspace), ADLS Gen2, Amazon S3, Google Cloud Storage, S3-compatible, Dataverse. Use cases : fédérer des données multi-cloud sans ETL, accéder aux données d'un autre workspace sans duplication, intégrer des données ADLS existantes dans Fabric. Les accélerated shortcuts (sur ADLS Gen2) permettent en plus le Direct Lake dans Power BI pour des performances optimales."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:17,
+text:"Comment implémenter un Database Project dans Microsoft Fabric pour gérer le schéma d'un Warehouse ?",
+code:null,
+opts:["En exportant le schéma du Warehouse en CSV et en le versionnant dans Git manuellement.","Un Database Project dans Fabric permet de définir le schéma d'un Warehouse (tables, vues, procédures) dans des fichiers SQL versionnés dans Git — avec support de Visual Studio Code, des comparaisons de schéma et des déploiements automatisés via CI/CD.","Les Database Projects sont réservés aux Azure SQL Database, pas aux Fabric Warehouses.","En utilisant SQL Server Management Studio (SSMS) pour gérer le schéma depuis l'extérieur."],
+ok:1,
+fb:"Les Database Projects dans Fabric (inspirés des SQL Server Database Projects SSDT) permettent de gérer l'infrastructure-as-code pour les Warehouses : les scripts CREATE TABLE, CREATE VIEW, CREATE PROCEDURE sont stockés dans des fichiers .sql dans Git. Intégration VS Code avec l'extension SQL Database Projects. Permet le schema comparison (diff entre le project et la DB) et le déploiement automatisé via CI/CD pipelines (Azure DevOps, GitHub Actions)."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:18,
+text:"Quelle est la différence entre Object-Level Security (OLS) et Column-Level Security (CLS) dans Fabric ?",
+code:null,
+opts:["OLS cache des objets entiers (tables, colonnes) à certains rôles dans le modèle sémantique — les utilisateurs ne voient pas l'objet du tout. CLS restreint l'accès à des colonnes spécifiques dans le SQL Endpoint ou le Warehouse via des permissions DENY sur les colonnes.","OLS et CLS sont des synonymes pour la même fonctionnalité.","OLS s'applique uniquement aux vues, CLS uniquement aux tables de base.","CLS est uniquement disponible dans le Warehouse, OLS dans le Lakehouse."],
+ok:0,
+fb:"OLS (Object-Level Security) dans le modèle sémantique Power BI : cache complètement une table ou une colonne à un rôle spécifique — la table/colonne n'apparaît même pas dans la liste des champs. CLS (Column-Level Security) dans le Warehouse/SQL Endpoint : via DENY SELECT on [dbo].[Table]([SensitiveColumn]) TO [role] — l'utilisateur peut voir la table mais pas la colonne restreinte. Ces deux approches sont complémentaires et font partie de la stratégie de sécurité multicouche dans Fabric."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:19,
+text:"Comment mettre en œuvre le Workspace Logging dans Microsoft Fabric pour auditer les accès ?",
+code:null,
+opts:["En activant Azure Monitor sur chaque item individuellement.","En configurant Workspace logging dans les paramètres du workspace — les logs d'audit (accès, modifications, exécutions) sont envoyés vers un Lakehouse ou un Eventstream dans Fabric, ou vers un Log Analytics workspace Azure.","Le logging est activé automatiquement et ne peut pas être configuré.","En installant un agent de monitoring sur le cluster Spark."],
+ok:1,
+fb:"Fabric Workspace Logging : activé dans Workspace Settings → Monitoring. Les logs sont envoyés vers un Lakehouse Fabric (tables Delta) pour analyse. Types de logs : opérations sur les items, exécutions de pipelines/notebooks, requêtes SQL, accès aux données. Pour l'audit à l'échelle du tenant : Microsoft Purview Audit (unified audit log) capture toutes les activités Fabric. Ces logs sont essentiels pour la conformité (RGPD, SOC2) et le debugging."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:20,
+text:"Scénario : Votre équipe de data scientists souhaite expérimenter avec des notebooks Spark dans Fabric sans risque d'impacter les données de production. Quelle approche recommandez-vous ?",
+code:null,
+opts:["Donner aux data scientists un accès Admin au workspace de production.","Créer un workspace de développement séparé avec son propre Lakehouse de test et des données synthétiques ou d'échantillon — connecté au même repo Git via une branche dédiée (ex. 'dev'). Les promotions vers la production se font via PRs et deployment pipelines.","Utiliser des branches Git uniquement — pas besoin de workspace séparé.","Activer le mode 'Read-Only' sur le workspace de production."],
+ok:1,
+fb:"La bonne pratique pour l'isolation des environnements dans Fabric : plusieurs workspaces (Dev/Test/Prod), chacun avec ses propres items et données. Git integration avec des branches séparées (dev/main). Les Deployment Pipelines Fabric gèrent la promotion entre environnements. Les data scientists travaillent en Dev avec des données d'échantillon → PR vers Test → validation → Deployment Pipeline vers Prod. Cela évite les erreurs en production tout en maintenant un workflow collaboratif."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:21,
+text:"Comment configurer les paramètres de domaine (Domain workspace settings) dans Microsoft Fabric ?",
+code:null,
+opts:["Les domaines Fabric sont des sous-réseaux virtuels pour isoler les communications.","Les domaines Fabric correspondent aux domaines Active Directory de l'organisation.","Les Domains dans Fabric permettent de regrouper des workspaces par unité métier ou domaine fonctionnel (ex. Finance, Marketing, RH) — facilitant la gouvernance centralisée, les politiques de sécurité communes et la délégation d'administration à des Domain Admins.","Les domaines ne peuvent être configurés que par Microsoft Support."],
+ok:2,
+fb:"Les Fabric Domains (Fabric Admin Portal → Domains) permettent de regrouper logiquement des workspaces par unité métier. Avantages : délégation d'administration (Domain Admins gèrent leurs workspaces sans droits Fabric Admin globaux), politique de sécurité et de certification communes à un domaine, visibilité dans le Data Catalog. Un workspace peut appartenir à un seul domaine. Les domaines s'alignent sur l'organisation métier pour une meilleure gouvernance distribuée."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:22,
+text:"Scénario : Un pipeline doit passer des paramètres dynamiques (ex. la date de traitement) à un notebook Spark. Comment implémenter cela ?",
+code:null,
+opts:["Il est impossible de passer des paramètres dynamiques entre pipelines et notebooks dans Fabric.","En configurant l'activité 'Notebook' dans le pipeline avec des paramètres (base parameters) — les valeurs sont passées au notebook et accessibles via mssparkutils.notebook.run() ou les paramètres Spark. Les expressions dynamiques utilisent @pipeline().parameters et @formatDateTime() pour calculer des valeurs à l'exécution.","En utilisant des variables d'environnement Windows dans le pipeline.","En hardcodant la date dans le notebook et en le recréant chaque jour."],
+ok:1,
+fb:"Les Pipeline Parameters dans Fabric permettent de rendre les pipelines dynamiques : on définit des paramètres au niveau pipeline (ex. ProcessDate de type string), on les référence dans les activités avec @pipeline().parameters.ProcessDate. Pour les notebooks Fabric : l'activité Notebook permet de passer des base parameters via 'Base parameters' → accessibles dans le notebook via notebookutils.runtime.context ou en lisant les paramètres Spark (spark.conf.get('param.ProcessDate')). Les expressions dynamiques utilisent le langage d'expression Azure Data Factory (@formatDateTime(), @addDays()...). Note : dbutils est la syntaxe Databricks — dans Fabric on utilise notebookutils/mssparkutils."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:23,
+text:"Qu'est-ce que le Mirroring dans Microsoft Fabric et quel problème résout-il ?",
+code:null,
+opts:["Le Mirroring est une fonctionnalité de backup pour les données OneLake.","Le Mirroring réplique en continu des données depuis des bases de données externes (Azure SQL, Snowflake, Azure Cosmos DB...) vers OneLake, au format Delta Lake, sans pipeline ETL à maintenir — les données sont automatiquement synchronisées avec une faible latence.","Le Mirroring crée des copies physiques des Lakehouses entre workspaces Fabric.","Le Mirroring est uniquement disponible pour les données Dataverse."],
+ok:1,
+fb:"Fabric Mirroring réplique en quasi temps réel (CDC — Change Data Capture) des données depuis Azure SQL DB, Azure SQL MI, Azure Cosmos DB, Snowflake, et d'autres sources vers OneLake en format Delta Lake. Avantages : pas de pipeline ETL à coder/maintenir, faible latence, données toujours fraîches dans Fabric. Les tables mirrorées sont accessibles via le SQL Endpoint et Spark. Idéal pour les architectures où les données opérationnelles doivent être analysées dans Fabric sans ETL complexe."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:24,
+text:"Scénario : Vous devez permettre à des utilisateurs Power BI de consommer des données d'un Lakehouse Fabric avec les meilleures performances. Quelle mode de connexion recommandez-vous ?",
+code:null,
+opts:["Direct Lake mode — il lit directement les fichiers Delta sur OneLake sans importer les données dans Power BI, offrant des performances proches de l'Import mode sans duplication des données ni actualisation planifiée nécessaire.","Toujours utiliser Import mode pour les meilleures performances.","DirectQuery mode pour toujours avoir les données en temps réel.","Composite mode avec Import pour les petites tables et DirectQuery pour les grandes."],
+ok:0,
+fb:"Direct Lake est le mode de connexion révolutionnaire de Fabric : il lit directement les fichiers Delta Parquet sur OneLake (pas d'import → pas de copie de données, pas d'actualisation planifiée). Performance proche de l'Import mode grâce au pre-loading en mémoire des colonnes fréquemment accédées. Limites : le modèle sémantique doit être sur une Fabric Capacity, les données doivent être dans OneLake Delta format. Pour les Lakehouses avec Shortcuts ADLS, les Accelerated Shortcuts sont nécessaires pour le Direct Lake."
+},
+{d:"Domaine 1 — Implement & Manage",dw:"30-35%",di:0,n:25,
+text:"Comment implémenter une OneLake Security pour contrôler l'accès au niveau des fichiers et dossiers ?",
+code:null,
+opts:["OneLake Security se configure uniquement via Azure RBAC dans le portail Azure.","OneLake Security (actuellement en preview) permet de définir des ACLs (Access Control Lists) au niveau des dossiers et fichiers dans OneLake — complémentaire aux workspace roles. On peut donner accès à un sous-dossier spécifique sans donner accès à tout le workspace.","Les fichiers OneLake sont toujours accessibles à tous les membres du workspace.","OneLake Security utilise les politiques Azure Policy pour contrôler l'accès."],
+ok:1,
+fb:"OneLake Data Access Controls (actuellement en preview/disponibilité progressive) permettent de définir des permissions granulaires au niveau dossier/fichier dans OneLake : READ, WRITE, EXECUTE. Cas d'usage : donner à une équipe accès uniquement à la zone 'Silver' d'un Lakehouse sans voir le 'Bronze', ou partager un sous-ensemble de tables avec un groupe externe. Complémentaire aux Workspace Roles (qui s'appliquent à tout le workspace)."
+},
+
+// ═══════════════════════════════════════════════════
+// DOMAINE 2 — Ingest and Transform Data (30-35%) — 25 questions
+// ═══════════════════════════════════════════════════
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:26,
+text:"Quelle est la différence entre un chargement Full Load et un chargement Incremental Load ?",
+code:null,
+opts:["Full Load est plus rapide car il charge moins de données.","Full Load recharge toutes les données de la source à chaque exécution. Incremental Load ne charge que les données nouvelles ou modifiées depuis le dernier chargement (basé sur un watermark — timestamp, ID auto-incrémenté, ou CDC). L'incremental est plus efficace pour les grands volumes.","Il n'existe pas d'Incremental Load natif dans Fabric — il faut le coder manuellement.","Full Load s'applique aux tables de faits, Incremental Load aux tables de dimensions."],
+ok:1,
+fb:"Full Load (truncate & reload) : simple mais coûteux pour les grands datasets. Incremental Load : charge uniquement les deltas — nécessite un mécanisme de tracking (watermark column comme ModifiedDate, CDC via Fabric Mirroring, ou high watermark pattern). Dans Fabric, le Data Factory Copy Activity supporte le watermark pattern nativement. Pour les dimensions avec historique (SCD Type 2), l'approche Delta Merge (MERGE INTO) est recommandée pour gérer les insertions, mises à jour et fermetures de lignes."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:27,
+text:"Qu'est-ce que la medallion architecture (Bronze/Silver/Gold) et comment s'implémente-t-elle dans un Lakehouse Fabric ?",
+code:null,
+opts:["La medallion architecture est uniquement applicable avec Apache Hive, pas avec Fabric.","La medallion architecture est une obligation légale pour stocker des données financières.","Bronze = données brutes ingérées telles quelles depuis les sources. Silver = données nettoyées, validées et normalisées. Gold = données agrégées et optimisées pour la consommation (modèle dimensionnel, KPIs). Dans Fabric, on implémente généralement avec 3 Lakehouses séparés (ou 3 zones dans un seul Lakehouse) en Delta Lake.","Bronze/Silver/Gold correspondent aux 3 niveaux de Fabric Capacity (F8/F32/F64)."],
+ok:2,
+fb:"La Medallion Architecture (Databricks/Delta Lake pattern) dans Fabric : Bronze Lakehouse — raw data, append-only, format original (JSON, CSV...) ou Delta. Silver Lakehouse — données parsées, nettoyées, déduplicquées, typées, format Delta. Gold Lakehouse — agrégations, modèle en étoile (fact/dim), optimisé pour Power BI (Direct Lake). Les transformations entre zones se font via notebooks PySpark (Bronze → Silver → Gold), pipelines ou Dataflows Gen2. Cette architecture supporte la data lineage et facilite la reprise en cas d'erreur."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:28,
+text:"Analysez ce code PySpark. Que fait l'opération MERGE INTO et pourquoi est-elle utile pour les chargements incrémentiels ?",
+code:'from delta.tables import DeltaTable\n\nsilver_table = DeltaTable.forPath(spark, "abfss://silver@onelake/dim_customer")\n\nsilver_table.alias("target").merge(\n    new_data.alias("source"),\n    "target.customer_id = source.customer_id"\n).whenMatchedUpdateAll()\n .whenNotMatchedInsertAll()\n .execute()',
+opts:["MERGE INTO supprime et recrée la table à chaque exécution.","MERGE INTO (UPSERT) met à jour les lignes existantes si une correspondance est trouvée (UPDATE) et insère les nouvelles lignes si pas de correspondance (INSERT) — en une seule opération atomique. Idéal pour les chargements incrémentiels sans duplication.","MERGE INTO ne fonctionne qu'avec les tables Delta Lake version 3 et supérieure.","MERGE INTO est une opération qui nécessite un verrou exclusif bloquant toutes les lectures."],
+ok:1,
+fb:"L'opération MERGE (Delta Lake) est fondamentale pour les chargements incrémentiels : elle évite les doublons en faisant un UPSERT atomique (UPDATE si existe + INSERT si nouveau). Pour SCD Type 1 : MERGE avec UPDATE des colonnes + INSERT des nouvelles lignes. Pour SCD Type 2 : plus complexe — fermeture de la ligne active (UPDATE endDate) + insertion de la nouvelle version. Delta Lake garantit la cohérence ACID de l'opération."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:29,
+text:"Quand utilise-t-on KQL (Kusto Query Language) dans Microsoft Fabric ?",
+code:null,
+opts:["KQL remplace T-SQL dans tous les Warehouses Fabric.","KQL est le langage de requête de l'Eventhouse (Real-Time Intelligence) dans Fabric — optimisé pour les données time-series, les logs et les événements. Il est utilisé pour interroger des KQL Databases, créer des KQL Querysets et construire des dashboards temps réel.","KQL est un langage de scripting pour orchestrer les pipelines Fabric.","KQL est identique à SQL — les deux peuvent être utilisés de façon interchangeable dans Fabric."],
+ok:1,
+fb:"KQL (Kusto Query Language) est le langage natif de l'Eventhouse (anciennement Real-Time Analytics/ADX) dans Fabric. Syntaxe pipe : Table | where timestamp > ago(1h) | summarize count() by category | sort by count_ desc. KQL excelle pour : télémétrie, logs, IoT data, event streams, time-series analysis. L'Eventhouse stocke des données en colonnes compressées avec indexation temporelle — très performant pour les requêtes sur grandes quantités de données temporelles. Dans Fabric, les KQL Databases font partie de Real-Time Intelligence."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:30,
+text:"Comment ingestor des données en streaming depuis Azure Event Hubs dans Microsoft Fabric ?",
+code:null,
+opts:["Via Fabric Eventstream : on crée un Eventstream, on connecte la source (Event Hubs, IoT Hub, Kafka...), on configure les transformations (filtres, agrégations fenêtrées) et on définit les destinations (Eventhouse/KQL Database, Lakehouse Delta table, Warehouse).","On utilise uniquement Azure Stream Analytics pour le streaming — Fabric ne supporte pas le streaming natif.","En utilisant un pipeline Copy Activity avec un polling toutes les 5 minutes.","Via une Azure Function qui écrit les événements dans OneLake."],
+ok:0,
+fb:"Fabric Eventstream est le service de streaming natif de Fabric (basé sur Azure Event Hubs). Pipeline de streaming : Source (Event Hubs, IoT Hub, Custom Endpoint, Kafka...) → Transformations dans Eventstream (filtres, agrégations, unions...) → Destinations (Eventhouse KQL Database pour l'analyse temps réel, Lakehouse pour le stockage Delta, Fabric Activator pour les alertes). L'Eventstream supporte aussi Spark Structured Streaming via des notebooks pour des transformations complexes."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:31,
+text:"Analysez cette requête KQL. Que fait-elle ?",
+code:"SensorData\n| where timestamp > ago(1h)\n| where temperature > 80\n| summarize avg_temp = avg(temperature),\n           count_alerts = count()\n           by deviceId, bin(timestamp, 5m)\n| order by avg_temp desc",
+opts:["Elle supprime les données de température supérieures à 80 depuis la dernière heure.","Elle filtre les données de capteurs de la dernière heure avec température > 80, calcule la température moyenne et le nombre d'alertes par appareil et par fenêtre de 5 minutes, triées par température décroissante.","Elle insère de nouvelles données dans la table SensorData.","Elle modifie les données historiques pour corriger les valeurs de température."],
+ok:1,
+fb:"Décomposition de la requête KQL : 1) SensorData — table source. 2) | where timestamp > ago(1h) — filtre les 60 dernières minutes. 3) | where temperature > 80 — filtre les lectures en alerte. 4) | summarize ... by deviceId, bin(timestamp, 5m) — agrégation par appareil et par fenêtre temporelle de 5 min (bin() est la fonction de fenêtrage temporel KQL). 5) | order by avg_temp desc — tri décroissant. C'est un pattern classique pour la détection d'anomalies temps réel dans Fabric Real-Time Intelligence."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:32,
+text:"Comment gérer les données en retard (late-arriving data) dans un pipeline de streaming Fabric ?",
+code:null,
+opts:["On ignore les données en retard — elles sont automatiquement supprimées par Fabric.","En configurant une watermark avec un délai de tolérance dans Spark Structured Streaming ou des window functions avec un allowed lateness dans l'Eventstream — les événements arrivant en retard sont inclus dans les calculs si leur retard est inférieur au seuil défini.","En triant les événements par timestamp avant de les ingérer dans l'Eventstream.","Les données en retard ne sont pas possibles dans Fabric car Event Hubs garantit l'ordre."],
+ok:1,
+fb:"La gestion des late-arriving data est un problème classique du streaming : un événement généré à T-10min peut arriver à T. Solutions dans Fabric : Spark Structured Streaming avec withWatermark('timestamp', '10 minutes') — les données arrivant avec un retard > 10min sont ignorées. Eventstream : fenêtres temporelles avec tolérance (Tumbling, Hopping, Session windows). Pour les cas critiques (ex. facturation), une approche lambda (batch + streaming) peut re-traiter les late data dans un job batch nocturne."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:33,
+text:"Quelle est la différence entre les Windowing Functions dans KQL : Tumbling, Hopping et Session ?",
+code:null,
+opts:["Ce sont trois noms différents pour la même opération d'agrégation temporelle.","Tumbling s'utilise pour les données batch, Hopping pour le streaming, Session pour les données IoT.","Tumbling = fenêtres fixes non chevauchantes (ex. toutes les 5 min). Hopping = fenêtres fixes chevauchantes (ex. toutes les 5 min mais décalées de 1 min). Session = fenêtres dynamiques qui se ferment après une période d'inactivité.","Hopping est disponible uniquement dans Azure Stream Analytics, pas dans Fabric."],
+ok:2,
+fb:"Windowing functions dans Fabric (Eventstream + KQL) : Tumbling window — fenêtres de taille fixe, non chevauchantes, sans gaps. Ex : agrégation horaire 00:00-01:00, 01:00-02:00... Hopping window — taille fixe mais décalage < taille → chevauchement. Ex : taille 1h, décalage 30min → la même donnée peut apparaître dans 2 fenêtres. Session window — fenêtre dynamique qui s'ouvre à la première activité et se ferme après X minutes d'inactivité — adaptée pour les sessions utilisateurs. Dans KQL : bin() pour Tumbling, sliding_window_sum() pour Hopping."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:34,
+text:"Comment dénormaliser des données dans un Lakehouse Fabric pour optimiser les performances des requêtes analytiques ?",
+code:'-- Exemple : créer une table dénormalisée\nCREATE TABLE gold.fact_sales_denorm AS\nSELECT\n    s.sale_id,\n    s.amount,\n    c.customer_name,\n    c.city,\n    p.product_name,\n    p.category\nFROM silver.fact_sales s\nJOIN silver.dim_customer c ON s.customer_id = c.customer_id\nJOIN silver.dim_product p ON s.product_id = p.product_id',
+opts:["La dénormalisation est une mauvaise pratique — il faut toujours conserver le modèle normalisé.","La dénormalisation pré-joint les tables pour réduire la complexité des requêtes analytiques au runtime — en créant des tables Gold qui intègrent déjà les dimensions dans la table de faits. Idéal pour Power BI Direct Lake et les requêtes fréquentes.","La dénormalisation ne fonctionne que dans le Warehouse, pas dans le Lakehouse.","La dénormalisation augmente toujours les performances de 100% quel que soit le cas."],
+ok:1,
+fb:"La dénormalisation dans la couche Gold d'un Lakehouse est une technique d'optimisation : en pré-joinant les tables, on élimine les JOIN coûteux à l'exécution et on réduit la complexité des requêtes pour les consommateurs (Power BI, data scientists). Trade-off : plus de stockage et de complexité de mise à jour. Dans Fabric, les tables Delta Lake sont stockées en Parquet (format colonnaire) → la dénormalisation est encore plus efficace car on peut sélectionner uniquement les colonnes nécessaires."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:35,
+text:"Comment gérer les doublons lors de l'ingestion de données dans un Lakehouse Fabric ?",
+code:'# Déduplique avec PySpark\ndf_dedup = df.dropDuplicates(["order_id", "product_id"])\n\n# Ou via MERGE Delta\nDeltaTable.forPath(spark, path).alias("t").merge(\n    df_dedup.alias("s"),\n    "t.order_id = s.order_id"\n).whenNotMatchedInsertAll().execute()',
+opts:["On ne gère pas les doublons — Delta Lake les supprime automatiquement.","Via dropDuplicates() en PySpark avant d'écrire, ou via un MERGE Delta avec une clé unique (INSERT ONLY si pas de correspondance). On peut aussi utiliser une contrainte d'unicité dans le Warehouse ou une table de hachage pour tracker les IDs déjà ingérés.","On utilise DISTINCT dans chaque requête SQL pour éliminer les doublons à la lecture.","Il faut recréer la table entière à chaque ingestion pour éliminer les doublons."],
+ok:1,
+fb:"Stratégies anti-doublons dans Fabric : 1) dropDuplicates() PySpark avant écriture — simple mais charge toute la donnée en mémoire. 2) MERGE Delta (WHEN NOT MATCHED INSERT) — n'insère que si la clé n'existe pas déjà — pattern idéal pour les ingestions incrémentielles. 3) Hash-based dedup — calculer un hash MD5/SHA des colonnes clés et le comparer à une table de hachage. 4) QUALIFY ROW_NUMBER() OVER (PARTITION BY key ORDER BY timestamp DESC) = 1 — garde uniquement la dernière version dans le SQL Endpoint."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:36,
+text:"Scénario : Vous devez ingérer des données depuis 50 sources hétérogènes (APIs REST, bases SQL, fichiers SharePoint) avec des transformations légères, en utilisant une interface visuelle. Quel outil Fabric recommandez-vous ?",
+code:null,
+opts:["Dataflow Gen2 (Power Query) — il offre une interface visuelle avec 200+ connecteurs natifs, des transformations drag-and-drop, et génère automatiquement le code M. Adapté aux utilisateurs non-développeurs et aux transformations légères. Pour les volumes très élevés, les Staging Lakehouses permettent de déléguer le calcul à Spark.","Un notebook PySpark pour chaque source — c'est le plus flexible.","Un Pipeline Copy Activity avec 50 activités en parallèle.","Azure Data Factory externe connecté à Fabric via Linked Services."],
+ok:0,
+fb:"Dataflow Gen2 est la solution idéale pour ce scénario : 200+ connecteurs Power Query (REST APIs, SQL, SharePoint, Salesforce...), interface visuelle drag-and-drop sans code, support de la transformation M (Power Query) pour les cas complexes, et output direct vers un Lakehouse/Warehouse Fabric. Pour les grands volumes, activer le Staging Lakehouse délègue l'exécution à Spark au lieu du runtime Power Query léger. Dataflow Gen2 peut être orchestré dans un Pipeline Fabric pour l'automatisation."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:37,
+text:"Comment préparer des données pour un modèle dimensionnel dans Fabric ? Citez les principales étapes.",
+code:null,
+opts:["Il suffit de copier les données de la source dans le Warehouse sans transformation.","Les étapes principales : 1) Créer les tables de dimensions (avec surrogate keys, attributs descriptifs, SCD si nécessaire). 2) Créer les tables de faits (avec foreign keys vers les dimensions, métriques mesurables). 3) Gérer les surrogate keys (auto-increment ou IDENTITY). 4) Peupler d'abord les dimensions puis les faits. 5) Gérer les données manquantes (dimension 'Unknown'). 6) Optimiser avec statistiques et index.","Le modèle dimensionnel n'est plus utilisé — on utilise uniquement des modèles en flocon.","On importe directement les tables OLTP de la source opérationnelle dans Power BI."],
+ok:1,
+fb:"La préparation pour un modèle dimensionnel dans Fabric : 1) Identifier les faits (transactions, événements) vs dimensions (clients, produits, dates). 2) Créer les surrogate keys (INTEGER IDENTITY ou sequence) dans le Warehouse. 3) Implémenter les dimensions slowly changing (SCD Type 1 = écrasement, SCD Type 2 = historisation avec StartDate/EndDate/IsCurrent). 4) Charger les dimensions en premier (pour résoudre les foreign keys). 5) Créer une dimension Date conformed. 6) Valider l'intégrité référentielle. Dans Fabric Warehouse, les contraintes FK sont déclaratives (non enforced) mais utilisées par l'optimiseur de requêtes."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:38,
+text:"Quelle est la différence entre une Accelerated Shortcut et une Non-Accelerated Shortcut dans Fabric Real-Time Intelligence ?",
+code:null,
+opts:["Les Accelerated Shortcuts sont plus rapides à créer mais moins durables.","Les Accelerated Shortcuts (vers ADLS Gen2) importent les métadonnées de schéma et permettent le mode Direct Lake de Power BI — les données restent dans ADLS mais sont optimisées pour Fabric. Les Non-Accelerated Shortcuts n'ont pas ces optimisations mais supportent plus de sources (S3, GCS, Dataverse).","Il n'existe pas de distinction entre Accelerated et Non-Accelerated Shortcuts dans Fabric.","Les Accelerated Shortcuts sont disponibles uniquement pour les Lakehouses Premium."],
+ok:1,
+fb:"Dans Fabric Real-Time Intelligence, les Shortcuts ont deux modes : Accelerated (ADLS Gen2 seulement) — les métadonnées Delta sont indexées dans Fabric, permettant Direct Lake, des performances optimales et une meilleure intégration. Non-Accelerated (ADLS, S3, GCS, Dataverse, OneLake cross-workspace) — accès aux données mais sans les optimisations Fabric-native (pas de Direct Lake, temps de découverte des fichiers plus longs). Pour les scénarios BI critiques, les Accelerated Shortcuts vers ADLS Gen2 sont recommandées."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:39,
+text:"Comment traiter des données manquantes (NULL) lors de transformations PySpark dans un Lakehouse Fabric ?",
+code:'# Stratégies de gestion des NULLs\ndf.fillna({"revenue": 0, "category": "Unknown"})  # Valeur par défaut\ndf.dropna(subset=["customer_id"])                 # Supprimer si clé manquante\ndf.fillna({"date": df.agg({"date": "max"}).collect()[0][0]})  # Valeur calculée',
+opts:["Les NULLs sont automatiquement convertis en 0 par Spark lors de l'écriture.","Selon le contexte : fillna() pour remplacer par une valeur par défaut (0, 'Unknown'...), dropna() pour supprimer les lignes avec des clés manquantes, imputation statistique (moyenne/médiane) pour les métriques analytiques. Le choix dépend de la règle métier et de l'impact sur l'analyse.","On doit toujours supprimer les lignes avec des NULLs pour éviter les erreurs.","Les NULLs n'existent pas en Delta Lake — ils sont représentés par des chaînes vides."],
+ok:1,
+fb:"La gestion des NULLs dans Fabric doit être guidée par les règles métier : clés étrangères manquantes → ligne à supprimer ou joindre à une dimension 'Unknown'. Métriques manquantes → imputer par 0, moyenne, médiane ou la valeur précédente (forward fill). Attributs descriptifs manquants → 'Unknown', 'N/A'. Dans PySpark : fillna(), dropna(), na.fill(), coalesce(). Dans T-SQL Fabric Warehouse : COALESCE(), ISNULL(), NULLIF(). La documentation des règles de gestion des NULLs est essentielle pour la traçabilité."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:40,
+text:"Scénario : Vous devez ingérer des données via Continuous Integration from OneLake. Qu'est-ce que cela signifie ?",
+code:null,
+opts:["C'est l'intégration avec Azure DevOps pour le déploiement continu des notebooks.","La CI from OneLake permet de déclencher automatiquement des pipelines ou notebooks quand de nouveaux fichiers arrivent dans un dossier OneLake — sans polling : le trigger est basé sur les événements de OneLake (fichier créé/modifié) via le pattern Storage Event Trigger.","C'est une fonctionnalité uniquement disponible pour les Warehouses Fabric.","On doit créer une Azure Function pour écouter les événements OneLake."],
+ok:1,
+fb:"L'ingestion via Continuous Integration from OneLake dans Fabric utilise les Storage Event Triggers des Pipelines : quand un nouveau fichier arrive dans un dossier OneLake spécifié (ou ADLS), le pipeline se déclenche automatiquement. C'est l'équivalent fabric-natif des event-driven architectures : pas de polling coûteux, latence faible. Configuration : Pipeline → New Trigger → Storage event → spécifier le chemin OneLake (ABFSS path) et le pattern de fichier (*.csv, *.parquet...)."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:41,
+text:"Comment transformer des données avec Power Query (M) dans un Dataflow Gen2 pour grouper et agréger des données ?",
+code:'// Power Query M - Exemple d\'agrégation\nlet\n    Source = Lakehouse.Contents("sales"),\n    Grouped = Table.Group(\n        Source,\n        {"category", "year"},\n        {{"total_sales", each List.Sum([amount]), type number},\n         {"avg_price", each List.Average([price]), type number}}\n    )\nin\n    Grouped',
+opts:["Power Query M ne supporte pas les agrégations — il faut utiliser SQL pour grouper les données.","Table.Group() dans Power Query M groupe les données par les colonnes spécifiées et calcule des agrégations (somme, moyenne, comptage...) pour chaque groupe — équivalent du GROUP BY SQL dans une interface visuelle.","Table.Group() crée des groupes de worksheets dans Excel.","Cette syntaxe M n'est valide que dans Power BI Desktop, pas dans Fabric Dataflows."],
+ok:1,
+fb:"Table.Group() est la fonction M pour les agrégations (GROUP BY SQL equivalent) : Table.Group(Source, {GroupKeys}, {AggregatedColumns}) où chaque agrégation est définie comme {\"nom_colonne\", each Aggregation([colonne]), type}. Dans le Dataflow Gen2, cette opération est générée automatiquement via l'interface 'Group By' sans écrire de M manuellement. Le code M généré peut être visualisé et modifié dans l'éditeur avancé. Power Query M est un langage fonctionnel orienté ETL."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:42,
+text:"Quand utiliser Spark Structured Streaming vs Eventstream dans Fabric pour les données en temps réel ?",
+code:null,
+opts:["Eventstream est préférable pour des pipelines de streaming simples avec une interface visuelle (connecteurs natifs, transformations de base, multiple outputs). Spark Structured Streaming (notebooks) est préférable pour des transformations complexes (ML en temps réel, jointures stream-stream, logique métier avancée) nécessitant du code PySpark.","Spark Structured Streaming est toujours préférable pour les performances.","Eventstream n'existe plus dans Fabric — il a été remplacé par Spark Streaming.","Les deux ne peuvent pas être utilisés simultanément dans le même workspace."],
+ok:0,
+fb:"Eventstream vs Spark Structured Streaming dans Fabric : Eventstream — interface visuelle no-code/low-code, sources prêtes à l'emploi (Event Hubs, IoT Hub, Kafka), transformations de base (filtre, agrégation, union), multiple outputs (Eventhouse, Lakehouse, Warehouse, Activator). Ideal pour: logs, telemetry, IoT. Spark Structured Streaming — code PySpark, transformations arbitrairement complexes (ML scoring en temps réel, jointures stream-stream, watermarking avancé), intégration Delta Live Tables. Les deux peuvent coexister : Eventstream pour l'ingestion, Spark pour les transformations complexes."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:43,
+text:"Comment choisir entre le Lakehouse et le Warehouse comme data store principal dans Fabric ?",
+code:null,
+opts:["Le Warehouse est toujours préférable car il supporte T-SQL complet.","Lakehouse : idéal si on travaille principalement avec Spark/PySpark, données semi-structurées ou non-structurées, volumes extrêmement larges, ML/Data Science, pipelines ETL complexes. Warehouse : idéal si l'équipe est SQL-first, modèle dimensionnel strict, requêtes analytiques T-SQL complexes, concurrence élevée de requêtes SQL, consommation directe par Power BI via Direct Lake.","Le Lakehouse est uniquement pour le développement — le Warehouse pour la production.","Il faut toujours utiliser les deux — le Lakehouse pour le stockage, le Warehouse pour la requête."],
+ok:1,
+fb:"Décision Lakehouse vs Warehouse dans Fabric : Lakehouse — équipe Spark, données raw/semi-structurées, volumes massifs, ML, architecture medallion, flexibility de schéma (schema-on-read). Warehouse — équipe SQL, modèle dimensionnel, T-SQL DDL/DML complets (INSERT/UPDATE/DELETE), procédures stockées, contraintes (non enforced), compatibilité outils SQL (SSMS, Azure Data Studio). En pratique : souvent les deux coexistent — Lakehouse pour la zone Bronze/Silver, Warehouse pour la zone Gold/Serving. Direct Lake fonctionne bien avec les deux."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:44,
+text:"Comment implémenter une ingestion de données depuis un fichier CSV vers un Lakehouse via un Pipeline Fabric ?",
+code:null,
+opts:["On ne peut pas ingérer des CSV directement dans Fabric — ils doivent être convertis en Parquet.","Via l'activité 'Copy Data' dans un Pipeline : source = HTTP/ADLS/SharePoint (fichier CSV), sink = Lakehouse (Tables ou Files zone), mapping des colonnes. Le Copy Activity peut aussi convertir automatiquement le CSV en format Delta Lake. Pour des transformations complexes, enchaîner avec une activité Notebook ou Dataflow.","On utilise uniquement BULK INSERT via le SQL Endpoint pour les CSV.","Le Copy Activity ne supporte que les bases de données relationnelles comme source."],
+ok:1,
+fb:"Le Copy Activity dans les Fabric Pipelines supporte 90+ sources et destinations. Pour CSV → Lakehouse : source = Linked Service vers ADLS/SharePoint/HTTP + format CSV (délimiteur, encodage, header). Sink = Lakehouse → Files (si on veut garder le CSV brut) ou Tables (si on veut le convertir en Delta). Options : First row as header, schema mapping, compression. Pour la conversion automatique CSV → Delta : activer 'Dynamic range' et 'Auto create table'. Pour les gros volumes, utiliser COPY INTO T-SQL dans le Warehouse."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:45,
+text:"Scénario : Vous devez créer une fenêtre glissante de 7 jours pour calculer la moyenne mobile des ventes dans un KQL Database. Quelle fonction utiliser ?",
+code:"// Objectif : moyenne mobile 7 jours\nSalesData\n| where timestamp > ago(30d)\n| summarize avg_sales = avg(amount)\n          by bin(timestamp, 1d)\n| ???",
+opts:["Il faut exporter les données vers Python pour calculer des moyennes mobiles.","Utiliser series_fir() ou series_rolling_avg() après avoir créé une série temporelle avec make_series() — ou utiliser sliding_window_sum() pour des agrégations glissantes sur des intervalles de temps.","KQL ne supporte pas les fenêtres glissantes — utiliser Spark Structured Streaming.","Utiliser une jointure self-join sur les 7 jours précédents."],
+ok:1,
+fb:"KQL pour les moyennes mobiles : pattern make_series + series_rolling_avg() : SalesData | make-series daily_sales=avg(amount) default=0 on timestamp from ago(30d) to now() step 1d | extend rolling_7d = series_rolling_avg(daily_sales, 7) — crée une série temporelle puis calcule la moyenne mobile sur 7 jours. Alternative : sliding_window_sum() pour des sommes glissantes. Pour les calculs plus complexes sur des séries temporelles : series_fir() (filtre à réponse impulsionnelle finie)."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:46,
+text:"Comment choisir entre le mode natif, mirrorisé ou Shortcut dans Real-Time Intelligence pour stocker des données ?",
+code:null,
+opts:["Toujours utiliser le stockage natif — c'est le plus performant.","Natif (KQL Database) : données ingérées directement dans l'Eventhouse — meilleures performances pour l'analyse temps réel, compression et indexation optimisées pour KQL. Mirrorisé : réplique des données externes en quasi temps réel. Shortcut : référence externe sans ingestion — lecture directe depuis OneLake/ADLS.","Le mode mirrorisé est uniquement disponible pour les bases Azure Cosmos DB.","Les Shortcuts ne peuvent pas être utilisés dans Real-Time Intelligence."],
+ok:1,
+fb:"Dans Fabric Real-Time Intelligence : Natif (KQL Table) — ingestion directe dans l'Eventhouse, format colonnaire compressé, indexation temporelle, best performance pour requêtes KQL. Mirroring (via CDC) — réplique des DB externes (Azure SQL, Cosmos DB, Snowflake) → OneLake Delta, accessible via KQL ou Spark. Shortcut (OneLake/ADLS) — zero-copy, données restent dans la source, idéal si les données existent déjà en Delta. Le choix dépend de : la latence requise, le coût de stockage, la fréquence d'accès et la source des données."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:47,
+text:"Comment dénormaliser des données hiérarchiques (ex. JSON imbriqué) avec PySpark dans Fabric ?",
+code:'from pyspark.sql.functions import explode, col\n\n# JSON avec array de produits\ndf_flat = df_orders \\\n    .withColumn("product", explode(col("products"))) \\\n    .select(\n        col("order_id"),\n        col("customer_id"),\n        col("product.product_id"),\n        col("product.quantity"),\n        col("product.price")\n    )',
+opts:["PySpark ne peut pas lire les JSON imbriqués — il faut les aplatir en amont.","explode() décompose un array (ou map) en lignes individuelles — chaque élément du tableau devient une ligne séparée. col() avec la notation pointée accède aux champs imbriqués. getItem() est une alternative pour les maps. Cette opération est fondamentale pour aplatir les données JSON semi-structurées ingérées en Bronze vers le Silver.","explode() est une fonction uniquement disponible dans Spark 3.5+.","On doit utiliser OPENJSON en T-SQL pour traiter les JSON imbriqués dans Fabric."],
+ok:1,
+fb:"L'aplatissement des données JSON dans PySpark : explode() — transforme un array en lignes. explode_outer() — comme explode mais garde les lignes avec array null. posexplode() — ajoute aussi l'index de position dans l'array. col('json_col.nested_field') — accès aux champs imbriqués via la notation pointée. schema_of_json() + from_json() — parse les colonnes JSON string en StructType. Ces opérations sont essentielles pour passer de la couche Bronze (JSON brut) à la couche Silver (schéma relationnel plat)."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:48,
+text:"Scénario : Un pipeline doit ingérer 10 millions de lignes d'une base SQL vers un Lakehouse. Quelle technique permet d'accélérer le Copy Activity ?",
+code:null,
+opts:["Utiliser le partitionnement parallèle (Partition option) dans le Copy Activity : partition par colonne (Physical partitions ou Dynamic range) → Fabric lit plusieurs partitions en parallèle. Augmenter le Degree of Copy Parallelism. Pour les sources SQL : utiliser des partitions sur une colonne numérique ou une date.","Augmenter le timeout du Copy Activity à 24 heures.","Diviser manuellement la requête en 10 lots de 1 million et créer 10 activités Copy.","Il n'est pas possible d'accélérer le Copy Activity — c'est intrinsèquement séquentiel."],
+ok:0,
+fb:"Optimisation du Copy Activity pour les grands volumes : Partition option → Physical partitions (utilise les partitions SQL Server existantes) ou Dynamic range (divise une colonne numérique/date en intervalles égaux) → parallélisme de lecture. Degree of Copy Parallelism → nombre de threads parallèles. DIU (Data Integration Units) → puissance de calcul allouée au Copy Activity. Source-side parallelism → lire plusieurs files en parallèle. Pour les cas extrêmes (>100M lignes) : COPY INTO T-SQL dans le Warehouse est plus performant que le Copy Activity."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:49,
+text:"Quelle est la différence entre T-SQL et PySpark pour les transformations dans Fabric, et quand choisir l'un ou l'autre ?",
+code:null,
+opts:["T-SQL est pour les bases de données, PySpark est pour les fichiers — pas de chevauchement.","T-SQL (Fabric Warehouse ou SQL Endpoint) : idéal pour les requêtes analytiques complexes, les opérations set-based (JOINS, agrégations, CTEs), les équipes SQL-first. PySpark (notebooks) : idéal pour les grands volumes distribués, le ML, les données non-structurées, les transformations complexes row-by-row, l'API DataFrame. Les deux peuvent lire les tables Delta du Lakehouse.","PySpark est toujours plus rapide que T-SQL dans Fabric.","T-SQL ne peut pas lire les tables du Lakehouse dans Fabric."],
+ok:1,
+fb:"T-SQL dans Fabric (Warehouse ou SQL Endpoint du Lakehouse) : optimisé pour les requêtes analytiques SQL, supporte tous les DDL/DML dans le Warehouse, familier aux équipes DBA/SQL. PySpark (notebooks Fabric) : distribué sur cluster Spark, scale horizontal pour les volumes massifs, API DataFrame/SQL flexibles, intégration ML (MLflow), manipulation de données semi-structurées. Les tables Delta Lake dans OneLake sont accessibles via les deux — un même dataset peut être traité par T-SQL pour les rapports et PySpark pour le ML."
+},
+{d:"Domaine 2 — Ingest & Transform",dw:"30-35%",di:1,n:50,
+text:"Comment configurer un Eventstream pour ingérer des données depuis Azure IoT Hub et les router vers un Eventhouse KQL Database ?",
+code:null,
+opts:["On utilise un Pipeline avec une activité IoT Hub Trigger.","Dans Fabric Real-Time Intelligence : créer un Eventstream → ajouter la source 'Azure IoT Hub' (avec la connection string ou la managed identity) → configurer les transformations si nécessaire → ajouter une destination 'Eventhouse' → sélectionner la KQL Database et la table cible. Les données arrivent en continu dans la KQL Database sans code.","IoT Hub n'est pas supporté dans Fabric — on doit passer par Event Hubs.","On doit écrire un consumer Azure Function pour consommer IoT Hub et écrire dans Fabric."],
+ok:1,
+fb:"La configuration Eventstream pour IoT Hub dans Fabric : 1) Créer un Eventstream dans le workspace Real-Time Intelligence. 2) Add source → Azure IoT Hub → saisir le nom du hub et la politique d'accès. 3) Configurer optionnellement des transformations dans le Eventstream (filtre sur deviceId, agrégation...). 4) Add destination → KQL Database → sélectionner la DB et la table cible (avec mapping des colonnes). L'ingestion est continue avec une latence de quelques secondes. Les données sont queryables immédiatement dans le KQL Database."
+},
+
+// ═══════════════════════════════════════════════════
+// DOMAINE 3 — Monitor and Optimize (30-35%) — 25 questions
+// ═══════════════════════════════════════════════════
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:51,
+text:"Comment monitorer l'exécution des pipelines dans Microsoft Fabric ?",
+code:null,
+opts:["On utilise uniquement Azure Monitor pour surveiller les pipelines Fabric.","Les pipelines Fabric ne peuvent pas être monitorés — seuls les notebooks le peuvent.","Via le Monitoring Hub Fabric (vue centralisée de toutes les exécutions), l'historique d'exécution dans chaque pipeline, les alertes configurées dans les paramètres du workspace, et le Data Factory Monitoring pour les détails d'activité.","On doit exporter les logs vers Azure Log Analytics pour les monitorer."],
+ok:2,
+fb:"Le monitoring des pipelines dans Fabric se fait via : Monitoring Hub — vue centralisée de toutes les exécutions de pipelines, notebooks, Spark jobs dans le workspace. Statuts : Running, Succeeded, Failed, Cancelled. Dans chaque pipeline : onglet 'Monitor' avec l'historique des runs, le temps d'exécution par activité, les erreurs. Alerts : configurer des alertes email/webhook sur les échecs. Workspace Logging : logs d'audit vers un Lakehouse. Fabric Capacity Metrics App : pour monitorer la consommation de CUs."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:52,
+text:"Comment diagnostiquer et résoudre une erreur dans un pipeline Fabric qui échoue sur une activité 'Copy Data' ?",
+code:null,
+opts:["Supprimer et recréer le pipeline — c'est la seule façon de résoudre les erreurs.","Dans le Monitoring Hub ou l'onglet Monitor du pipeline : cliquer sur l'exécution échouée → voir le message d'erreur de l'activité Copy → vérifier : les credentials de la source/destination, la disponibilité de la source, le mapping des colonnes, les permissions sur le Lakehouse, la validité du schéma. Corriger et relancer.","Les erreurs Copy Activity sont toujours des erreurs réseau — vérifier la connexion.","On doit contacter le support Microsoft pour chaque erreur de pipeline."],
+ok:1,
+fb:"Debugging d'une erreur Copy Activity dans Fabric : le message d'erreur dans le Monitoring Hub contient le code d'erreur et le détail. Erreurs courantes : 'Access denied' → vérifier les permissions Fabric/ADLS. 'Schema mismatch' → le mapping des colonnes est incorrect. 'Connection timeout' → la source est indisponible. 'Row count mismatch' → data truncation ou conversion error. 'Invalid credentials' → token expiré ou secret rotation. Pour chaque activité échouée, les détails de l'input/output sont disponibles pour le debugging."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:53,
+text:"Comment optimiser les performances d'une table Delta Lake dans un Lakehouse Fabric ?",
+code:'-- Via SQL Endpoint\nOPTIMIZE lakehouse.silver.fact_sales\nZORDER BY (customer_id, sale_date)\n\n-- Via PySpark\nfrom delta.tables import DeltaTable\nDeltaTable.forPath(spark, path).optimize().zorderBy("customer_id", "sale_date")',
+opts:["Il suffit d'ajouter un index sur la colonne clé — comme dans SQL Server.","OPTIMIZE compacte les petits fichiers Parquet en fichiers plus gros (file compaction) pour réduire le overhead de lecture. ZORDER BY réorganise les données par colonne(s) fréquemment filtrées pour maximiser le data skipping — les requêtes filtrant sur ces colonnes lisent beaucoup moins de fichiers.","OPTIMIZE est une opération destructive qui supprime définitivement les anciennes données.","ZORDER BY ne fonctionne que si la table a moins de 100 fichiers."],
+ok:1,
+fb:"Optimisation Delta Lake dans Fabric : OPTIMIZE (file compaction) — fusionne les nombreux petits fichiers Parquet en fichiers de ~128MB → réduit le nombre de fichiers à lire, améliore les I/O. ZORDER BY (co-clustering) — réorganise physiquement les données par les colonnes spécifiées → le data skipping est plus efficace car les valeurs similaires sont co-localisées. VACUUM — supprime les anciens fichiers Delta (au-delà de la période de rétention, défaut 7 jours). ANALYZE TABLE — met à jour les statistiques pour l'optimiseur de requêtes. Ces opérations sont planifiables dans un Pipeline nocturne."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:54,
+text:"Comment configurer des alertes pour les erreurs d'un pipeline Fabric ?",
+code:null,
+opts:["Via Data Activator (Reflex dans Fabric) : connecté au Monitoring Hub, il peut déclencher des alertes email/Teams/webhook quand un pipeline échoue. Alternativement : configurer des notifications directement dans les paramètres du pipeline (Email on failure). Pour des alertes avancées : webhook vers Logic App ou Power Automate.","On ne peut configurer des alertes que via Azure Monitor External.","Les alertes sont uniquement disponibles pour les notebooks, pas les pipelines.","On doit créer une Logic App Azure qui poll l'API Fabric toutes les 5 minutes."],
+ok:0,
+fb:"Les alertes dans Fabric se configurent via : Fabric Activator (Data Activator/Reflex) — outil no-code pour créer des règles d'alertes sur n'importe quel événement Fabric (pipeline échoué, anomalie de données...) → notifie par email, Teams, webhook. Pipeline Settings → Notifications → configurer email on failure/success. Fabric Capacity Metrics App → alertes sur la consommation des CUs (throttling). Power Automate → déclenché par un webhook Fabric pour des workflows d'alerte complexes."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:55,
+text:"Comment monitorer l'actualisation d'un modèle sémantique (Semantic Model) dans Fabric ?",
+code:null,
+opts:["On monitore les modèles sémantiques uniquement dans Power BI Service.","Dans Fabric : Monitoring Hub → filtrer par 'Semantic model refresh'. On voit le statut (Success/Failed), la durée, le mode (Import/DirectQuery/Direct Lake). En cas d'échec : consulter le message d'erreur (souvent source indisponible, timeout, credentials expirés). Pour les modèles Direct Lake : un fallback vers DirectQuery se produit si les données ne sont pas en mémoire.","Les modèles sémantiques Fabric ne se rafraîchissent pas — seuls les datasets Power BI le font.","Le monitoring des modèles sémantiques nécessite une licence Power BI Premium."],
+ok:1,
+fb:"Monitoring des Semantic Model refresh dans Fabric : Monitoring Hub → Semantic model refresh history. Statuts : Completed, Failed, Disabled. En cas d'échec : le message d'erreur indique la cause (datasource unavailable, credentials expired, memory exceeded, timeout). Pour les modèles Direct Lake : si les données ne sont pas en mémoire, Fabric bascule automatiquement en DirectQuery (fallback) → performances dégradées mais toujours fonctionnel. Pour les grands modèles : activer 'Large model storage format' et optimiser les partitions."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:56,
+text:"Comment identifier et résoudre un goulot d'étranglement (bottleneck) dans un notebook PySpark Fabric ?",
+code:null,
+opts:["En augmentant la taille du cluster Spark (plus de nœuds).","Via le Spark UI (accessible depuis le Monitoring Hub) : analyser le DAG des jobs, identifier les stages longs, inspecter les shuffle reads/writes (signe de skew), les temps d'I/O et les tâches OOM (Out of Memory). Solutions : cache(), repartition(), broadcast join, optimiser les filtres (pushdown), utiliser les formats optimisés (Delta, Parquet).","Les notebooks Fabric n'ont pas d'outil de profiling — on doit ajouter des timestamps manuellement.","Il suffit d'augmenter la mémoire de l'exécuteur Spark dans la configuration."],
+ok:1,
+fb:"Profiling PySpark dans Fabric : Spark UI (tab 'Monitoring') → DAG visualization → voir quels stages consomment le plus de temps. Indicateurs de problèmes : Data skew → une tâche prend 100x plus de temps que les autres → solutions : salting technique, repartition(). Shuffle → trop de données déplacées entre executors → réduire les large joins, utiliser broadcast join pour les petites tables (broadcast(df_small)). I/O bottleneck → lire trop de fichiers petits → OPTIMIZE la table Delta. OOM → executors qui crash → augmenter spark.executor.memory ou réduire le batch size."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:57,
+text:"Comment optimiser les performances d'un Warehouse Fabric pour des requêtes analytiques complexes ?",
+code:null,
+opts:["En ajoutant des index clustered sur toutes les tables du Warehouse.","Les Warehouses Fabric ont des performances fixes — on ne peut pas les optimiser.","Créer des statistiques sur les colonnes de jointure et de filtre (CREATE STATISTICS), utiliser des résultats de requêtes en cache (query result caching), matérialiser des agrégations fréquentes dans des tables Gold, utiliser des CTEs pour simplifier et optimiser le plan d'exécution, vérifier les query plans pour identifier les full table scans.","Utiliser des vues indexées (INDEXED VIEWS) comme dans SQL Server."],
+ok:2,
+fb:"Optimisation du Fabric Warehouse : Statistics → CREATE STATISTICS sur les colonnes de JOIN/WHERE → l'optimiseur de requêtes génère de meilleurs plans. Result Set Caching → les requêtes identiques retournent le cache directement (sub-second). Materialized Gold Tables → pré-calculer les agrégations fréquentes. Query Plan Analysis → Explain Plan dans les requêtes SQL pour identifier les opérations coûteuses. Partitionnement logique → diviser les grandes tables par date. Pour les Fact Tables larges : éviter les SELECT * et sélectionner uniquement les colonnes nécessaires (profite du format colonnaire Parquet)."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:58,
+text:"Comment identifier et résoudre des erreurs dans un Dataflow Gen2 dans Fabric ?",
+code:null,
+opts:["On ne peut pas débugger les Dataflows Gen2 — ils doivent être reconstruits en cas d'erreur.","Dans l'éditeur Dataflow Gen2 : le panneau de preview montre les erreurs de transformation en temps réel par colonne. Après l'exécution : Monitoring Hub → Dataflow refresh history → message d'erreur. Erreurs courantes : source indisponible, type mismatch (conversion d'entier vers string attendu), mémoire insuffisante (activer Staging). Solutions : valider le schéma source, activer 'Data Preview', vérifier les Linked Services.","Les erreurs Dataflow sont toujours des problèmes de permissions.","Toujours convertir les Dataflows en notebooks PySpark pour le debugging."],
+ok:1,
+fb:"Debugging Dataflow Gen2 dans Fabric : Preview pane dans l'éditeur → chaque étape M montre un aperçu des données et les erreurs de transformation (colonnes en rouge). Après exécution échouée → Monitoring Hub → Dataflow refresh → Error message (avec erreur M et contexte). Erreurs courantes : Formula.Firewall (accès à plusieurs sources → activer 'Fast Combine'), mémoire (grands datasets → activer Staging Lakehouse), type conversion (explicitement caster les colonnes). L'éditeur avancé M permet de débugger le code Power Query étape par étape."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:59,
+text:"Comment optimiser les performances de l'Eventstream et de l'Eventhouse dans Fabric ?",
+code:null,
+opts:["L'Eventstream et l'Eventhouse sont automatiquement optimisés par Fabric.","Pour l'Eventstream : configurer le bon Consumer group, éviter les transformations inutiles, utiliser le batching approprié. Pour l'Eventhouse : choisir le bon retention period, activer les hot cache pour les données fréquemment accédées, utiliser des Materialized Views KQL pour les agrégations pré-calculées, optimiser les ingestion policies (batch vs streaming).","On doit augmenter la Fabric Capacity pour tout problème de performance Eventstream.","L'Eventhouse ne peut pas être optimisé — ses performances sont fixes."],
+ok:1,
+fb:"Optimisation Eventstream + Eventhouse : Eventstream → configurer la taille des batches (micro-batching vs streaming continu), filtrer les événements inutiles en amont, utiliser des fanout (un input → plusieurs outputs). Eventhouse (KQL) → Hot cache policy : définir quelles données restent en mémoire RAM (default 31 jours chaud, au-delà = cold storage = disque). Materialized Views KQL : pré-calculent et stockent le résultat de requêtes fréquentes (comme des index ou des vues matérialisées). Retention policy : supprimer automatiquement les données plus vieilles que N jours. Partitioning : sharding des données par colonne temporelle."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:60,
+text:"Scénario : Les requêtes sur un Lakehouse Fabric prennent de plus en plus de temps. Vous constatez des milliers de petits fichiers Parquet dans OneLake. Quelle est la solution ?",
+code:null,
+opts:["Exécuter OPTIMIZE sur la table Delta Lake — il fusionne les petits fichiers en fichiers de taille optimale (~128MB). Planifier OPTIMIZE régulièrement (ex. toutes les nuits dans un Pipeline). Ajouter ZORDER BY sur les colonnes de filtre fréquentes. Activer Auto-optimize si disponible.","Supprimer les anciens fichiers manuellement depuis OneLake.","Augmenter la Fabric Capacity pour gérer plus de petits fichiers.","Recréer le Lakehouse depuis zéro avec des fichiers plus gros."],
+ok:0,
+fb:"Le 'small files problem' est un problème classique Delta Lake : trop de fichiers petits → overhead de listing des fichiers → requêtes lentes. Solution : OPTIMIZE (file compaction) fusionne les fichiers en ~128MB. Dans Fabric, OPTIMIZE peut être exécuté via : SQL Endpoint (OPTIMIZE tableName), PySpark (DeltaTable.optimize().executeCompaction()), ou Pipeline planifié. Auto-OPTIMIZE (option Delta) peut compacter automatiquement lors des écritures. VACUUM (après rétention) supprime les anciens fichiers pour libérer de l'espace. Recommandation : planifier OPTIMIZE + VACUUM toutes les nuits."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:61,
+text:"Comment monitorer les données d'ingestion dans Fabric pour détecter les anomalies ?",
+code:null,
+opts:["On utilise Azure Application Insights pour monitorer l'ingestion Fabric.","Via le Monitoring Hub (statut et durée des pipelines), les Workspace Logs (nombre de lignes ingérées, erreurs), Fabric Activator pour des alertes sur des seuils (ex. alerte si moins de X lignes ingérées en une heure), et des dashboards KQL/Power BI sur les métriques d'ingestion.","L'ingestion dans Fabric est automatiquement validée — aucun monitoring n'est nécessaire.","On doit installer un agent sur les serveurs sources pour monitorer l'ingestion."],
+ok:1,
+fb:"Monitoring de l'ingestion dans Fabric : Monitoring Hub → pipelines et Eventstreams en cours. Workspace Logging → logs des Copy Activities (lignes lues/écrites, durée, erreurs) dans un Lakehouse. KQL Database → .show ingestion failures pour voir les erreurs d'ingestion dans l'Eventhouse. Fabric Activator (Data Activator) → créer des règles : si le nombre de lignes ingérées est < seuil ou si des erreurs sont détectées → alerte email/Teams. Power BI Dashboard → tableau de bord des métriques d'ingestion (fraîcheur des données, volume, latence)."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:62,
+text:"Comment identifier et résoudre des erreurs KQL dans un Eventhouse Fabric ?",
+code:"// Requête KQL qui génère une erreur\nSensorData\n| where timestamp > ago(1h)\n| join kind=inner (\n    DeviceInfo\n    | project deviceId, deviceName\n  ) on deviceId\n| summarize avg_temp = avg(temperature) by DeviceInfo.deviceName",
+opts:["Les erreurs KQL sont automatiquement corrigées par Fabric.","Identifier l'erreur : la colonne 'DeviceInfo.deviceName' devrait être 'deviceName' après le join (le préfixe du nom de table est incorrect). Utiliser l'éditeur KQL avec IntelliSense pour détecter les erreurs de syntaxe. Vérifier le schéma des tables avec .show table SensorData schema.","Les JOINs ne sont pas supportés dans KQL — utiliser UNION ALL.","Remplacer KQL par T-SQL pour les requêtes avec JOIN."],
+ok:1,
+fb:"La requête a une erreur : après un join KQL, les colonnes de la table de droite sont accessibles directement (sans préfixe de table). La correction : | summarize avg_temp = avg(temperature) by deviceName. Pour débugger KQL : l'éditeur dans Fabric affiche les erreurs de syntaxe avec IntelliSense. .show table TableName schema → vérifie les colonnes disponibles. .show ingestion failures → erreurs d'ingestion. let variables → tester des sous-requêtes isolément. L'onglet Results montre les erreurs d'exécution avec le message détaillé."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:63,
+text:"Comment optimiser les performances Spark dans Fabric pour éviter les OOM (Out of Memory) dans les notebooks ?",
+code:'# Configurations Spark pour optimiser la mémoire\nspark.conf.set("spark.sql.adaptive.enabled", "true")\nspark.conf.set("spark.sql.adaptive.coalescePartitions.enabled", "true")\nspark.conf.set("spark.sql.files.maxPartitionBytes", "134217728")  # 128MB',
+opts:["Toujours augmenter la taille du cluster Spark pour éviter les OOM.","Activer Adaptive Query Execution (AQE) qui ajuste dynamiquement les partitions et les join strategies. Configurer maxPartitionBytes pour contrôler la taille des partitions. Utiliser cache() stratégiquement (et unpersist() après utilisation). Éviter les collect() sur de grands datasets. Préférer les opérations set-based aux row-by-row operations.","Les OOM dans Fabric ne peuvent pas être prévenus — c'est un bug connu.","Toujours diviser les notebooks en petits morceaux de 1000 lignes max."],
+ok:1,
+fb:"Optimisation mémoire Spark dans Fabric : AQE (Adaptive Query Execution) → ajuste dynamiquement les plans de requête à l'exécution, fusionne les petites partitions, sélectionne la meilleure stratégie de JOIN. coalescePartitions → réduit le nombre de partitions après shuffle (évite les petites partitions). maxPartitionBytes → contrôle la taille max des partitions de lecture. Autres optimisations : broadcast join pour les petites tables (< 10MB → spark.sql.autoBroadcastJoinThreshold). cache() → utiliser judicieusement (coûteux). Éviter les Python UDFs (lents) → préférer les Spark SQL functions native."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:64,
+text:"Comment résoudre cette erreur T-SQL dans le Fabric Warehouse lors d'une insertion ?",
+code:"INSERT INTO dbo.fact_sales\nSELECT order_id, customer_id, amount, sale_date\nFROM staging.stg_orders\n\n-- Erreur : \"Cannot insert explicit value for identity column\"\n-- in table 'fact_sales' when IDENTITY_INSERT is set to OFF\"",
+opts:["L'INSERT est impossible dans le Fabric Warehouse — seul le COPY INTO est supporté.","Retirer la colonne IDENTITY de la liste des colonnes sélectionnées — laisser Fabric générer automatiquement la valeur. Le Fabric Warehouse ne supporte pas SET IDENTITY_INSERT contrairement à SQL Server traditionnel.","Activer SET IDENTITY_INSERT dbo.fact_sales ON puis relancer l'INSERT.","Modifier le type de la colonne IDENTITY en BIGINT normal."],
+ok:1,
+fb:"Important : le Fabric Warehouse ne supporte PAS la commande SET IDENTITY_INSERT (contrairement à SQL Server / Azure SQL DB). La seule solution est de retirer la colonne IDENTITY de la liste SELECT → Fabric génère automatiquement la valeur séquentielle. Si on a besoin de préserver des IDs existants lors d'une migration, il faut : 1) supprimer la contrainte IDENTITY (en recréant la table sans IDENTITY), 2) insérer les données avec les IDs existants, 3) rétablir la séquence si nécessaire. Vérifier toujours les fonctionnalités T-SQL supportées dans le Fabric Warehouse sur Microsoft Learn avant de supposer la parité avec SQL Server."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:65,
+text:"Comment optimiser une requête SQL dans le Fabric Warehouse qui fait un full scan d'une table de 1 milliard de lignes ?",
+code:'-- Requête lente (full table scan)\nSELECT customer_id, SUM(amount) as total\nFROM dbo.fact_sales\nWHERE YEAR(sale_date) = 2024\nGROUP BY customer_id\n\n-- Requête optimisée\nSELECT customer_id, SUM(amount) as total\nFROM dbo.fact_sales\nWHERE sale_date >= \'2024-01-01\' AND sale_date < \'2025-01-01\'\nGROUP BY customer_id',
+opts:["Créer un index clustered sur sale_date dans le Warehouse (non supporté dans Fabric Warehouse).","Remplacer YEAR(sale_date) = 2024 par une condition sur la plage de dates brute (sale_date >= '2024-01-01' AND sale_date < '2025-01-01') — YEAR() est une fonction non-sargable qui empêche l'utilisation des statistiques et du data skipping. Créer des statistiques sur sale_date. Matérialiser des agrégations annuelles dans une table Gold.","Augmenter la Fabric Capacity F-SKU.","Utiliser NOLOCK pour accélérer la lecture."],
+ok:1,
+fb:"SARGABLE predicates (Search ARGument ABLE) : les filtres doivent utiliser directement la colonne pour que les statistiques et le data skipping soient efficaces. YEAR(sale_date) = 2024 → non-sargable (fonction sur la colonne → scan complet). sale_date >= '2024-01-01' AND sale_date < '2025-01-01' → sargable → utilise les statistiques et le data skipping Delta. Note : le Fabric Warehouse ne supporte PAS les index clustered ou non-clustered comme SQL Server — l'optimisation passe par CREATE STATISTICS, la matérialisation de résultats et les requêtes sargable. NOLOCK n'est pas non plus supporté dans Fabric Warehouse."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:66,
+text:"Comment résoudre une erreur de Shortcut dans Fabric quand le Shortcut pointe vers des données ADLS Gen2 inaccessibles ?",
+code:null,
+opts:["Supprimer et recréer le Shortcut.","Vérifier : les credentials du Shortcut (Managed Identity ou Account Key ou SPN), les permissions RBAC sur le storage account ADLS (Storage Blob Data Reader minimum), la disponibilité du storage account (Azure Portal), la validité du chemin (container/dossier), et les politiques de firewall ADLS qui pourraient bloquer l'accès depuis Fabric.","Les Shortcuts ADLS Gen2 ne peuvent pas pointer vers des comptes dans un autre tenant Azure.","Activer le mode Public access sur le storage account ADLS."],
+ok:1,
+fb:"Diagnostic d'un Shortcut ADLS Gen2 inaccessible : 1) Credentials → vérifier que la Managed Identity du workspace Fabric a le rôle 'Storage Blob Data Reader' sur le container ADLS (ou que le Account Key / SPN est valide et non expiré). 2) Firewall ADLS → si le storage a un firewall activé, ajouter les IPs Fabric ou utiliser Private Endpoints. 3) Chemin ABFSS → vérifier que le container et le chemin existent. 4) Cross-tenant → possible mais nécessite une configuration SPN spécifique. Le message d'erreur du Shortcut dans Fabric indique généralement la cause précise."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:67,
+text:"Comment monitorer la transformation des données dans Fabric pour détecter les dégradations de qualité ?",
+code:null,
+opts:["On ne peut pas monitorer la qualité des données dans Fabric.","Via des Great Expectations ou des règles de validation dans les notebooks (ex. vérifier le nombre de NULLs, les valeurs hors plage, la cohérence référentielle) combinés avec des alertes Fabric Activator. Le Fabric Data Quality (via OneLake Health) peut aussi signaler les anomalies automatiquement.","La qualité des données est garantie automatiquement par Delta Lake.","On doit créer des tests unitaires Python pour chaque pipeline."],
+ok:1,
+fb:"Monitoring de la qualité des données dans Fabric : Notebooks de validation → après chaque transformation, vérifier : count de lignes (vs attendu), % de NULLs (< seuil), unicité des clés, plages de valeurs, cohérence référentielle. Résultats stockés dans une table de métriques de qualité. Fabric Activator → déclenche une alerte si une métrique dépasse le seuil. Power BI Dashboard de qualité → visualise les métriques au fil du temps. Approche recommandée : tester à chaque couche (Bronze, Silver, Gold) plutôt qu'une seule fois en fin de pipeline."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:68,
+text:"Scénario : Un notebook PySpark dans Fabric prend 3 heures à s'exécuter. En analysant le Spark UI, vous constatez qu'un seul stage prend 2h50 à cause d'une tâche qui traite 90% des données. Quel est le problème et comment le résoudre ?",
+code:null,
+opts:["Le problème est un timeout de connexion — augmenter spark.network.timeout.","C'est du Data Skew : une partition contient une quantité disproportionnée de données (une valeur de clé très fréquente). Solution : salting technique (ajouter un suffixe aléatoire à la clé de jointure pour distribuer la charge), repartitionner sur une colonne plus distribuée, ou utiliser un broadcast join si une table est petite.","C'est une erreur de mémoire — augmenter la taille des executors.","C'est un problème de réseau — déplacer les données vers un Lakehouse différent."],
+ok:1,
+fb:"Le Data Skew est une cause majeure de lenteur Spark : une partition reçoit beaucoup plus de données que les autres (ex. clé de jointure avec une valeur très fréquente comme 'Unknown'). Symptôme dans Spark UI : une tâche prend 100x plus de temps que les autres dans le même stage. Solutions : 1) Salting — ajouter CONCAT(key, '_', FLOOR(RAND()*10)) pour distribuer les données. 2) Broadcast join — si la table de droite est petite (<10MB) → JOIN.broadcast(). 3) Repartition — spark.repartition(n) ou repartitionByRange() sur une colonne plus uniforme. 4) Skew hint — Spark 3.x AQE gère automatiquement le skew avec spark.sql.adaptive.skewJoin.enabled=true."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:69,
+text:"Qu'est-ce que le Query Folding dans Power Query (Dataflow Gen2) et pourquoi est-il important ?",
+code:null,
+opts:["Le Query Folding est une technique de compression des requêtes M pour réduire la taille du code.","Le Query Folding est la capacité de Power Query à traduire les transformations M en requêtes natives de la source (SQL, OData...) plutôt que de charger toutes les données puis les filtrer côté client. Quand le folding est actif, le filtrage et les agrégations s'exécutent dans la source — beaucoup plus efficace pour les grands volumes.","Le Query Folding ne s'applique qu'aux sources HTTP REST — pas aux bases SQL.","Le Query Folding désactive les optimisations Spark dans Dataflow Gen2."],
+ok:1,
+fb:"Le Query Folding est fondamental pour les performances Dataflow Gen2 : sans folding → Power Query charge toutes les données dans son runtime puis applique les filtres (inefficace pour les grands volumes). Avec folding → les transformations sont traduites en SQL/OData et exécutées dans la source → seules les données nécessaires sont transférées. Indicateur dans Power Query : clic-droit sur une étape → 'View Native Query' (si disponible → folding actif). Certaines opérations cassent le folding : custom functions M, certaines jointures complexes → à éviter si possible."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:70,
+text:"Comment utiliser la Fabric Capacity Metrics App pour diagnostiquer un throttling (limitation de performance) ?",
+code:null,
+opts:["La Fabric Capacity Metrics App est uniquement disponible pour les administrateurs Microsoft.","L'app Power BI 'Microsoft Fabric Capacity Metrics' (installée depuis AppSource) montre la consommation des CUs par workload et par workspace — en cas de throttling, elle identifie quel workload consomme le plus. On peut voir les 'Rejection' et 'Delay' events qui indiquent le throttling.","Le throttling est uniquement visible dans les logs Azure Monitor.","Il faut contacter Microsoft Support pour diagnostiquer le throttling."],
+ok:1,
+fb:"La Microsoft Fabric Capacity Metrics App (Power BI app) est l'outil clé pour le monitoring de la capacité : Timepoint view → CUs consommés au fil du temps. Interactive vs Background CUs (les Background ont une priorité plus basse → throttlés en premier). Rejection events → workloads refusés car la capacité est épuisée. Burndown chart → consommation cumulée des CUs. Par workspace → identifier les workspaces les plus consommateurs. Actions en cas de throttling : scale up la capacity, optimiser les workloads gourmands, planifier les gros jobs en heures creuses, pauser les jobs non-urgents."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:71,
+text:"Comment résoudre des erreurs dans un Eventstream Fabric quand des événements sont perdus ou mal formatés ?",
+code:null,
+opts:["Redémarrer l'Eventstream — les événements perdus sont automatiquement rejoués.","Via le Monitoring Hub → Eventstream → voir les erreurs d'ingestion. Activer le 'Dead Letter' pour capturer les événements mal formatés dans un Lakehouse. Vérifier le schéma d'entrée (JSON malformé, champs manquants). Utiliser 'Reject on error' vs 'Drop on error' selon le besoin. Valider les transformations Eventstream avec les données de test.","Les événements perdus dans l'Eventstream ne peuvent pas être récupérés.","Utiliser un backup Eventstream pour capturer les données manquantes."],
+ok:1,
+fb:"Debugging Eventstream dans Fabric : Monitoring Hub → Eventstream → statut et métriques (events/sec, errors). Événements mal formatés → activer le Dead Letter Lakehouse (capture les événements qui ne peuvent pas être parsés). Transformation errors → vérifier les expressions de transformation dans l'Eventstream editor. Schema evolution → si le schéma source change, adapter les transformations. Offset management → dans les sources basées sur des offsets (Event Hubs), vérifier que l'offset de départ est correct pour éviter les données manquantes ou les doublons."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:72,
+text:"Scénario : Votre équipe reçoit des plaintes que les rapports Power BI sont lents lors des heures de pointe. Les données sont stockées dans un Lakehouse Fabric en mode Direct Lake. Que vérifiez-vous en premier ?",
+code:null,
+opts:["Changer le mode de connexion de Direct Lake vers Import.","Vérifier dans la Capacity Metrics App si la capacité est saturée (throttling) pendant les heures de pointe. Vérifier si le modèle Direct Lake tombe en fallback DirectQuery (signe de données non en cache). Vérifier les tailles des tables Delta (OPTIMIZE si beaucoup de petits fichiers). Considérer d'augmenter la Fabric Capacity pendant les heures de pointe.","Ajouter plus de nœuds au cluster Spark.","Désactiver Direct Lake et utiliser Import pour tous les rapports."],
+ok:1,
+fb:"Diagnostic de lenteur Power BI Direct Lake : 1) Capacity Metrics App → vérifier CUs consommés aux heures de pointe → si throttling → scale up ou optimiser les workloads. 2) Fabric Monitoring Hub → modèle sémantique → vérifier le fallback en DirectQuery (signe que les données ne sont pas en mémoire → framing issues). 3) Delta table health → OPTIMIZE + ZORDER pour réduire les fichiers petits. 4) Modèle sémantique → supprimer les colonnes inutiles, réduire la cardinalité des dimensions. 5) Power BI Performance Analyzer → identifier les visuels les plus lents."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:73,
+text:"Qu'est-ce que l'exam DP-700 est 'open book' et comment en tirer parti ?",
+code:null,
+opts:["'Open book' signifie qu'on peut utiliser n'importe quelle ressource internet pendant l'examen.","DP-700 est open book uniquement pour la documentation Microsoft Learn — on peut ouvrir des onglets vers les pages de référence (syntaxe KQL, PySpark, T-SQL, Fabric documentation) pendant l'examen. La stratégie : connaître la structure de Microsoft Learn pour trouver rapidement la syntaxe, ne pas perdre de temps à chercher les concepts fondamentaux (les comprendre à l'avance).","'Open book' signifie qu'on peut communiquer avec son équipe pendant l'examen.","Le DP-700 n'est pas open book — c'est une information incorrecte."],
+ok:1,
+fb:"Le DP-700 est effectivement open book (accès à Microsoft Learn pendant l'examen). Stratégie recommandée : maîtriser les concepts (pas besoin de chercher ce qu'est un Lakehouse), utiliser Microsoft Learn uniquement pour les syntaxes précises (KQL, M, PySpark, T-SQL). Pratiquer la navigation dans Microsoft Learn avant l'examen : learn.microsoft.com/en-us/fabric/. Raccourcis utiles : chercher directement 'KQL reference', 'Fabric pipeline activities', 'Delta Lake optimization'. Le temps est limité — ne pas passer plus d'1-2 minutes par question sur la recherche."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:74,
+text:"Comment monitorer et optimiser les performances d'un pipeline Fabric qui comporte des activités en parallèle ?",
+code:null,
+opts:["Toujours exécuter les activités en séquence pour éviter les conflits.","Dans le Monitoring Hub : analyser le timeline des activités (Gantt chart) pour identifier les activités qui bloquent le pipeline. Optimiser le parallélisme : utiliser les activités ForEach avec 'Is Sequential: false' et configurer le batch count. Éviter trop de parallelisme si cela sature la capacité Fabric. Limiter les dépendances inutiles entre activités.","Le parallélisme dans les pipelines Fabric n'est pas configurable.","Utiliser des pipelines séparés pour chaque activité et les orchestrer avec Azure Logic Apps."],
+ok:1,
+fb:"Optimisation des pipelines avec parallélisme dans Fabric : ForEach activity avec IsSequential=false + batchCount (nombre de traitements en parallèle). Dépendances → vérifier que les activités ne sont pas connectées inutilement (si B et C ne dépendent pas de A, les mettre en parallèle). Goulots d'étranglement → Monitoring Hub → timeline view montre quelles activités attendent. Si throttling Fabric → réduire le batchCount. Si I/O bottleneck sur la source → réduire le parallélisme Copy Activity. Règle d'or : trop de parallélisme peut saturer la source ou la destination."
+},
+{d:"Domaine 3 — Monitor & Optimize",dw:"30-35%",di:2,n:75,
+text:"Scénario final : Vous êtes Data Engineer Fabric dans une entreprise. Un pipeline critique qui alimente un rapport exécutif Power BI échoue chaque nuit depuis 3 jours sans alerte. Quelles mesures prenez-vous immédiatement et quelles améliorations recommandez-vous ?",
+code:null,
+opts:["Recréer le pipeline depuis zéro avec une architecture différente.","Immédiat : 1) Monitoring Hub → analyser les 3 exécutions échouées → identifier l'erreur (message d'erreur, activité échouée). 2) Corriger la cause (credentials expirés, source indisponible, erreur SQL...). 3) Relancer manuellement. Améliorations : 4) Configurer des alertes (Fabric Activator ou email) sur l'échec. 5) Ajouter une gestion d'erreurs dans le pipeline (Try-Catch avec activité de notification). 6) Mettre en place un tableau de bord de monitoring. 7) Documenter la procédure de résolution.","Contacter Microsoft Support en priorité.","Désactiver le pipeline et utiliser une import manuelle des données."],
+ok:1,
+fb:"Ce scénario teste la maîtrise complète du monitoring Fabric. Approche en 2 phases : Urgence → diagnostiquer et corriger l'erreur (Monitoring Hub est la première ressource). Prévention → mettre en place les alertes et la gestion d'erreurs pour ne plus être surpris. Architecture résiliente dans Fabric : alertes proactives (Activator), retry policies sur les activités (max retry count + retry interval), notifications Teams/email sur échec, tableau de bord de monitoring Power BI sur les métriques de pipeline. La gestion des erreurs est aussi importante que le développement des pipelines."
+}
+];
+
+const DNAMES = [
+  "Implement & Manage",
+  "Ingest & Transform",
+  "Monitor & Optimize"
+];
+const DTOTALS = [25,25,25];
+const LETTERS = ['A','B','C','D'];
+
+let S = {screen:'intro',cur:0,score:0,ans:false,ds:[0,0,0]};
+
+function pct(s,t){return t===0?0:Math.round(s/t*100);}
+
+function uh(){
+  const hs=document.getElementById('header-score');
+  const sub=document.getElementById('header-sub');
+  if(S.screen==='question'){
+    hs.style.display='block';
+    hs.textContent=S.score+' / '+S.cur+' ok';
+    sub.textContent='Q'+Q[S.cur].n+'/'+Q.length+' — '+Q[S.cur].d;
+  } else if(S.screen==='result'){
+    hs.style.display='none';
+    sub.textContent='Résultats finaux';
+  } else {
+    hs.style.display='none';
+    sub.textContent='QCM de positionnement — CYBERSTRUCT';
+  }
+}
+
+function intro(){
+  S.screen='intro'; uh();
+  document.getElementById('app').innerHTML=`
+  <div class="intro-card card-anim">
+    <div class="intro-title">DP-700 — Microsoft Fabric Data Engineer Associate</div>
+    <div class="intro-sub">75 questions couvrant les 3 domaines officiels du blueprint DP-700 (mis à jour janvier 2026). Mix scénarios, architecture et technique (KQL, PySpark, T-SQL, Pipelines). Seuil de passage : 700/1000 (70%). Note : l'examen est open book (accès Microsoft Learn).</div>
+    <div class="intro-stats">
+      <div class="intro-stat"><div class="intro-stat-val">75</div><div class="intro-stat-label">questions</div></div>
+      <div class="intro-stat"><div class="intro-stat-val">70%</div><div class="intro-stat-label">seuil (700/1000)</div></div>
+      <div class="intro-stat"><div class="intro-stat-val">~60 min</div><div class="intro-stat-label">durée estimée</div></div>
+      <div class="intro-stat"><div class="intro-stat-val">Open book</div><div class="intro-stat-label">MS Learn autorisé</div></div>
+    </div>
+    <div class="intro-blocs">
+      <div class="intro-blocs-title">Domaines officiels DP-700 (blueprint jan. 2026)</div>
+      ${[
+        ["1","Implement & Manage an analytics solution (workspace, sécurité, gouvernance, orchestration, Shortcuts...)","25 q","30-35%"],
+        ["2","Ingest & Transform data (batch, streaming, KQL, PySpark, T-SQL, Dataflow, medallion...)","25 q","30-35%"],
+        ["3","Monitor & Optimize (monitoring, résolution d'erreurs, optimisation Delta/Spark/KQL/Warehouse...)","25 q","30-35%"]
+      ].map(([n,name,q,w])=>`
+      <div class="intro-bloc-item">
+        <div class="intro-bloc-num">${n}</div>
+        <span>${name}</span>
+        <div class="intro-bloc-meta">
+          <span class="intro-bloc-q">${q}</span>
+          <span class="intro-bloc-w">${w}</span>
+        </div>
+      </div>`).join('')}
+    </div>
+    <button class="btn-start" onclick="start()">Commencer le QCM</button>
+  </div>`;
+}
+
+function start(){
+  S={screen:'question',cur:0,score:0,ans:false,ds:[0,0,0]};
+  render();
+}
+
+function render(){
+  S.screen='question'; S.ans=false; uh();
+  const q=Q[S.cur];
+  const prog=Math.round(S.cur/Q.length*100);
+  document.getElementById('app').innerHTML=`
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" style="width:${prog}%"></div></div>
+    <div class="progress-labels"><span>Q${q.n} / ${Q.length}</span><span>${prog}%</span></div>
+  </div>
+  <div class="card card-anim">
+    <div class="domain-badge">${q.d} <span class="domain-weight">${q.dw}</span></div>
+    <div class="question-text">${q.text}</div>
+    ${q.code?`<div class="code-block">${q.code}</div>`:''}
+    <div class="options" id="opts">
+      ${q.opts.map((o,i)=>`
+      <button class="option-btn" onclick="ans(${i})">
+        <span class="option-letter">${LETTERS[i]}</span>
+        <span>${o}</span>
+      </button>`).join('')}
+    </div>
+    <div id="fb"></div>
+    <div class="nav-row" id="nav" style="display:none">
+      <button class="btn-next" onclick="next()">${S.cur<Q.length-1?'Question suivante →':'Voir mes résultats →'}</button>
+    </div>
+  </div>`;
+}
+
+function ans(i){
+  if(S.ans)return;
+  S.ans=true;
+  const q=Q[S.cur];
+  const ok=i===q.ok;
+  if(ok){S.score++;S.ds[q.di]++;}
+  document.querySelectorAll('.option-btn').forEach((b,j)=>{
+    b.disabled=true;
+    if(j===i&&ok)b.classList.add('correct');
+    if(j===i&&!ok)b.classList.add('wrong');
+    if(j===q.ok&&!ok)b.classList.add('reveal-correct');
+  });
+  document.getElementById('fb').innerHTML=`
+  <div class="feedback-box ${ok?'correct':'wrong'}">
+    <span class="feedback-label">${ok?'✓ Bonne réponse':'✗ Mauvaise réponse'}</span>${q.fb}
+  </div>`;
+  document.getElementById('nav').style.display='flex';
+  uh();
+}
+
+function next(){
+  S.cur++;
+  if(S.cur>=Q.length) result();
+  else render();
+}
+
+function result(){
+  S.screen='result'; uh();
+  const p=pct(S.score,Q.length);
+  let vt,vs;
+  if(p>=80){vt='Excellent — niveau largement suffisant pour passer le DP-700 !';vs='background:var(--success-bg);border-color:var(--success-border);color:var(--success-text);';}
+  else if(p>=70){vt='Tu franchis le seuil (70%) — quelques révisions pour consolider.';vs='background:var(--warn-bg);border-color:var(--warn-border);color:var(--warn-text);';}
+  else{vt='En dessous du seuil — reprendre le learning path DP-700 sur Microsoft Learn.';vs='background:var(--error-bg);border-color:var(--error-border);color:var(--error-text);';}
+  const bc=DNAMES.map((n,i)=>`
+  <div class="bloc-card">
+    <div class="bloc-card-name">${n}</div>
+    <div class="bloc-card-score">${S.ds[i]}/${DTOTALS[i]}<span class="bloc-card-pct">(${pct(S.ds[i],DTOTALS[i])}%)</span></div>
+  </div>`).join('');
+  document.getElementById('app').innerHTML=`
+  <div class="result-card card-anim">
+    <div class="result-pct">${p}%</div>
+    <div class="result-fraction">${S.score} / ${Q.length} bonnes réponses</div>
+    <div class="result-verdict" style="${vs}">${vt}</div>
+    <div class="bloc-grid">${bc}</div>
+    <div class="threshold-note">Seuil DP-700 : 700/1000 (70%) — soit 53/75 dans ce QCM. L'examen est open book (Microsoft Learn accessible).</div>
+    <button class="btn-restart" onclick="restart()">Recommencer le QCM</button>
+  </div>`;
+}
+
+function restart(){
+  S={screen:'intro',cur:0,score:0,ans:false,ds:[0,0,0]};
+  intro();
+}
+
+intro();
+</script>
+</body>
+</html>
