@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QCM — Fondamentaux pour le Big Data | CYBERSTRUCT</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f8f7f4; --surface: #ffffff; --surface2: #f2f1ee;
+    --text: #1a1a18; --text-muted: #6b6a66; --text-hint: #9e9d99;
+    --border: rgba(0,0,0,0.10); --border-med: rgba(0,0,0,0.18);
+    --accent: #7C3AED; --accent-bg: #F3EEFF; --accent-text: #5B21B6;
+    --success-bg: #EAF3DE; --success-border: #639922; --success-text: #27500A;
+    --error-bg: #FCEBEB; --error-border: #E24B4A; --error-text: #A32D2D;
+    --warn-bg: #FAEEDA; --warn-border: #BA7517; --warn-text: #854F0B;
+    --code-bg: #1e1e1e; --code-text: #d4d4d4;
+    --radius: 10px; --radius-sm: 6px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a; --surface: #252523; --surface2: #2e2e2b;
+      --text: #f0ede8; --text-muted: #a09f9a; --text-hint: #6b6a66;
+      --border: rgba(255,255,255,0.10); --border-med: rgba(255,255,255,0.18);
+      --accent: #A78BFA; --accent-bg: #2E1065; --accent-text: #C4B5FD;
+      --success-bg: #0e2206; --success-border: #3B6D11; --success-text: #C0DD97;
+      --error-bg: #2a0a0a; --error-border: #A32D2D; --error-text: #F09595;
+      --warn-bg: #2a1a04; --warn-border: #854F0B; --warn-text: #FAC775;
+    }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+  .header { background: var(--surface); border-bottom: 0.5px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; }
+  .header-logo { width: 32px; height: 32px; background: var(--accent); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: white; flex-shrink: 0; }
+  .header-info { flex: 1; min-width: 0; }
+  .header-title { font-size: 13px; font-weight: 500; color: var(--text); }
+  .header-sub { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .header-score { font-size: 12px; font-weight: 500; color: var(--accent-text); background: var(--accent-bg); padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+  .main { max-width: 720px; margin: 0 auto; padding: 20px 16px 60px; }
+  .progress-wrap { margin-bottom: 18px; }
+  .progress-track { height: 3px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+  .progress-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-hint); margin-top: 5px; }
+  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 22px; }
+  .semaine-badge { display: inline-block; font-size: 11px; font-weight: 500; background: var(--accent-bg); color: var(--accent-text); padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; }
+  .question-text { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.55; margin-bottom: 14px; }
+  .code-block { background: var(--code-bg); color: var(--code-text); font-family: 'SF Mono','Fira Code','Consolas',monospace; font-size: 12px; line-height: 1.7; padding: 14px 16px; border-radius: var(--radius-sm); margin-bottom: 14px; overflow-x: auto; white-space: pre; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn { display: flex; align-items: flex-start; gap: 11px; padding: 11px 14px; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; text-align: left; font-size: 13px; color: var(--text); line-height: 1.5; transition: background 0.12s, border-color 0.12s, transform 0.08s; width: 100%; font-family: inherit; }
+  .option-btn:hover:not(:disabled) { background: var(--surface2); border-color: var(--accent); transform: translateX(2px); }
+  .option-btn:disabled { cursor: default; }
+  .option-letter { font-size: 11px; font-weight: 500; min-width: 20px; height: 20px; background: var(--surface2); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; color: var(--text-muted); }
+  .option-btn:hover:not(:disabled) .option-letter { background: var(--accent-bg); color: var(--accent-text); }
+  .option-btn.correct { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+  .option-btn.correct .option-letter { background: var(--success-border); color: white; }
+  .option-btn.wrong { background: var(--error-bg); border-color: var(--error-border); color: var(--error-text); }
+  .option-btn.wrong .option-letter { background: var(--error-border); color: white; }
+  .option-btn.reveal-correct { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); opacity: 0.65; }
+  .feedback-box { margin-top: 14px; padding: 11px 14px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.65; border: 0.5px solid; animation: fadeIn 0.2s ease; }
+  .feedback-box.correct { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+  .feedback-box.wrong { background: var(--error-bg); border-color: var(--error-border); color: var(--error-text); }
+  .feedback-label { font-weight: 500; display: block; margin-bottom: 3px; }
+  .nav-row { display: flex; justify-content: flex-end; margin-top: 16px; }
+  .btn-next { padding: 9px 20px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); cursor: pointer; font-family: inherit; transition: background 0.12s; }
+  .btn-next:hover { background: var(--surface2); }
+  .result-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 28px 22px; text-align: center; }
+  .result-pct { font-size: 58px; font-weight: 500; color: var(--text); line-height: 1; margin-bottom: 5px; }
+  .result-fraction { font-size: 14px; color: var(--text-muted); margin-bottom: 18px; }
+  .result-verdict { display: inline-block; font-size: 14px; font-weight: 500; padding: 9px 18px; border-radius: var(--radius-sm); margin-bottom: 24px; border: 0.5px solid; }
+  .bloc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 9px; margin-bottom: 18px; text-align: left; }
+  .bloc-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 11px 13px; }
+  .bloc-card-name { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; line-height: 1.4; }
+  .bloc-card-score { font-size: 20px; font-weight: 500; color: var(--text); }
+  .bloc-card-pct { font-size: 12px; color: var(--text-hint); margin-left: 3px; }
+  .threshold-note { font-size: 12px; color: var(--text-hint); margin-bottom: 18px; padding: 7px 11px; background: var(--surface2); border-radius: var(--radius-sm); }
+  .btn-restart { padding: 9px 24px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--border-med); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); cursor: pointer; font-family: inherit; }
+  .btn-restart:hover { background: var(--surface2); }
+  .intro-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 28px 24px; }
+  .intro-title { font-size: 20px; font-weight: 500; margin-bottom: 6px; }
+  .intro-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+  .intro-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); gap: 8px; margin-bottom: 20px; }
+  .intro-stat { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .intro-stat-val { font-size: 19px; font-weight: 500; }
+  .intro-stat-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+  .intro-blocs { margin-bottom: 22px; }
+  .intro-blocs-title { font-size: 11px; font-weight: 500; color: var(--text-hint); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+  .intro-bloc-item { display: flex; align-items: center; gap: 9px; font-size: 12px; padding: 7px 0; border-bottom: 0.5px solid var(--border); }
+  .intro-bloc-item:last-child { border-bottom: none; }
+  .intro-bloc-num { width: 20px; height: 20px; background: var(--accent-bg); color: var(--accent-text); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+  .intro-bloc-q { font-size: 10px; color: var(--text-hint); margin-left: auto; }
+  .btn-start { width: 100%; padding: 12px; font-size: 14px; font-weight: 500; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer; font-family: inherit; transition: opacity 0.12s; }
+  .btn-start:hover { opacity: 0.88; }
+  .card-anim { animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div class="header" id="header">
+  <div class="header-logo">Σ</div>
+  <div class="header-info">
+    <div class="header-title">Fondamentaux pour le Big Data — FUN MOOC / IMT</div>
+    <div class="header-sub" id="header-sub">QCM de positionnement — CYBERSTRUCT</div>
+  </div>
+  <div class="header-score" id="header-score" style="display:none"></div>
+</div>
+<div class="main" id="app"></div>
+
+<script>
+const Q = [
+// ══════════════════════════════════════════
+// S0 — Enjeux du Big Data (5 questions)
+// ══════════════════════════════════════════
+{s:"Semaine 0 — Enjeux du Big Data",si:0,n:1,
+text:"Qu'est-ce que le Big Data ? Quelle définition des '3V' est correcte ?",
+code:null,
+opts:["Volume (quantité de données), Vitesse (fréquence de traitement), Valeur (utilité économique).","Volume (quantité de données), Véracité (qualité des données), Visualisation (représentation graphique).","Volume (grande quantité), Velocity (haute fréquence de génération/traitement), Variety (diversité des types de données) — les trois caractéristiques fondamentales des systèmes Big Data.","Vitesse (traitement temps réel), Valeur (insights utiles), Variabilité (données changeantes)."],
+ok:2,
+fb:"Les 3V du Big Data : Volume — des pétaoctets à des exaoctets de données. Velocity — génération et traitement en continu ou quasi-temps réel (IoT, réseaux sociaux, logs...). Variety — données structurées (SQL), semi-structurées (JSON, XML) et non-structurées (textes, images, vidéos). On ajoute parfois Veracity (qualité/fiabilité des données) et Value (valeur économique extraite) pour les 5V."
+},
+{s:"Semaine 0 — Enjeux du Big Data",si:0,n:2,
+text:"Pourquoi les bases de données relationnelles classiques ne sont-elles pas toujours adaptées aux contextes Big Data ?",
+code:null,
+opts:["Parce que SQL est un langage trop complexe pour les data scientists.","Parce qu'elles ne supportent pas les transactions ACID.","Parce qu'elles sont conçues pour des schémas fixes et des volumes limités — elles peinent à passer à l'échelle (scalabilité horizontale), à gérer des données semi-structurées/non-structurées, et à traiter des flux continus à haute fréquence.","Parce qu'elles ne peuvent pas stocker des données numériques."],
+ok:2,
+fb:"Les SGBDR traditionnels (MySQL, PostgreSQL, Oracle) sont optimisés pour la cohérence ACID sur des données structurées à volume maîtrisé. Leurs limites en Big Data : scalabilité verticale limitée (difficile d'ajouter des nœuds), schéma rigide (difficile d'adapter à des données semi-structurées), performances dégradées sur des volumes massifs en lecture/écriture continues. Les systèmes NoSQL (Cassandra, MongoDB, HBase) et les architectures distribuées (Hadoop, Spark) ont été développés pour répondre à ces limites."
+},
+{s:"Semaine 0 — Enjeux du Big Data",si:0,n:3,
+text:"Qu'est-ce que le théorème CAP et pourquoi est-il important en Big Data ?",
+code:null,
+opts:["Le théorème CAP dit que tout système distribué peut garantir simultanément Cohérence, Disponibilité et tolérance aux Partitions réseau.","Le théorème CAP (Brewer, 2000) établit qu'un système distribué ne peut garantir simultanément que deux des trois propriétés : Consistency (cohérence), Availability (disponibilité), Partition tolerance (tolérance aux pannes réseau) — et doit donc faire des compromis.","CAP est un acronyme qui signifie Calcul, Analyse, Persistance dans les architectures Big Data.","Le théorème CAP s'applique uniquement aux bases de données SQL et pas aux systèmes NoSQL."],
+ok:1,
+fb:"Le théorème CAP (Eric Brewer, 2000) est fondamental pour comprendre les choix d'architecture en Big Data : on ne peut avoir que 2 des 3 garanties. CP (Consistency + Partition tolerance) → ex. HBase, MongoDB — privilégie la cohérence au détriment de la disponibilité en cas de partition. AP (Availability + Partition tolerance) → ex. Cassandra, CouchDB — toujours disponible mais peut retourner des données temporairement incohérentes. CA → ex. SGBDR classiques — cohérent et disponible mais ne tolère pas les partitions réseau (single node)."
+},
+{s:"Semaine 0 — Enjeux du Big Data",si:0,n:4,
+text:"Quelle est la différence entre la scalabilité verticale et la scalabilité horizontale dans les systèmes Big Data ?",
+code:null,
+opts:["La scalabilité verticale augmente le nombre de serveurs ; la scalabilité horizontale améliore un seul serveur.","La scalabilité verticale (scale up) améliore la puissance d'un seul serveur (plus de CPU, RAM, disque) — limitée et coûteuse. La scalabilité horizontale (scale out) ajoute des nœuds supplémentaires au cluster — c'est l'approche privilégiée en Big Data (Hadoop, Spark, NoSQL).","Les deux termes sont synonymes dans le contexte du Big Data.","La scalabilité horizontale ne s'applique qu'aux bases de données NoSQL."],
+ok:1,
+fb:"La distinction scale up vs scale out est centrale en Big Data. Scale up (vertical) : ajouter des ressources à un seul serveur (mémoire, CPU...) → limites physiques et coûts exponentiels. Scale out (horizontal) : ajouter des serveurs ordinaires (commodity hardware) au cluster → les données et calculs sont distribués. C'est le principe fondateur d'Hadoop (HDFS + MapReduce) et Spark : des centaines de machines bon marché remplacent un supercalculateur unique."
+},
+{s:"Semaine 0 — Enjeux du Big Data",si:0,n:5,
+text:"Qu'est-ce que MapReduce et quel problème résout-il ?",
+code:null,
+opts:["MapReduce est un framework de visualisation de données massives créé par Google.","MapReduce est un modèle de programmation distribué (Google, 2004) qui décompose un traitement en deux phases : Map (transformation parallèle sur chaque nœud) et Reduce (agrégation des résultats intermédiaires) — permettant de traiter des pétaoctets de données sur un cluster.","MapReduce est un protocole réseau pour transférer des données entre datacenters.","MapReduce est une extension de SQL pour les bases de données distribuées."],
+ok:1,
+fb:"MapReduce (Dean & Ghemawat, Google 2004) : Map — chaque nœud du cluster traite une partie des données localement et produit des paires clé-valeur intermédiaires. Shuffle — les paires sont redistribuées par clé sur les nœuds. Reduce — chaque nœud agrège les valeurs associées à chaque clé. Exemple : compter les mots dans un corpus de milliards de documents. Apache Hadoop implémente MapReduce en open-source. Spark améliore MapReduce en gardant les données en mémoire (10-100x plus rapide)."
+},
+
+// ══════════════════════════════════════════
+// S1+2 — Python & NumPy (12 questions)
+// ══════════════════════════════════════════
+{s:"Semaines 1-2 — Python & NumPy",si:1,n:6,
+text:"Quelle est la différence entre une liste Python et un tableau NumPy (ndarray) ?",
+code:null,
+opts:["Une liste Python peut contenir des éléments de types différents et est dynamique. Un ndarray NumPy est homogène (même type pour tous les éléments), stocké en mémoire contiguë, et supporte des opérations vectorisées (beaucoup plus rapides pour le calcul numérique).","Une liste Python est plus rapide qu'un ndarray NumPy pour les calculs mathématiques.","Les tableaux NumPy et les listes Python sont strictement équivalents — seule la syntaxe diffère.","Un ndarray ne peut contenir que des entiers, pas des flottants."],
+ok:0,
+fb:"La différence clé : les listes Python sont des tableaux d'objets hétérogènes (chaque élément est un pointeur vers un objet Python) → overhead important. Les ndarrays NumPy stockent des données homogènes en mémoire contiguë (comme les tableaux C) → accès ultra-rapide. NumPy utilise des opérations vectorisées en C/Fortran → 10 à 100x plus rapide que les boucles Python pour les calculs. C'est pourquoi NumPy est la bibliothèque de base de tout l'écosystème scientifique Python (scikit-learn, TensorFlow, pandas...)."
+},
+{s:"Semaines 1-2 — Python & NumPy",si:1,n:7,
+text:"Qu'est-ce que le broadcasting en NumPy ?",
+code:'import numpy as np\nA = np.array([[1, 2, 3],\n              [4, 5, 6]])\nv = np.array([10, 20, 30])\nprint(A + v)',
+opts:["Le broadcasting est une erreur — on ne peut additionner que des tableaux de même forme.","Le broadcasting est un mécanisme NumPy qui permet d'effectuer des opérations entre tableaux de formes différentes en 'étirant' automatiquement le tableau le plus petit pour correspondre à la forme du plus grand — ici v (1×3) est appliqué à chaque ligne de A (2×3).","Le broadcasting copie physiquement le tableau v pour créer un tableau 2×3 en mémoire.","Le broadcasting ne fonctionne que si les deux tableaux ont exactement le même nombre d'éléments."],
+ok:1,
+fb:"Broadcasting NumPy : v (shape 3,) est diffusé sur chaque ligne de A (shape 2,3) → le résultat est [[11,22,33],[14,25,36]]. Règles : deux dimensions sont compatibles si elles sont égales ou si l'une d'elles vaut 1. NumPy 'étire' conceptuellement (sans copie mémoire) le tableau de dimension 1 pour correspondre à l'autre. Le broadcasting évite les boucles Python explicites et rend le code plus lisible et plus rapide."
+},
+{s:"Semaines 1-2 — Python & NumPy",si:1,n:8,
+text:"Que retourne ce code NumPy ?",
+code:'import numpy as np\nA = np.array([[1, 2], [3, 4], [5, 6]])\nprint(A.shape)\nprint(A.T.shape)',
+opts:["(3, 2) puis (3, 2) — la transposition ne change pas la forme.","(3, 2) puis (2, 3) — A est une matrice 3×2, sa transposée est une matrice 2×3.","(2, 3) puis (3, 2) — A est une matrice 2×3.","Une erreur — NumPy ne supporte que les tableaux 1D ou carrés."],
+ok:1,
+fb:"A est créé avec 3 lignes et 2 colonnes → shape = (3, 2). La transposée A.T échange lignes et colonnes → shape = (2, 3). Le point .T est l'opérateur de transposition NumPy. La transposition est fondamentale en algèbre linéaire : (AB)ᵀ = BᵀAᵀ. En NumPy, .T ne crée pas de nouvelle copie des données — il change uniquement les 'strides' de lecture mémoire (opération O(1))."
+},
+{s:"Semaines 1-2 — Python & NumPy",si:1,n:9,
+text:"Comment calculer le produit matriciel de deux matrices A (m×n) et B (n×p) en NumPy ?",
+code:'import numpy as np\nA = np.array([[1, 2], [3, 4]])\nB = np.array([[5, 6], [7, 8]])',
+opts:["A * B — l'opérateur * fait le produit matriciel.","np.dot(A, B) ou A @ B — l'opérateur @ (Python 3.5+) ou np.dot() pour le produit matriciel. L'opérateur * fait le produit élément par élément (Hadamard), pas le produit matriciel.","np.multiply(A, B) — c'est la fonction pour le produit matriciel.","A.dot(B) uniquement — @ et np.dot ne fonctionnent pas pour les matrices 2D."],
+ok:1,
+fb:"Distinction cruciale en NumPy : A * B = produit élément par élément (Hadamard product) [[1×5, 2×6],[3×7, 4×8]]. A @ B = np.dot(A, B) = produit matriciel (dot product) [[1×5+2×7, 1×6+2×8],[3×5+4×7, 3×6+4×8]] = [[19,22],[43,50]]. Pour que le produit matriciel soit défini, le nombre de colonnes de A doit égaler le nombre de lignes de B. L'opérateur @ a été introduit en Python 3.5 (PEP 465) précisément pour clarifier cette distinction."
+},
+{s:"Semaines 1-2 — Python & NumPy",si:1,n:10,
+text:"Quelle est la différence entre np.zeros(), np.ones() et np.eye() ?",
+code:null,
+opts:["np.zeros() crée un tableau de 0, np.ones() de 1, np.eye() crée une matrice identité — np.eye(n) crée une matrice n×n avec des 1 sur la diagonale principale et des 0 ailleurs.","np.zeros() initialise à zéro, np.ones() à un, np.eye() à e (nombre d'Euler ≈ 2.718).","Ces trois fonctions sont équivalentes — elles créent toutes des tableaux de la même valeur.","np.eye() ne peut créer que des matrices 2×2."],
+ok:0,
+fb:"Fonctions d'initialisation NumPy : np.zeros((m,n)) → tableau de shape (m,n) rempli de 0. np.ones((m,n)) → rempli de 1. np.eye(n) → matrice identité n×n (1 sur la diagonale, 0 ailleurs). La matrice identité I est l'élément neutre du produit matriciel : AI = IA = A. np.diag([1,2,3]) crée une matrice diagonale. np.full((m,n), val) crée un tableau rempli d'une valeur arbitraire. Ces fonctions sont essentielles pour initialiser des matrices en algèbre linéaire."
+},
+{s:"Semaines 1-2 — Python & NumPy",si:1,n:11,
+text:"Qu'est-ce que le slicing (découpage) d'un tableau NumPy ? Que retourne A[1:3, 0:2] pour A = np.arange(16).reshape(4,4) ?",
+code:'import numpy as np\nA = np.arange(16).reshape(4, 4)\nprint(A)\nprint(A[1:3, 0:2])',
+opts:["Une erreur — le slicing ne fonctionne pas sur les tableaux 2D.","Les éléments aux indices 1 et 3 de la ligne 0, et 0 et 2 de la colonne 1.","Une sous-matrice 2×2 contenant les lignes 1 et 2 (indices 1:3 exclu) et les colonnes 0 et 1 (indices 0:2 exclu) — soit [[4,5],[8,9]].","La transposée d'une sous-matrice de A."],
+ok:2,
+fb:"A = np.arange(16).reshape(4,4) crée : [[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15]]. A[1:3, 0:2] : lignes 1 à 2 (3 exclu) = lignes indexées 1 et 2, colonnes 0 à 1 (2 exclu) = colonnes 0 et 1. Résultat : [[4,5],[8,9]]. Le slicing NumPy crée une vue (view) sur les données d'origine — pas une copie. Modifier le slice modifie A. Pour une copie indépendante : A[1:3, 0:2].copy()."
+},
+{s:"Semaines 1-2 — Python & NumPy",si:1,n:12,
+text:"Qu'est-ce que la vectorisation en Python/NumPy et pourquoi est-elle préférable aux boucles for ?",
+code:'import numpy as np\nn = 1_000_000\nx = np.random.randn(n)\n\n# Version boucle\nresult_loop = sum([xi**2 for xi in x])\n\n# Version vectorisée\nresult_vec = np.sum(x**2)',
+opts:["La vectorisation est plus lente mais plus lisible que les boucles.","La vectorisation applique une opération à tout un tableau en une seule instruction, en déléguant le calcul à des routines C/Fortran optimisées — typiquement 10 à 100x plus rapide que les boucles Python explicites. Python est interprété et a un overhead par itération ; NumPy évite cet overhead.","La vectorisation et les boucles for ont exactement les mêmes performances.","La vectorisation ne fonctionne que pour les additions — pas pour les puissances ou les fonctions mathématiques."],
+ok:1,
+fb:"La vectorisation est le principe le plus important pour le code scientifique Python : éviter les boucles for Python au profit d'opérations NumPy. Raison : Python est un langage interprété avec un overhead par instruction (type checking, gestion mémoire...). NumPy délègue le calcul à du code C compilé et peut utiliser les instructions SIMD du processeur (SSE, AVX). Sur 1M d'éléments : boucle Python ≈ 1s, NumPy ≈ 0.01s. La règle d'or : si tu écris une boucle for sur un array NumPy, cherche l'équivalent vectorisé."
+},
+{s:"Semaines 1-2 — Python & NumPy",si:1,n:13,
+text:"Qu'est-ce qu'une fonction Python et comment définit-on ses arguments avec des valeurs par défaut ?",
+code:'def distance_euclidienne(x, y, p=2):\n    """Calcule la distance de Minkowski d\'ordre p."""\n    return sum(abs(xi - yi)**p for xi, yi in zip(x, y))**(1/p)',
+opts:["Les valeurs par défaut dans une fonction Python sont obligatoires pour tous les arguments.","p=2 définit une valeur par défaut pour l'argument p — si l'appelant ne fournit pas p, la valeur 2 est utilisée (distance euclidienne). Les arguments avec valeurs par défaut doivent toujours être placés après les arguments sans valeur par défaut.","Les valeurs par défaut sont recalculées à chaque appel de la fonction.","On ne peut pas avoir plus d'un argument avec valeur par défaut dans une fonction Python."],
+ok:1,
+fb:"Les arguments avec valeurs par défaut (keyword arguments) permettent de rendre les paramètres optionnels. distance_euclidienne([1,0],[0,0]) → utilise p=2 (euclidienne). distance_euclidienne([1,0],[0,0], p=1) → distance de Manhattan. Piège classique : ne jamais utiliser un objet mutable (liste, dict) comme valeur par défaut → def f(x=[]) est un bug car la liste est créée une seule fois. La docstring (triple guillemets) est accessible via help(distance_euclidienne)."
+},
+{s:"Semaines 1-2 — Python & NumPy",si:1,n:14,
+text:"Comment fonctionne np.linalg.solve(A, b) et dans quel contexte l'utilise-t-on ?",
+code:'import numpy as np\nA = np.array([[2, 1], [1, 3]])\nb = np.array([5, 10])\nx = np.linalg.solve(A, b)\nprint(x)',
+opts:["np.linalg.solve(A, b) calcule A + b.","np.linalg.solve(A, b) résout le système linéaire Ax = b en calculant x = A⁻¹b — mais sans calculer explicitement l'inverse (plus stable numériquement). Utilisé pour la régression linéaire, la résolution de systèmes d'équations.","np.linalg.solve produit toujours une solution unique même si A est singulière.","np.linalg.solve est uniquement disponible pour les matrices 2×2."],
+ok:1,
+fb:"np.linalg.solve(A, b) résout Ax = b via la décomposition LU (factorisation de Gauss) — beaucoup plus stable numériquement et efficace que np.linalg.inv(A) @ b. Si A est singulière (déterminant nul), une LinAlgError est levée. Application en data science : la solution des moindres carrés pour la régression linéaire est (AᵀA)x = Aᵀb → np.linalg.solve(A.T @ A, A.T @ b). np.linalg.lstsq est encore plus robuste pour les systèmes surdéterminés ou mal conditionnés."
+},
+{s:"Semaines 1-2 — Python & NumPy",si:1,n:15,
+text:"Qu'est-ce qu'une compréhension de liste (list comprehension) en Python et comment diffère-t-elle d'une boucle for classique ?",
+code:'# Boucle classique\ncarres = []\nfor i in range(10):\n    if i % 2 == 0:\n        carres.append(i**2)\n\n# Compréhension de liste équivalente\ncarres = [i**2 for i in range(10) if i % 2 == 0]',
+opts:["Les compréhensions de liste sont uniquement syntaxiques — même performance qu'une boucle.","Une compréhension de liste crée une liste en une expression compacte — légèrement plus rapide qu'une boucle for équivalente (car elle évite l'overhead d'appel à .append()), plus lisible pour les transformations simples. Pour les grands volumes, les générateurs (parenthèses au lieu de crochets) sont encore plus efficaces car ils évaluent la valeur à la demande sans stocker toute la liste.","Les compréhensions de liste ne supportent pas les conditions if.","Les compréhensions de liste ne peuvent traiter que des entiers."],
+ok:1,
+fb:"Les list comprehensions sont idiomatiques en Python : [expression for item in iterable if condition]. Performances : légèrement meilleures qu'une boucle for + append() car optimisées par l'interpréteur Python. Pour éviter de tout stocker en mémoire : générateur = (i**2 for i in range(10) if i%2==0) → évaluation lazy. Dict comprehension : {k: v for k, v in items}. Set comprehension : {x for x in items}. Pour les opérations numériques massives, préférer NumPy vectorisé aux compréhensions."
+},
+{s:"Semaines 1-2 — Python & NumPy",si:1,n:16,
+text:"Qu'est-ce que la norme d'un vecteur et comment la calculer avec NumPy ?",
+code:'import numpy as np\nx = np.array([3.0, 4.0])\nnorme_l2 = np.linalg.norm(x)\nnorme_l1 = np.linalg.norm(x, ord=1)',
+opts:["La norme L2 d'un vecteur est la somme de ses composantes.","La norme L2 (euclidienne) est la racine carrée de la somme des carrés des composantes : ||x||₂ = √(3²+4²) = √25 = 5. La norme L1 (Manhattan) est la somme des valeurs absolues : ||x||₁ = |3|+|4| = 7. np.linalg.norm() calcule ces normes efficacement.","La norme d'un vecteur est toujours 1 si le vecteur est normalisé.","np.linalg.norm() ne peut calculer que la norme L2 — pas la norme L1."],
+ok:1,
+fb:"Les normes sont fondamentales en Big Data/ML : Norme L1 (||x||₁ = Σ|xᵢ|) → régularisation Lasso, distance de Manhattan, robuste aux outliers. Norme L2 (||x||₂ = √(Σxᵢ²)) → régularisation Ridge, distance euclidienne, différentiable partout sauf en 0. Norme Lp (||x||_p = (Σ|xᵢ|ᵖ)^(1/p)). Pour normaliser un vecteur : x / np.linalg.norm(x). La norme est utilisée dans la descente de gradient (taille du gradient), les SVM (marges) et les distances entre points."
+},
+{s:"Semaines 1-2 — Python & NumPy",si:1,n:17,
+text:"Comment fonctionne l'indexation booléenne (boolean indexing) en NumPy ?",
+code:'import numpy as np\nx = np.array([1, -2, 3, -4, 5])\nmasque = x > 0\nprint(masque)\nprint(x[masque])',
+opts:["L'indexation booléenne génère une erreur — les tableaux NumPy ne peuvent être indexés que par des entiers.","x > 0 crée un tableau booléen [True, False, True, False, True]. x[masque] sélectionne les éléments où le masque est True → [1, 3, 5]. C'est une façon efficace de filtrer les données sans boucle.","x[masque] retourne les indices des éléments True, pas les valeurs.","L'indexation booléenne ne fonctionne que pour les comparaisons d'égalité (==)."],
+ok:1,
+fb:"L'indexation booléenne (fancy indexing) NumPy : x > 0 crée un ndarray de booléens de même forme. x[masque] retourne un nouveau tableau contenant uniquement les éléments où le masque est True. Applications : filtrer les valeurs aberrantes (x[np.abs(x) < 3*std]), sélectionner des lignes d'une matrice selon une condition (A[y == 1, :] pour les exemples positifs). Combinaison : x[(x > 0) & (x < 3)] → ET logique. Modification : x[x < 0] = 0 remplace les négatifs par 0."
+},
+
+// ══════════════════════════════════════════
+// S2 — Bases de données relationnelles & limites (8 questions)
+// ══════════════════════════════════════════
+{s:"Semaine 2 — Bases de données & NoSQL",si:2,n:18,
+text:"Qu'est-ce que la normalisation d'une base de données relationnelle et pourquoi est-elle importante ?",
+code:null,
+opts:["La normalisation est une technique pour accélérer les requêtes SQL par l'ajout d'index.","La normalisation consiste à organiser les données en tables selon des règles (formes normales) pour éliminer la redondance et assurer l'intégrité des données. La 1NF, 2NF, 3NF et BCNF définissent des niveaux croissants de normalisation.","La normalisation est un processus qui consiste à convertir toutes les valeurs numériques entre 0 et 1.","La normalisation est uniquement utile pour les bases de données de plus d'un million de lignes."],
+ok:1,
+fb:"La normalisation des bases de données (Codd, 1970) élimine la redondance et les anomalies de mise à jour. 1NF : attributs atomiques (pas de répétition de groupes). 2NF : pas de dépendances partielles sur la clé primaire. 3NF : pas de dépendances transitives entre attributs non-clés. BCNF : forme plus stricte de 3NF. La dénormalisation (regrouper des tables pour des performances) est parfois nécessaire en analytique (data warehouse, modèle en étoile) au détriment de la redondance."
+},
+{s:"Semaine 2 — Bases de données & NoSQL",si:2,n:19,
+text:"Quelle est la différence entre une jointure INNER JOIN et une LEFT JOIN en SQL ?",
+code:"-- Table Orders : client_id, montant\n-- Table Clients : client_id, nom\n\nSELECT c.nom, o.montant\nFROM Clients c\nINNER JOIN Orders o ON c.client_id = o.client_id;\n\nSELECT c.nom, o.montant\nFROM Clients c\nLEFT JOIN Orders o ON c.client_id = o.client_id;",
+opts:["INNER JOIN et LEFT JOIN produisent toujours le même résultat.","INNER JOIN retourne uniquement les lignes ayant une correspondance dans les deux tables. LEFT JOIN retourne toutes les lignes de la table gauche (Clients), avec NULL dans les colonnes de Orders pour les clients sans commande.","LEFT JOIN est plus lent qu'INNER JOIN car il retourne plus de lignes.","INNER JOIN ne peut joindre que deux tables ; LEFT JOIN peut en joindre plusieurs."],
+ok:1,
+fb:"Types de jointures SQL : INNER JOIN → intersection (clients avec au moins une commande). LEFT JOIN → tous les clients, même sans commande (colonnes Orders = NULL si pas de correspondance). RIGHT JOIN → toutes les commandes, même sans client correspondant. FULL OUTER JOIN → union (toutes les lignes des deux tables). CROSS JOIN → produit cartésien (toutes les combinaisons). Le choix impacte les résultats : un INNER JOIN qui exclut des lignes peut masquer des données manquantes importantes en analyse."
+},
+{s:"Semaine 2 — Bases de données & NoSQL",si:2,n:20,
+text:"Pourquoi les bases de données NoSQL ont-elles émergé et quels types principaux existent ?",
+code:null,
+opts:["Les bases NoSQL ont remplacé totalement SQL — les SGBDR sont obsolètes.","Les bases NoSQL ont émergé pour répondre aux limites des SGBDR face au Big Data : scalabilité horizontale, schéma flexible, volumes massifs, accès distribué. 4 types principaux : Clé-valeur (Redis), Document (MongoDB), Colonne (Cassandra, HBase), Graphe (Neo4j).","NoSQL signifie 'No SQL' — ces bases ne supportent aucun langage de requête.","Les bases NoSQL sont uniquement adaptées aux données non-structurées."],
+ok:1,
+fb:"NoSQL = 'Not Only SQL' (pas 'pas de SQL'). Les 4 familles : Clé-valeur (Redis, DynamoDB) → accès ultra-rapide par clé, cache, sessions. Document (MongoDB, CouchDB) → stocke des documents JSON/BSON, schéma flexible. Colonne (Cassandra, HBase) → optimisé pour la lecture/écriture de grandes colonnes, time-series, IoT. Graphe (Neo4j) → relations complexes, réseaux sociaux, recommandations. Chaque type est optimisé pour un pattern d'accès spécifique — aucun ne remplace universellement les SGBDR."
+},
+{s:"Semaine 2 — Bases de données & NoSQL",si:2,n:21,
+text:"Qu'est-ce que HDFS (Hadoop Distributed File System) et comment stocke-t-il les données ?",
+code:null,
+opts:["HDFS est un système de fichiers qui stocke toutes les données sur un seul serveur central.","HDFS découpe les fichiers en blocs (128 Mo par défaut), distribue ces blocs sur les nœuds du cluster (DataNodes), et en crée plusieurs répliques (3 par défaut) pour la tolérance aux pannes. Un nœud maître (NameNode) gère les métadonnées (où sont les blocs).","HDFS est un protocole réseau pour transférer des fichiers entre serveurs.","HDFS ne supporte que les fichiers texte — pas les données binaires."],
+ok:1,
+fb:"HDFS (Apache Hadoop) est le système de fichiers distribué de référence pour le Big Data : blocs de 128 Mo (configurable) → optimisé pour les fichiers très larges. Facteur de réplication = 3 → si un nœud tombe, les données restent disponibles sur d'autres nœuds. NameNode → stocke les métadonnées (mapping fichier → blocs → nœuds) en mémoire → point de défaillance unique (SPOF) mitigé par le Secondary NameNode / HA NameNode. DataNodes → stockent les blocs physiquement. Principe de localité : le calcul (MapReduce, Spark) est envoyé là où sont les données, pas l'inverse."
+},
+{s:"Semaine 2 — Bases de données & NoSQL",si:2,n:22,
+text:"Qu'est-ce que la propriété ACID dans les bases de données relationnelles ?",
+code:null,
+opts:["ACID signifie Atomicité, Cohérence, Isolation, Durabilité — les quatre propriétés qui garantissent la fiabilité des transactions dans les SGBDR.","ACID est un protocole de chiffrement des données dans les bases de données.","ACID signifie que les requêtes SQL sont toujours 100% optimisées.","ACID est applicable uniquement aux bases de données MySQL."],
+ok:0,
+fb:"ACID est le fondement de la fiabilité des SGBDR : Atomicité → une transaction est tout ou rien (si une étape échoue, tout est annulé — rollback). Cohérence → la base passe d'un état valide à un autre état valide (contraintes d'intégrité respectées). Isolation → les transactions concurrentes ne s'interfèrent pas (niveaux : Read Committed, Repeatable Read, Serializable). Durabilité → une transaction confirmée est persistante même en cas de panne (journalisation, WAL). Les bases NoSQL sacrifient souvent ACID pour la performance et la scalabilité (BASE : Basically Available, Soft state, Eventually consistent)."
+},
+{s:"Semaine 2 — Bases de données & NoSQL",si:2,n:23,
+text:"Qu'est-ce qu'Apache Spark et en quoi améliore-t-il MapReduce ?",
+code:null,
+opts:["Apache Spark est uniquement un outil de visualisation de données massives.","Apache Spark est un framework de calcul distribué qui garde les données en mémoire (RDDs, DataFrames) entre les étapes de traitement, contrairement à MapReduce qui écrit sur disque entre chaque Map et Reduce — rendant Spark 10 à 100x plus rapide pour les algorithmes itératifs (ML, graphes).","Apache Spark remplace uniquement la partie Reduce de MapReduce.","Apache Spark ne fonctionne que sur des clusters de plus de 100 nœuds."],
+ok:1,
+fb:"Spark vs MapReduce : MapReduce écrit les données intermédiaires sur disque (HDFS) entre chaque étape → très lent pour les algorithmes ML qui nécessitent de nombreuses itérations. Spark maintient les données en mémoire (in-memory computing) → beaucoup plus rapide pour les workloads itératifs. Spark propose : RDD (Resilient Distributed Dataset) pour la programmation fonctionnelle, DataFrame/Dataset API (comme pandas mais distribuée), Spark SQL, Spark Streaming, MLlib (ML distribué), GraphX. PySpark est l'API Python de Spark."
+},
+{s:"Semaine 2 — Bases de données & NoSQL",si:2,n:24,
+text:"Quelle requête SQL calcule le chiffre d'affaires total par catégorie de produits, en n'affichant que les catégories avec plus de 10 000 € de CA ?",
+code:'-- Tables : Ventes(produit_id, quantite, prix_unitaire)\n--          Produits(produit_id, nom, categorie)',
+opts:["SELECT categorie, SUM(quantite * prix_unitaire) FROM Ventes JOIN Produits USING (produit_id) WHERE SUM(...) > 10000 GROUP BY categorie","SELECT categorie, SUM(v.quantite * v.prix_unitaire) AS ca_total FROM Ventes v JOIN Produits p ON v.produit_id = p.produit_id GROUP BY p.categorie HAVING SUM(v.quantite * v.prix_unitaire) > 10000","SELECT categorie, SUM(ca) FROM Ventes WHERE ca > 10000 GROUP BY categorie","SELECT categorie, COUNT(*) FROM Produits GROUP BY categorie HAVING COUNT > 10000"],
+ok:1,
+fb:"Points clés de cette requête : JOIN pour combiner les deux tables. GROUP BY categorie pour agréger par catégorie. HAVING (pas WHERE) pour filtrer sur des agrégats — WHERE ne peut pas utiliser des fonctions d'agrégation (SUM, COUNT, AVG...). WHERE filtre avant le groupement, HAVING filtre après. Ordre d'exécution SQL : FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT."
+},
+{s:"Semaine 2 — Bases de données & NoSQL",si:2,n:25,
+text:"Qu'est-ce qu'un index dans une base de données relationnelle et quel est son impact sur les performances ?",
+code:null,
+opts:["Un index est une contrainte qui empêche les doublons dans une colonne.","Un index est une structure de données (B-tree, hash...) qui accélère la recherche sur une colonne en évitant un full scan de la table — au prix d'un espace supplémentaire et d'un overhead en écriture (l'index doit être mis à jour à chaque INSERT/UPDATE/DELETE).","Un index ralentit toujours les requêtes SELECT — il est uniquement utile pour les INSERT.","Un index permet de stocker plus de données dans une table."],
+ok:1,
+fb:"Les index dans les SGBDR : sans index → full table scan O(n). Avec B-tree index → O(log n). Avec hash index → O(1) pour les égalités. Avantages : accélère les SELECT, JOIN sur les colonnes indexées, ORDER BY. Inconvénients : espace disque supplémentaire, overhead sur INSERT/UPDATE/DELETE (l'index doit être mis à jour), trop d'index dégrade les performances en écriture. Bonnes pratiques : indexer les colonnes de JOIN fréquentes (clés étrangères), les colonnes filtrées souvent (WHERE), ne pas sur-indexer les tables à forte écriture."
+},
+
+// ══════════════════════════════════════════
+// S1+2 — Algèbre linéaire (8 questions)
+// ══════════════════════════════════════════
+{s:"Semaines 1-2 — Algèbre linéaire",si:3,n:26,
+text:"Qu'est-ce qu'une valeur propre et un vecteur propre d'une matrice carrée A ?",
+code:null,
+opts:["Un vecteur propre est un vecteur dont toutes les composantes sont positives.","Un vecteur propre v et sa valeur propre λ vérifient Av = λv : la multiplication par A change uniquement l'échelle du vecteur (λ), pas sa direction. Les valeurs propres sont solutions de det(A - λI) = 0.","Les valeurs propres d'une matrice sont toujours des entiers.","Toute matrice carrée a exactement 2 valeurs propres."],
+ok:1,
+fb:"Valeurs/vecteurs propres (eigenvalues/eigenvectors) : Av = λv signifie que v est un vecteur dont la direction est conservée par la transformation A (seule l'amplitude change par le facteur λ). Calcul : det(A - λI) = 0 → polynôme caractéristique → racines = valeurs propres. Applications majeures : ACP (Principal Component Analysis) — les vecteurs propres de la matrice de covariance sont les axes principaux. PageRank de Google. Compression d'images (SVD). Stabilité des systèmes dynamiques."
+},
+{s:"Semaines 1-2 — Algèbre linéaire",si:3,n:27,
+text:"Quelle est la condition pour qu'une matrice carrée soit inversible ?",
+code:'import numpy as np\nA = np.array([[1, 2], [2, 4]])\nprint(np.linalg.det(A))\nprint(np.linalg.matrix_rank(A))',
+opts:["Une matrice est inversible si elle est carrée et que tous ses éléments sont non nuls.","Une matrice carrée A est inversible (régulière) si et seulement si son déterminant est non nul (det(A) ≠ 0), ou de façon équivalente si son rang est égal à sa dimension (matrice de rang plein).","Toute matrice carrée est inversible.","Une matrice est inversible si elle est symétrique."],
+ok:1,
+fb:"La matrice [[1,2],[2,4]] a det = 1×4 - 2×2 = 0 → singulière (non inversible). Les colonnes [1,2] et [2,4] sont proportionnelles → rang = 1 < 2. Conditions équivalentes d'inversibilité : det(A) ≠ 0, rang(A) = n, les colonnes (ou lignes) sont linéairement indépendantes, 0 n'est pas valeur propre, le système Ax = b a une solution unique pour tout b. En ML : si X^T X est singulière dans la régression linéaire → pas de solution unique des moindres carrés → nécessite régularisation (Ridge)."
+},
+{s:"Semaines 1-2 — Algèbre linéaire",si:3,n:28,
+text:"Qu'est-ce que la décomposition en valeurs singulières (SVD) et à quoi sert-elle ?",
+code:null,
+opts:["La SVD est une méthode de chiffrement des matrices utilisée en cryptographie.","La SVD décompose toute matrice A (m×n) en A = UΣVᵀ où U et V sont orthogonales et Σ est diagonale (valeurs singulières décroissantes). Elle est utilisée pour la réduction de dimension, la compression, la recommandation et le calcul de la pseudo-inverse.","La SVD ne s'applique qu'aux matrices carrées symétriques.","La SVD est identique à la décomposition en valeurs propres."],
+ok:1,
+fb:"SVD (Singular Value Decomposition) : A = UΣVᵀ. U (m×m) : vecteurs singuliers gauches (orthonormaux). Σ (m×n) : matrice diagonale des valeurs singulières σ₁ ≥ σ₂ ≥ ... ≥ 0. V (n×n) : vecteurs singuliers droits. Tronquer à k valeurs singulières → approximation de rang k de A → compression (images, textes). Applications : ACP (SVD de la matrice centrée), filtrage collaboratif (Netflix Prize), LSA (Latent Semantic Analysis pour le texte), pseudo-inverse Moore-Penrose. np.linalg.svd() en NumPy."
+},
+{s:"Semaines 1-2 — Algèbre linéaire",si:3,n:29,
+text:"Qu'est-ce qu'un espace vectoriel et pourquoi est-ce important en data science ?",
+code:null,
+opts:["Un espace vectoriel est uniquement l'ensemble ℝ² ou ℝ³.","Un espace vectoriel est un ensemble muni d'opérations d'addition et de multiplication scalaire vérifiant certains axiomes (fermeture, associativité, neutre, inverse...). En data science, les données sont des vecteurs dans ℝⁿ (n features) → les distances, projections et transformations linéaires s'appliquent.","Un espace vectoriel est un algorithme de ML pour les données en haute dimension.","La notion d'espace vectoriel n'a pas d'application en data science."],
+ok:1,
+fb:"L'espace vectoriel ℝⁿ est le cadre mathématique naturel pour les données tabulaires : chaque exemple est un vecteur dans ℝⁿ (n variables/features). Les opérations essentielles : distance euclidienne entre deux exemples, projection sur un sous-espace (ACP), transformation linéaire (rotation, mise à l'échelle). Le sous-espace vectoriel engendré par un ensemble de vecteurs (span) est clé pour comprendre la régression (le prédicteur ŷ est la projection de y sur l'espace des colonnes de X). La notion de base orthonormale (comme U et V dans la SVD) simplifie les calculs."
+},
+{s:"Semaines 1-2 — Algèbre linéaire",si:3,n:30,
+text:"Comment interprète-t-on géométriquement le produit scalaire de deux vecteurs ?",
+code:'import numpy as np\nu = np.array([1, 0])\nv = np.array([0, 1])\nw = np.array([1, 1]) / np.sqrt(2)\nprint(np.dot(u, v))\nprint(np.dot(u, w))',
+opts:["Le produit scalaire donne le vecteur perpendiculaire aux deux vecteurs.","u·v = ||u|| ||v|| cos(θ) où θ est l'angle entre les vecteurs. u·v = 0 → vecteurs orthogonaux. u·v > 0 → angle aigu (même direction générale). u·v < 0 → angle obtus. Si u et v sont unitaires → cos(θ) = u·v directement.","Le produit scalaire est toujours positif.","np.dot(u, v) donne la distance entre u et v."],
+ok:1,
+fb:"Interprétation géométrique : u·v = ||u|| ||v|| cos(θ). u·v [0,0] = 1×1×cos(90°) = 0 → u ⊥ v (orthogonaux). u·w = 1×1×cos(45°) = 1/√2 ≈ 0.707. Applications ML : la similarité cosinus entre deux vecteurs (documents TF-IDF, embeddings) = cos(θ) = (u·v)/(||u||||v||). Les noyaux (kernels) pour les SVM sont des généralisations du produit scalaire. La projection de u sur v est (u·v/||v||²)v."
+},
+{s:"Semaines 1-2 — Algèbre linéaire",si:3,n:31,
+text:"Qu'est-ce qu'une matrice de covariance et quelle est sa relation avec l'ACP ?",
+code:'import numpy as np\nX = np.array([[1,2],[3,4],[5,6]])\nX_centre = X - X.mean(axis=0)\nCov = (X_centre.T @ X_centre) / (len(X) - 1)',
+opts:["La matrice de covariance est la matrice inverse des données centrées.","La matrice de covariance Σ (n×n) mesure les relations linéaires entre les n variables : Σᵢⱼ = cov(Xᵢ, Xⱼ). Les valeurs propres de Σ donnent la variance selon chaque axe principal ; les vecteurs propres sont les axes de l'ACP. L'ACP cherche les axes de maximum de variance.","La matrice de covariance est toujours diagonale.","L'ACP et la matrice de covariance ne sont pas liées."],
+ok:1,
+fb:"La matrice de covariance Σ : Σᵢⱼ = E[(Xᵢ - μᵢ)(Xⱼ - μⱼ)]. La diagonale contient les variances. Hors-diagonale : covariances positives (variables corrélées positivement) ou négatives. ACP : diagonaliser Σ → valeurs propres λ₁ ≥ λ₂ ≥ ... (variance expliquée par chaque axe) et vecteurs propres v₁, v₂... (directions principales). Projeter X sur les k premiers vecteurs propres → réduction de dimension. np.cov(X.T) calcule la matrice de covariance. np.linalg.eigh() calcule les valeurs/vecteurs propres d'une matrice symétrique."
+},
+{s:"Semaines 1-2 — Algèbre linéaire",si:3,n:32,
+text:"Qu'est-ce que la résolution des moindres carrés ordinaires (OLS) pour la régression linéaire ?",
+code:'import numpy as np\n# X : matrice de design (n×p), y : vecteur cible (n,)\n# Solution OLS : β = (XᵀX)⁻¹ Xᵀy\nbeta = np.linalg.lstsq(X, y, rcond=None)[0]',
+opts:["Les moindres carrés minimisent la somme des erreurs absolues |yᵢ - ŷᵢ|.","Les moindres carrés ordinaires minimisent la somme des carrés des résidus Σ(yᵢ - ŷᵢ)². La solution analytique est β = (XᵀX)⁻¹Xᵀy (si XᵀX est inversible). np.linalg.lstsq() est plus stable numériquement que l'inversion explicite.","Les moindres carrés nécessitent que X soit une matrice carrée.","La solution OLS n'existe que si les données sont normalement distribuées."],
+ok:1,
+fb:"OLS (Ordinary Least Squares) : minimiser ||y - Xβ||² → solution β̂ = (XᵀX)⁻¹Xᵀy. Dérivation : ∂/∂β ||y - Xβ||² = -2Xᵀ(y - Xβ) = 0 → XᵀXβ = Xᵀy (équations normales). Problèmes : si XᵀX est singulière (colonnes colinéaires) → pas de solution unique → régularisation Ridge (β = (XᵀX + λI)⁻¹Xᵀy). np.linalg.lstsq utilise la SVD → toujours stable. Lasso (L1) n'a pas de solution analytique → optimisation itérative requise."
+},
+{s:"Semaines 1-2 — Algèbre linéaire",si:3,n:33,
+text:"Qu'est-ce que la trace d'une matrice et quelles sont ses propriétés importantes ?",
+code:'import numpy as np\nA = np.array([[1,2,3],[4,5,6],[7,8,9]])\nprint(np.trace(A))',
+opts:["La trace d'une matrice est son déterminant.","La trace est la somme des éléments de la diagonale principale : tr(A) = Σaᵢᵢ. Pour A = [[1,2,3],[4,5,6],[7,8,9]] → tr(A) = 1+5+9 = 15. La trace est égale à la somme des valeurs propres : tr(A) = Σλᵢ. Elle est invariante par rotation : tr(AᵀA) = ||A||²_F (norme de Frobenius²).","La trace est le produit des éléments diagonaux.","La trace n'est définie que pour les matrices carrées 2×2."],
+ok:1,
+fb:"La trace : tr(A) = Σaᵢᵢ = somme des éléments diagonaux = somme des valeurs propres. Propriétés importantes : tr(A+B) = tr(A) + tr(B). tr(AB) = tr(BA) (cyclicité). tr(AᵀA) = Σᵢⱼ aᵢⱼ² = ||A||²_F (norme de Frobenius). Applications ML : dans l'ACP, la trace de la matrice de covariance = variance totale des données. Le ratio λₖ/tr(Σ) = proportion de variance expliquée par le k-ième axe principal. La trace apparaît dans la régularisation Ridge et dans les critères de sélection de modèles."
+},
+
+// ══════════════════════════════════════════
+// S3+4 — Probabilités (8 questions)
+// ══════════════════════════════════════════
+{s:"Semaines 3-4 — Probabilités",si:4,n:34,
+text:"Quelle est la définition d'une variable aléatoire et la différence entre variable discrète et continue ?",
+code:null,
+opts:["Une variable aléatoire est une variable dont la valeur est fixée à l'avance.","Une variable aléatoire est une fonction qui associe un nombre réel à chaque issue d'une expérience aléatoire. Variable discrète : prend un nombre fini ou dénombrable de valeurs (ex. nombre de clics, résultat d'un dé). Variable continue : prend des valeurs dans un intervalle continu (ex. temps, température, poids).","Variable discrète et variable continue sont deux termes synonymes.","Une variable aléatoire ne peut prendre que les valeurs 0 ou 1."],
+ok:1,
+fb:"Variables aléatoires : Discrètes → loi de Bernoulli (0/1), binomiale (nombre de succès), Poisson (événements rares). La loi est décrite par sa fonction de masse P(X = k). Continues → loi normale (Gauss), exponentielle, uniforme. La loi est décrite par sa densité f(x) telle que P(a ≤ X ≤ b) = ∫ₐᵇ f(x)dx. Moments : E[X] (espérance = moyenne), Var[X] = E[(X-μ)²] (variance). En ML : les sorties des modèles probabilistes (régression logistique, naive Bayes) sont des variables aléatoires."
+},
+{s:"Semaines 3-4 — Probabilités",si:4,n:35,
+text:"Qu'est-ce que la loi normale (gaussienne) et pourquoi est-elle centrale en statistiques ?",
+code:'import numpy as np\nfrom scipy import stats\nX = stats.norm(loc=0, scale=1)  # N(0,1)\nprint(X.pdf(0))   # densité en 0\nprint(X.cdf(1.96)) # P(X <= 1.96)',
+opts:["La loi normale est une loi discrète utilisée pour modéliser les comptages.","La loi normale N(μ, σ²) est une distribution symétrique en cloche, définie par sa moyenne μ et son écart-type σ. Elle est centrale grâce au théorème central limite : la moyenne d'un grand nombre de variables indépendantes tend vers une normale quelle que soit leur distribution originelle.","La loi normale ne peut modéliser que des données positives.","La loi normale s'applique uniquement si les données suivent une distribution exponentielle."],
+ok:1,
+fb:"La loi normale N(μ, σ²) : densité f(x) = (1/σ√2π) exp(-(x-μ)²/2σ²). Règle des 68-95-99.7 : 68% des données dans [μ-σ, μ+σ], 95% dans [μ-2σ, μ+2σ], 99.7% dans [μ-3σ, μ+3σ]. Théorème Central Limite (TCL) : √n(X̄ₙ - μ)/σ → N(0,1) quand n → ∞. P(Z ≤ 1.96) ≈ 0.975 → intervalle de confiance 95% = [μ-1.96σ/√n, μ+1.96σ/√n]. En ML : hypothèse de normalité des résidus dans la régression linéaire, initialisation des poids des réseaux de neurones, modèles génératifs (VAE, GMM)."
+},
+{s:"Semaines 3-4 — Probabilités",si:4,n:36,
+text:"Qu'est-ce que le théorème de Bayes et comment s'applique-t-il en data science ?",
+code:null,
+opts:["Le théorème de Bayes dit que tous les événements sont indépendants.","P(A|B) = P(B|A) × P(A) / P(B). Il permet de mettre à jour la probabilité d'une hypothèse A en fonction d'une observation B. P(A) est la probabilité a priori, P(A|B) est la probabilité a posteriori.","Le théorème de Bayes s'applique uniquement si A et B sont des événements indépendants.","P(A|B) = P(A) + P(B) selon le théorème de Bayes."],
+ok:1,
+fb:"Bayes : P(A|B) = P(B|A)P(A)/P(B). P(A) : probabilité a priori (avant observation). P(B|A) : vraisemblance (likelihood) de B sachant A. P(B) = Σ P(B|Aᵢ)P(Aᵢ) : probabilité marginale. P(A|B) : probabilité a posteriori (après observation). Applications ML : Naive Bayes (classification de texte, spam), inférence bayésienne, réseaux de croyances (Bayesian networks), estimation MAP (Maximum A Posteriori), hyperparameter tuning bayésien. Naive Bayes suppose l'indépendance conditionnelle des features → P(x₁,...,xₙ|y) = ΠP(xᵢ|y)."
+},
+{s:"Semaines 3-4 — Probabilités",si:4,n:37,
+text:"Qu'est-ce que la variance et l'écart-type d'une variable aléatoire ?",
+code:'import numpy as np\nx = np.array([2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0])\nprint(np.mean(x))\nprint(np.var(x))    # variance\nprint(np.std(x))    # écart-type',
+opts:["La variance est la moyenne des valeurs, l'écart-type est la somme des carrés.","La variance Var(X) = E[(X - μ)²] mesure la dispersion des données autour de la moyenne — elle est en unités². L'écart-type σ = √Var(X) est dans les mêmes unités que X. Pour l'échantillon : np.var(x) utilise n (biaisé), np.var(x, ddof=1) utilise n-1 (non biaisé).","La variance et l'écart-type sont des mesures de centralité, pas de dispersion.","La variance est toujours égale à la moyenne au carré."],
+ok:1,
+fb:"Variance Var(X) = E[(X-μ)²] = E[X²] - μ². Pour l'échantillon: s² = Σ(xᵢ-x̄)²/(n-1) (Bessel's correction, non biaisée). Le dataset [2,4,4,4,5,5,7,9] : μ=5, σ≈2. Interprétation : σ mesure l'étalement typique autour de la moyenne. Propriétés : Var(aX+b) = a²Var(X). Var(X+Y) = Var(X) + Var(Y) + 2Cov(X,Y). En ML : la variance d'un estimateur mesure sa sensibilité aux données d'entraînement → trade-off biais-variance fondamental."
+},
+{s:"Semaines 3-4 — Probabilités",si:4,n:38,
+text:"Qu'est-ce que l'indépendance entre deux variables aléatoires et comment la détecter ?",
+code:null,
+opts:["Deux variables sont indépendantes si leur covariance est nulle.","Deux variables X et Y sont indépendantes si P(X=x, Y=y) = P(X=x) × P(Y=y) pour toutes valeurs x, y. L'indépendance implique une covariance nulle, mais l'inverse n'est pas vrai (covariance nulle ≠ indépendance sauf pour les normales).","Deux variables indépendantes ont toujours la même distribution.","Deux variables sont indépendantes si leur corrélation est exactement 1."],
+ok:1,
+fb:"Indépendance : P(X,Y) = P(X)P(Y). Conséquence : Cov(X,Y) = 0, E[XY] = E[X]E[Y]. Attention : covariance nulle n'implique pas l'indépendance (exemple : X~N(0,1), Y=X² → Cov(X,Y)=0 mais Y est complètement déterminé par X). Exception : pour les vecteurs gaussiens, Cov=0 ⟺ indépendance. Corrélation de Pearson : ρ(X,Y) = Cov(X,Y)/(σₓσᵧ) ∈ [-1,1]. ρ = 0 → non linéairement corrélés (mais pas forcément indépendants). En ML : l'hypothèse d'indépendance des features dans Naive Bayes simplifie P(x|y) = ΠP(xᵢ|y)."
+},
+{s:"Semaines 3-4 — Probabilités",si:4,n:39,
+text:"Qu'est-ce que la loi des grands nombres et le théorème central limite ?",
+code:null,
+opts:["La loi des grands nombres dit que plus on a de données, plus les prédictions sont fausses.","Loi des grands nombres : la moyenne empirique d'un grand nombre d'observations indépendantes converge vers l'espérance théorique (X̄ₙ → μ). Théorème Central Limite : √n(X̄ₙ - μ)/σ → N(0,1) — la distribution de la moyenne normalisée converge vers une normale.","Le théorème central limite ne s'applique qu'aux variables normalement distribuées.","La loi des grands nombres implique que les données sont toujours normalement distribuées."],
+ok:1,
+fb:"Loi des Grands Nombres (LGN) : X̄ₙ = (X₁+...+Xₙ)/n → μ presque sûrement quand n → ∞ (loi forte). Théorème Central Limite (TCL) : indépendamment de la distribution de X (avec μ, σ² finis), la moyenne normalisée converge en loi vers N(0,1). C'est pourquoi la normale est si répandue en statistique : les statistiques basées sur des moyennes sont asymptotiquement normales. Application : intervalles de confiance, tests d'hypothèse, estimation. En ML : justifie l'utilisation de la perte quadratique et de la log-vraisemblance gaussienne."
+},
+{s:"Semaines 3-4 — Probabilités",si:4,n:40,
+text:"Qu'est-ce que la loi de Poisson et dans quel contexte l'utilise-t-on ?",
+code:null,
+opts:["La loi de Poisson modélise des événements continus sur un intervalle.","La loi de Poisson modélise le nombre d'événements rares se produisant dans un intervalle de temps/espace fixé, à un taux moyen λ. P(X=k) = e⁻λ λᵏ/k!. E[X] = Var(X) = λ.","La loi de Poisson ne s'applique qu'aux données financières.","La loi de Poisson est un cas particulier de la loi normale pour les grands échantillons."],
+ok:1,
+fb:"Loi de Poisson(λ) : modélise les événements rares indépendants à taux constant. Caractéristique unique : E[X] = Var(X) = λ (si Var > E → surdispersion → négative binomiale). Applications Big Data : nombre de requêtes par seconde sur un serveur, nombre de clics sur une page, nombre de pannes matérielles, nombre de fraudes dans une période. En NLP : modèle de Poisson pour la distribution des mots dans un corpus. Quand λ grand → Poisson ≈ N(λ, λ). Limite de la binomiale B(n,p) quand n→∞, p→0, np=λ."
+},
+{s:"Semaines 3-4 — Probabilités",si:4,n:41,
+text:"Qu'est-ce que l'espérance conditionnelle E[Y|X] et pourquoi est-elle centrale en régression ?",
+code:null,
+opts:["L'espérance conditionnelle E[Y|X=x] est toujours égale à E[Y].","E[Y|X=x] est la valeur moyenne de Y sachant que X prend la valeur x. En régression, on modélise E[Y|X] = f(X) — la fonction de régression est l'espérance conditionnelle de Y sachant X. Le meilleur prédicteur de Y (au sens de l'erreur quadratique) est E[Y|X].","L'espérance conditionnelle n'est définie que pour les variables discrètes.","E[Y|X] = E[Y] × E[X] toujours."],
+ok:1,
+fb:"L'espérance conditionnelle E[Y|X=x] est fondamentale en régression : la régression est l'estimation de m(x) = E[Y|X=x]. Propriété : E[Y|X] minimise l'erreur quadratique moyenne E[(Y - g(X))²] sur toutes les fonctions g → c'est le meilleur prédicteur. Loi de l'espérance totale : E[Y] = E[E[Y|X]]. Régression linéaire : suppose m(x) = βᵀx. Régression non-paramétrique (KNN, arbres, GAM) : estime directement m(x) sans forme paramétrique. Régression logistique : modélise E[Y|X] = P(Y=1|X) = σ(βᵀx)."
+},
+
+// ══════════════════════════════════════════
+// S3+4 — Analyse (calcul différentiel, optimisation) (6 questions)
+// ══════════════════════════════════════════
+{s:"Semaines 3-4 — Analyse & Optimisation",si:5,n:42,
+text:"Qu'est-ce que le gradient d'une fonction scalaire f : ℝⁿ → ℝ et comment l'interpréter ?",
+code:null,
+opts:["Le gradient d'une fonction est sa valeur en un point.","Le gradient ∇f(x) ∈ ℝⁿ est le vecteur des dérivées partielles de f en x. Il pointe dans la direction de la montée la plus rapide de f. Son opposé -∇f(x) est la direction de la descente la plus rapide — c'est la base de la descente de gradient.","Le gradient est défini uniquement pour les fonctions en 1D.","Le gradient d'une fonction est toujours un scalaire."],
+ok:1,
+fb:"Gradient ∇f(x) = [∂f/∂x₁, ..., ∂f/∂xₙ]ᵀ. Propriétés géométriques : ||∇f(x)|| mesure la pente (vitesse de variation). La direction de ∇f(x) est la direction de montée la plus rapide. Les surfaces de niveau f(x) = c sont perpendiculaires au gradient. Descente de gradient : xₜ₊₁ = xₜ - α∇f(xₜ) → converge vers un minimum local (sous conditions). En ML : ∇L(θ) = gradient de la loss par rapport aux paramètres → backpropagation calcule ce gradient efficacement via la règle de la chaîne."
+},
+{s:"Semaines 3-4 — Analyse & Optimisation",si:5,n:43,
+text:"Qu'est-ce qu'une fonction convexe et pourquoi est-ce crucial en optimisation ML ?",
+code:null,
+opts:["Une fonction convexe a plusieurs minima locaux.","Une fonction f est convexe si pour tout x, y et λ ∈ [0,1] : f(λx + (1-λ)y) ≤ λf(x) + (1-λ)f(y) — le segment entre deux points est au-dessus (ou sur) la courbe. Une fonction convexe n'a qu'un seul minimum global. Tout minimum local est global.","Une fonction convexe est toujours différentiable.","La convexité n'a aucune importance pour l'optimisation en machine learning."],
+ok:1,
+fb:"Convexité : géométriquement, la courbe est en forme de bol — le segment entre deux points est au-dessus de la courbe. Propriété fondamentale : tout minimum local est un minimum global → la descente de gradient converge vers l'optimum global. Fonctions convexes communes en ML : ||w||² (Ridge), |w| (Lasso), -log(p) (entropie croisée pour la régression logistique), MSE. Les réseaux de neurones ne sont PAS convexes → descente de gradient peut bloquer dans des minima locaux. La condition de convexité : f''(x) ≥ 0 en 1D, matrice hessienne positive semi-définie en dimension n."
+},
+{s:"Semaines 3-4 — Analyse & Optimisation",si:5,n:44,
+text:"Quelle est la différence entre la descente de gradient par lot (batch), stochastique (SGD) et mini-batch ?",
+code:null,
+opts:["Il n'y a pas de différence — les trois méthodes sont identiques.","Batch GD utilise tout le dataset pour calculer le gradient à chaque étape → stable mais lent pour les grands datasets. SGD utilise un seul exemple → rapide mais bruité. Mini-batch GD (intermédiaire) : utilise un sous-ensemble (32, 64, 128 exemples) → bon compromis vitesse/stabilité, standard en deep learning.","SGD est toujours préférable pour tous les problèmes d'optimisation.","La descente de gradient batch converge toujours en une seule itération."],
+ok:1,
+fb:"Comparaison : Batch GD → gradient exact sur n exemples → n calculs par étape → lent, stable, converge vers le minimum exact pour les fonctions convexes. SGD (Stochastic Gradient Descent) → gradient estimé sur 1 exemple → fluctuations importantes → peut échapper aux minima locaux mais oscille. Mini-batch (standard en DL) → gradient estimé sur B exemples (B=32-256) → utilise le parallélisme GPU, variance réduite, convergence rapide. Améliorations de SGD : momentum, AdaGrad, RMSprop, Adam (adaptatif par paramètre)."
+},
+{s:"Semaines 3-4 — Analyse & Optimisation",si:5,n:45,
+text:"Qu'est-ce que la règle de la chaîne et pourquoi est-elle fondamentale pour la backpropagation ?",
+code:null,
+opts:["La règle de la chaîne est uniquement applicable aux fonctions polynomiales.","La règle de la chaîne calcule la dérivée d'une fonction composée : si f = h∘g, alors df/dx = (dh/dg)(dg/dx). En backpropagation, le réseau est une composition de fonctions — la règle de la chaîne permet de calculer efficacement le gradient de la perte par rapport à chaque paramètre en propagant les gradients de la sortie vers l'entrée.","La règle de la chaîne dit que la dérivée d'une somme est la somme des dérivées.","La règle de la chaîne ne s'applique qu'aux fonctions en 2 variables."],
+ok:1,
+fb:"Règle de la chaîne : (f∘g)'(x) = f'(g(x)) × g'(x). En multivariable (Jacobienne) : ∂L/∂xᵢ = Σⱼ (∂L/∂yⱼ)(∂yⱼ/∂xᵢ). Backpropagation applique la règle de la chaîne de façon efficace (dynamic programming) : calcul forward (valeurs de chaque couche), puis backward (gradients de la loss vers l'entrée). Complexité : O(n) calculs pour n paramètres (vs O(n²) pour un calcul naïf). La backpropagation est l'algorithme qui rend l'entraînement des réseaux profonds possible."
+},
+{s:"Semaines 3-4 — Analyse & Optimisation",si:5,n:46,
+text:"Qu'est-ce que la régularisation L1 (Lasso) et L2 (Ridge) et quel est leur effet sur les paramètres ?",
+code:null,
+opts:["L1 et L2 augmentent la complexité du modèle pour améliorer les performances.","La régularisation L2 (Ridge) ajoute λ||w||² à la perte → pénalise les grands poids → réduit tous les poids vers 0 mais ne les annule pas exactement. La régularisation L1 (Lasso) ajoute λ||w||₁ → produit des poids exactement nuls (sélection de variables automatique) grâce à la géométrie de la norme L1.","L1 et L2 produisent exactement les mêmes résultats.","La régularisation ne s'applique qu'aux réseaux de neurones."],
+ok:1,
+fb:"L2 (Ridge) : L = ||y - Xβ||² + λ||β||². Solution analytique : β = (XᵀX + λI)⁻¹Xᵀy. Tous les β sont rétrécis vers 0 mais rarement nuls → bonne quand toutes les features sont utiles. L1 (Lasso) : L = ||y - Xβ||² + λ||β||₁. Pas de solution analytique → optimisation sous-différentielle. Produit des β exactement nuls → sélection automatique de variables → solution sparse. Raison géométrique : L1 ball (losange en 2D) a des coins aux axes → la solution optimale est souvent sur un coin (β_j = 0). Elastic Net = L1 + L2 → combine les deux avantages."
+},
+{s:"Semaines 3-4 — Analyse & Optimisation",si:5,n:47,
+text:"Qu'est-ce que le taux d'apprentissage (learning rate) α et comment son choix impacte-t-il la convergence ?",
+code:null,
+opts:["Le learning rate ne doit jamais être modifié pendant l'entraînement.","Le learning rate α contrôle la taille du pas dans la descente de gradient : wₜ₊₁ = wₜ - α∇L(wₜ). Trop grand → oscillations ou divergence. Trop petit → convergence très lente. Optimal → convergence rapide vers un (bon) minimum. Des schedulers réduisent α au cours de l'entraînement.","Le learning rate optimal est toujours 0.01 quelle que soit la tâche.","Un learning rate élevé garantit toujours de meilleures performances."],
+ok:1,
+fb:"Choix du learning rate : α trop grand → la loss oscille ou diverge (les mises à jour sont trop grandes, on 'saute' le minimum). α trop petit → convergence très lente, risque de rester dans un mauvais plateau. Techniques : learning rate schedules (step decay, cosine annealing, warm restarts), learning rate range test (cyclic LR). Adaptive optimizers (Adam, RMSprop) ajustent automatiquement le LR par paramètre. Warm-up : commencer avec un petit LR puis augmenter → stabilise l'entraînement des transformers. Le LR est l'hyperparamètre le plus important à régler."
+},
+
+// ══════════════════════════════════════════
+// S5 — Statistiques (6 questions)
+// ══════════════════════════════════════════
+{s:"Semaine 5 — Statistiques",si:6,n:48,
+text:"Quelle est la différence entre un estimateur biaisé et non biaisé ?",
+code:null,
+opts:["Un estimateur biaisé est toujours moins précis qu'un estimateur non biaisé.","Un estimateur θ̂ de θ est non biaisé si E[θ̂] = θ (en moyenne il 'vise juste'). Un estimateur biaisé a E[θ̂] ≠ θ — il sous-estime ou surestime systématiquement. La variance de l'estimateur s² = Σ(xᵢ-x̄)²/(n-1) est non biaisée grâce au facteur (n-1) de Bessel.","Un estimateur non biaisé a toujours la plus petite variance possible.","Un estimateur biaisé ne peut pas être utile en pratique."],
+ok:1,
+fb:"Biais d'un estimateur : Biais(θ̂) = E[θ̂] - θ. Variance de s² avec n : E[s²_biaisé] = (n-1)/n × σ² → biaisé. Avec n-1 : E[s²_sans biais] = σ² → non biaisé. Trade-off biais-variance : un estimateur biaisé peut avoir une variance plus faible → MSE total (biais² + variance) peut être plus faible. Ex : la régression Ridge est biaisée mais a une variance plus faible que OLS → meilleur en prédiction sur de nouvelles données. Le théorème de Gauss-Markov : OLS est le meilleur estimateur linéaire non biaisé (BLUE)."
+},
+{s:"Semaine 5 — Statistiques",si:6,n:49,
+text:"Qu'est-ce qu'un test d'hypothèse et que représente la p-valeur ?",
+code:null,
+opts:["La p-valeur est la probabilité que l'hypothèse nulle H₀ soit vraie.","Un test d'hypothèse évalue si des données sont compatibles avec H₀ (hypothèse nulle). La p-valeur est la probabilité d'observer des résultats aussi extrêmes que ceux observés, si H₀ était vraie. Une p-valeur faible (< 0.05) suggère que les données sont incompatibles avec H₀.","Si la p-valeur est > 0.05, l'hypothèse nulle est prouvée vraie.","La p-valeur mesure l'effet pratique ou l'importance clinique d'une différence."],
+ok:1,
+fb:"Test d'hypothèse : H₀ (hypothèse nulle : pas d'effet) vs H₁ (hypothèse alternative). Statistique de test calculée sur les données. p-valeur = P(statistique aussi extrême | H₀ vraie). Si p < α (seuil, souvent 0.05) → rejet de H₀ (résultat statistiquement significatif). Erreurs : Type I (faux positif, taux α = P(rejeter H₀|H₀ vraie)). Type II (faux négatif, taux β). Puissance = 1-β. Distinction cruciale : significatif statistiquement ≠ significatif pratiquement (avec de grandes données, même des effets triviaux sont significatifs)."
+},
+{s:"Semaine 5 — Statistiques",si:6,n:50,
+text:"Qu'est-ce que la régression logistique et comment produit-elle une probabilité ?",
+code:'import numpy as np\ndef sigmoid(z):\n    return 1 / (1 + np.exp(-z))\n\n# Modèle : P(Y=1|x) = σ(wᵀx + b)\nw = np.array([0.5, -1.0])\nb = 0.3\nx = np.array([1.0, 2.0])\nprob = sigmoid(np.dot(w, x) + b)',
+opts:["La régression logistique prédit directement des valeurs continues entre -∞ et +∞.","La régression logistique modélise P(Y=1|x) = σ(wᵀx + b) où σ(z) = 1/(1+e⁻ᶻ) est la fonction sigmoïde qui 'écrase' toute valeur réelle dans [0,1]. La décision est prise en seuillant la probabilité (ex. si P > 0.5 → classe 1).","La régression logistique est uniquement applicable aux problèmes multiclasses.","La fonction sigmoïde peut retourner des valeurs supérieures à 1."],
+ok:1,
+fb:"Régression logistique : log(p/(1-p)) = wᵀx + b (modélise le log-odds). σ(z) = 1/(1+e⁻ᶻ) ∈ (0,1) → sortie interprétable comme probabilité. Entraînement : minimiser la log-vraisemblance négative (entropie croisée) : L = -Σ[yᵢ log(pᵢ) + (1-yᵢ)log(1-pᵢ)] → fonction convexe → descente de gradient garantit le minimum global. Décision : seuil t (typiquement 0.5 mais ajustable selon le coût des erreurs). Extension multiclasse : softmax (régression logistique multinomiale). Régularisation : Ridge (C dans sklearn) pour éviter l'overfitting."
+},
+{s:"Semaine 5 — Statistiques",si:6,n:51,
+text:"Qu'est-ce que la validation croisée (cross-validation) et pourquoi est-elle nécessaire ?",
+code:null,
+opts:["La validation croisée consiste à évaluer le modèle sur les données d'entraînement.","La validation croisée k-fold divise les données en k parties, entraîne sur k-1 parties et évalue sur la partie restante, en répétant k fois (chaque partie servant de validation une fois). Elle fournit une estimation robuste de la performance de généralisation avec toutes les données.","La validation croisée n'est utile que pour les réseaux de neurones.","La validation croisée divise toujours les données en 50% train / 50% test."],
+ok:1,
+fb:"Cross-validation k-fold (typiquement k=5 ou k=10) : plus fiable qu'un simple split train/test car utilise toutes les données pour l'évaluation → estimation de performance moins variable. Stratified k-fold : préserve la proportion de classes dans chaque fold → important pour les datasets déséquilibrés. Leave-One-Out (LOO) : k = n → chaque exemple est un fold → très précis mais coûteux. Utilisation : sélection d'hyperparamètres (GridSearchCV dans sklearn), sélection de modèle, estimation de l'incertitude des performances. Ne jamais utiliser le test set pour la sélection d'hyperparamètres."
+},
+{s:"Semaine 5 — Statistiques",si:6,n:52,
+text:"Qu'est-ce que la corrélation de Pearson et quelles sont ses limites ?",
+code:'import numpy as np\nx = np.array([1, 2, 3, 4, 5])\ny = np.array([2, 4, 5, 4, 5])\nr = np.corrcoef(x, y)[0, 1]',
+opts:["La corrélation de Pearson mesure toute relation entre deux variables.","La corrélation de Pearson ρ ∈ [-1,1] mesure la force de la relation linéaire entre X et Y. ρ = 1 → corrélation positive parfaite. ρ = -1 → corrélation négative parfaite. ρ = 0 → pas de relation linéaire. Limite : ne capture pas les relations non-linéaires et est sensible aux outliers.","Une corrélation de 0.3 entre deux variables prouve qu'elles ne sont pas liées.","La corrélation de Pearson peut prendre des valeurs supérieures à 1."],
+ok:1,
+fb:"Corrélation de Pearson : ρ(X,Y) = Cov(X,Y)/(σₓσᵧ). Interprétation : ρ = 0.3 (faible), 0.5 (modérée), 0.7 (forte), > 0.9 (très forte). Limites majeures : mesure uniquement les relations linéaires (X et X² peuvent avoir ρ ≈ 0). Sensible aux outliers (un seul point aberrant peut changer drastiquement ρ). Corrélation ≠ causalité. Alternatives : corrélation de Spearman (rangs, robuste aux outliers), corrélation de Kendall (τ), information mutuelle (pour les relations non-linéaires). En Big Data : np.corrcoef(), pandas.DataFrame.corr(), heatmap de corrélation avec seaborn."
+},
+{s:"Semaine 5 — Statistiques",si:6,n:53,
+text:"Qu'est-ce que le compromis biais-variance et comment l'interpréter graphiquement ?",
+code:null,
+opts:["Le compromis biais-variance dit que les modèles complexes ont toujours de meilleures performances.","L'erreur de généralisation d'un modèle = Biais² + Variance + Bruit irréductible. Biais élevé (underfitting) → modèle trop simple, ne capture pas les patterns. Variance élevée (overfitting) → modèle trop complexe, mémorise le bruit. Le compromis optimal maximise la complexité tout en maintenant une bonne généralisation.","Le compromis biais-variance ne s'applique qu'aux réseaux de neurones.","Un biais élevé signifie que le modèle généralise parfaitement."],
+ok:1,
+fb:"E[(ŷ - y)²] = Biais[ŷ]² + Var[ŷ] + σ² (bruit irréductible). Biais = différence entre la prédiction moyenne du modèle et la vraie valeur → modèle systématiquement faux (ex. régression linéaire sur données non-linéaires). Variance = sensibilité du modèle aux variations du dataset d'entraînement → modèle instable, change beaucoup d'un dataset à l'autre (ex. arbre de décision profond). Graphique : courbe en U de l'erreur de test vs complexité. Régularisation réduit la variance au prix d'un biais légèrement accru. En double descente (deep learning) : la courbe peut se redresser puis redescendre au-delà de l'interpolation."
+},
+
+// ══════════════════════════════════════════
+// S6 — Perceptron & Classification (8 questions)
+// ══════════════════════════════════════════
+{s:"Semaine 6 — Perceptron & Classification",si:7,n:54,
+text:"Qu'est-ce que le Perceptron et quel problème résout-il ?",
+code:null,
+opts:["Le Perceptron est un algorithme de clustering qui regroupe les données similaires.","Le Perceptron (Rosenblatt, 1957) est un classifieur binaire linéaire : il apprend un hyperplan séparateur dans l'espace des features pour distinguer deux classes. Il converge garantissment si les données sont linéairement séparables.","Le Perceptron peut résoudre n'importe quel problème de classification, y compris non-linéaire.","Le Perceptron est uniquement applicable aux données en 1D."],
+ok:1,
+fb:"Perceptron : ŷ = signe(wᵀx + b). Règle d'apprentissage : si yᵢ ≠ ŷᵢ → w ← w + yᵢxᵢ, b ← b + yᵢ. Convergence : théorème de convergence du Perceptron — si les données sont linéairement séparables, l'algorithme converge en un nombre fini d'étapes. Si non séparables → ne converge pas. Limites célèbres (Minsky & Papert, 1969) : ne peut pas apprendre XOR (non linéairement séparable). Solution : réseaux multicouches (MLP) + fonctions d'activation non-linéaires. Le Perceptron est l'ancêtre de tous les réseaux de neurones modernes."
+},
+{s:"Semaine 6 — Perceptron & Classification",si:7,n:55,
+text:"Comment fonctionne la règle de mise à jour du Perceptron ?",
+code:'def perceptron_update(w, b, x, y, y_hat):\n    if y != y_hat:  # si erreur de classification\n        w = w + y * x\n        b = b + y\n    return w, b',
+opts:["Les poids sont mis à jour à chaque exemple, qu'il y ait une erreur ou non.","Les poids sont mis à jour uniquement quand une erreur de classification est commise : w ← w + yᵢxᵢ. Si yᵢ = +1 et ŷᵢ = -1 → w est poussé dans la direction de xᵢ (augmente le score pour cette classe). Si yᵢ = -1 et ŷᵢ = +1 → w est poussé dans la direction opposée.","Les poids sont mis à zéro après chaque erreur.","Le Perceptron met à jour les poids en calculant le gradient de la loss quadratique."],
+ok:1,
+fb:"Règle Perceptron (online learning) : parcourir les exemples un par un. Si ŷ = signe(wᵀx + b) ≠ y → w ← w + αyx (α = learning rate, souvent 1). Interprétation géométrique : si y=+1 mais ŷ=-1, xᵢ est du mauvais côté de l'hyperplan → on déplace le plan vers xᵢ. L'algorithme est une forme de SGD sur la perte hinge max(0, -y(wᵀx+b)). Différence avec la régression logistique : pas de probabilité, pas de convergence garantie si non séparable. Ancêtre du SVM (margin maximization) et du MLP (Perceptron multicouche)."
+},
+{s:"Semaine 6 — Perceptron & Classification",si:7,n:56,
+text:"Qu'est-ce qu'un hyperplan séparateur dans ℝⁿ et comment est-il défini ?",
+code:null,
+opts:["Un hyperplan dans ℝⁿ est une droite qui sépare les données en deux groupes.","Un hyperplan dans ℝⁿ est un sous-espace de dimension n-1 défini par wᵀx + b = 0 (avec w ∈ ℝⁿ vecteur normal à l'hyperplan et b le biais). Il divise ℝⁿ en deux demi-espaces : wᵀx + b > 0 et wᵀx + b < 0.","Un hyperplan dans ℝⁿ est uniquement défini pour n = 2 ou n = 3.","L'hyperplan séparateur est toujours centré à l'origine."],
+ok:1,
+fb:"Hyperplan wᵀx + b = 0 : en 1D → un point. En 2D → une droite. En 3D → un plan. En nD → un hyperplan. Le vecteur w est normal (perpendiculaire) à l'hyperplan. La distance d'un point x₀ à l'hyperplan = |wᵀx₀ + b| / ||w||. Le Perceptron trouve un hyperplan qui sépare les deux classes (si elles sont linéairement séparables). SVM maximise la marge = 2/||w|| (distance entre les deux classes les plus proches). Kernel SVM : hyperplan dans l'espace des features transformé φ(x) → séparation non-linéaire dans l'espace d'entrée."
+},
+{s:"Semaine 6 — Perceptron & Classification",si:7,n:57,
+text:"Qu'est-ce que la séparabilité linéaire et que se passe-t-il quand des données ne sont pas linéairement séparables ?",
+code:null,
+opts:["Toutes les données réelles sont toujours linéairement séparables avec suffisamment de features.","Des données sont linéairement séparables s'il existe un hyperplan qui classe parfaitement tous les exemples. Si non séparables : le Perceptron ne converge pas. Solutions : SVM avec marge souple (soft-margin, paramètre C), transformation non-linéaire des features (kernel trick), réseaux de neurones (approximateurs universels).","La séparabilité linéaire ne concerne que les problèmes en 2D.","Un problème non linéairement séparable ne peut jamais être résolu par un algorithme de ML."],
+ok:1,
+fb:"XOR est l'exemple classique de non-séparabilité linéaire : (0,0)→0, (0,1)→1, (1,0)→1, (1,1)→0 → aucune droite ne peut séparer les 1 des 0. Solutions : Transformation de features (ajouter x₁x₂) → le problème devient linéairement séparable en 3D. SVM avec kernel (RBF, polynomial) → transformation implicite vers un espace de haute dimension via le kernel trick K(x,z) = φ(x)ᵀφ(z). Perceptron multicouche : ajouter des couches cachées avec des fonctions non-linéaires → approximateur universel (Universal Approximation Theorem)."
+},
+{s:"Semaine 6 — Perceptron & Classification",si:7,n:58,
+text:"Quelles sont les métriques d'évaluation d'un classifieur binaire au-delà de l'accuracy ?",
+code:'from sklearn.metrics import classification_report\n# TP, TN, FP, FN depuis la matrice de confusion\n# Précision = TP / (TP + FP)\n# Rappel = TP / (TP + FN)\n# F1 = 2 * (P * R) / (P + R)',
+opts:["L'accuracy est toujours la meilleure métrique pour évaluer un classifieur.","Précision = TP/(TP+FP) (parmi les positifs prédits, combien sont vrais ?). Rappel = TP/(TP+FN) (parmi les vrais positifs, combien sont détectés ?). F1 = moyenne harmonique(P, R). AUC-ROC = aire sous la courbe ROC. Ces métriques sont essentielles pour les datasets déséquilibrés où l'accuracy est trompeuse.","La matrice de confusion est uniquement utile pour les problèmes multiclasses.","Le rappel est toujours plus important que la précision."],
+ok:1,
+fb:"Matrice de confusion : TP (vrai positif), TN (vrai négatif), FP (faux positif, erreur de type I), FN (faux négatif, erreur de type II). Accuracy = (TP+TN)/n → trompeuse si classes déséquilibrées (95% d'accuracy si on prédit toujours la classe majoritaire à 95%). Précision → utile si le coût des FP est élevé (ex. spam : mieux rater un spam que classer un mail légitime en spam). Rappel → utile si le coût des FN est élevé (ex. cancer : mieux faux positif que manquer un cancer). F1 → compromis. AUC-ROC → robuste au déséquilibre, mesure la capacité discriminante globale."
+},
+{s:"Semaine 6 — Perceptron & Classification",si:7,n:59,
+text:"Qu'est-ce qu'un réseau de neurones multicouche (MLP) et comment étend-il le Perceptron ?",
+code:null,
+opts:["Un MLP est uniquement une version plus rapide du Perceptron simple.","Un MLP (Multi-Layer Perceptron) ajoute une ou plusieurs couches cachées entre l'entrée et la sortie. Chaque couche cachée applique une transformation non-linéaire (activation ReLU, sigmoïde, tanh). Les couches cachées permettent d'apprendre des représentations hiérarchiques et de résoudre des problèmes non linéairement séparables.","Un MLP ne peut résoudre que des problèmes à 2 classes.","Les couches cachées du MLP utilisent uniquement des fonctions linéaires."],
+ok:1,
+fb:"MLP (ou réseau feedforward) : entrée → couche(s) cachée(s) avec activation non-linéaire → couche de sortie. Sans activation non-linéaire → composition de fonctions linéaires = fonction linéaire → pas mieux qu'un Perceptron. Avec ReLU/sigmoïde/tanh → capacité d'approximer n'importe quelle fonction continue (Théorème d'approximation universelle, Hornik 1989). Entraînement : backpropagation + SGD. Profondeur vs largeur : les réseaux profonds (deep learning) apprennent des représentations hiérarchiques (pixels → contours → formes → objets pour les images)."
+},
+{s:"Semaine 6 — Perceptron & Classification",si:7,n:60,
+text:"Qu'est-ce que l'entropie croisée (cross-entropy loss) et pourquoi est-elle utilisée pour la classification ?",
+code:'import numpy as np\ndef cross_entropy(y_true, y_pred):\n    # y_pred : probabilités prédites (après softmax/sigmoïde)\n    # y_true : labels vrais (0 ou 1)\n    return -np.mean(y_true * np.log(y_pred + 1e-8)\n                    + (1-y_true) * np.log(1-y_pred + 1e-8))',
+opts:["L'entropie croisée minimise la distance euclidienne entre les prédictions et les labels.","L'entropie croisée H(y, ŷ) = -Σ yₖ log(ŷₖ) mesure la différence entre la distribution vraie y et la distribution prédite ŷ. Elle est maximale (log-vraisemblance maximale) quand ŷ = y. Convexe pour la régression logistique → descente de gradient garantit le minimum global. Pénalise fortement les prédictions confidentes et erronées.","L'entropie croisée est uniquement applicable aux problèmes de régression.","L'entropie croisée est identique à l'erreur quadratique moyenne (MSE)."],
+ok:1,
+fb:"Cross-entropy binaire : L = -[y log(p) + (1-y)log(1-p)]. Si y=1 et p≈0 → L très grand (pénalité forte). Si y=1 et p≈1 → L≈0. Pour la multiclasse (softmax) : L = -Σₖ yₖ log(pₖ). Avantage vs MSE pour la classification : gradient plus informatif dans les zones saturées de la sigmoïde. Lien avec l'information théorique : H(p,q) = H(p) + KL(p||q) → minimiser la cross-entropy revient à minimiser la divergence KL entre les distributions. La 1e-8 dans le code évite log(0) (numerical stability)."
+},
+{s:"Semaine 6 — Perceptron & Classification",si:7,n:61,
+text:"Qu'est-ce que la fonction softmax et quand l'utilise-t-on ?",
+code:'import numpy as np\ndef softmax(z):\n    exp_z = np.exp(z - np.max(z))  # stabilité numérique\n    return exp_z / exp_z.sum()',
+opts:["Softmax est une fonction qui sélectionne la valeur maximale d'un vecteur.","Softmax transforme un vecteur de scores bruts (logits) en distribution de probabilités : softmax(z)ₖ = e^zₖ / Σⱼ e^zⱼ. La somme vaut toujours 1. Utilisée dans la couche de sortie pour la classification multiclasse (C classes).","Softmax est identique à la fonction sigmoïde.","Softmax ne peut être utilisée que pour exactement 3 classes."],
+ok:1,
+fb:"Softmax (normalized exponential) : softmax(z)ₖ = e^zₖ / Σⱼe^zⱼ. La soustraction de max(z) (trick numérique) évite l'explosion des exponentielles sans changer le résultat (division par une constante positive). Interprétation : chaque zₖ est le 'score' de la classe k → softmax le convertit en probabilité. softmax → sigmoïde pour 2 classes. Combinée avec cross-entropy : gradient simplifié = ŷ - y (facile à implémenter). En Python/TensorFlow : tf.keras.layers.Dense(n_classes, activation='softmax') ou nn.Softmax dans PyTorch."
+},
+{s:"Semaine 6 — Perceptron & Classification",si:7,n:62,
+text:"Qu'est-ce que la réduction de dimension et quels algorithmes le cours introduit-il ?",
+code:null,
+opts:["La réduction de dimension augmente le nombre de features pour améliorer les performances.","La réduction de dimension transforme des données haute dimension en représentation basse dimension en conservant l'information essentielle. Le cours introduit l'ACP (Analyse en Composantes Principales) — maximise la variance expliquée en trouvant les axes principaux via les vecteurs propres de la matrice de covariance.","La réduction de dimension est uniquement applicable aux images.","L'ACP produit toujours une meilleure classification que les données brutes."],
+ok:1,
+fb:"ACP (PCA) : trouver les k directions de maximum variance dans les données. Étapes : centrer les données (X ← X - μ), calculer Σ = XᵀX/(n-1), diagonaliser Σ → valeurs propres λ₁≥λ₂≥..., projeter X sur les k premiers vecteurs propres. Variance expliquée : λₖ/Σλᵢ. sklearn.decomposition.PCA(n_components=k). Avantages : réduction du bruit, visualisation (2D/3D), accélération de l'entraînement. Limites : linéaire uniquement → t-SNE ou UMAP pour les structures non-linéaires. En Big Data : Spark ML MLlib.PCA pour l'ACP distribuée."
+},
+{s:"Semaine 6 — Perceptron & Classification",si:7,n:63,
+text:"Récapitulatif : quelles sont les compétences clés acquises à l'issue du MOOC Fondamentaux pour le Big Data ?",
+code:null,
+opts:["Uniquement des compétences en programmation Python avancée.","Python & NumPy (vectorisation, algèbre linéaire), bases de données relationnelles et leurs limites face au Big Data, concepts fondamentaux de probabilités et statistiques (variables aléatoires, loi normale, tests d'hypothèse), calcul différentiel et optimisation (gradient, convexité, régularisation), et le classifieur Perceptron comme fil rouge vers le deep learning.","Uniquement des compétences en SQL et bases de données.","Des compétences en développement d'applications web avec Python."],
+ok:1,
+fb:"Ce MOOC de l'IMT Télécom ParisTech couvre 7 domaines interconnectés : Python/NumPy (fondations du calcul scientifique), limites des BD relationnelles/NoSQL/Big Data, algèbre linéaire (vecteurs, matrices, valeurs propres, SVD), analyse et optimisation (gradient, convexité, descente de gradient), probabilités (variables aléatoires, lois classiques, Bayes), statistiques (estimateurs, tests, régression, biais-variance, cross-validation), Perceptron (vers le deep learning). Ces fondamentaux sont indispensables pour suivre des formations en data science, big data et machine learning."
+}
+];
+
+const SNAMES = [
+  "S0 — Enjeux Big Data",
+  "S1-2 — Python & NumPy",
+  "S2 — BD & NoSQL",
+  "S1-2 — Algèbre linéaire",
+  "S3-4 — Probabilités",
+  "S3-4 — Analyse & Optimisation",
+  "S5 — Statistiques",
+  "S6 — Perceptron & Classification"
+];
+const STOTALS = [5,12,8,8,8,6,6,10];
+const LETTERS = ['A','B','C','D'];
+
+let S = {screen:'intro',cur:0,score:0,ans:false,ss:[0,0,0,0,0,0,0,0]};
+
+function pct(s,t){return t===0?0:Math.round(s/t*100);}
+
+function uh(){
+  const hs=document.getElementById('header-score');
+  const sub=document.getElementById('header-sub');
+  if(S.screen==='question'){
+    hs.style.display='block';
+    hs.textContent=S.score+' / '+S.cur+' ok';
+    sub.textContent='Q'+Q[S.cur].n+'/'+Q.length+' — '+Q[S.cur].s;
+  } else if(S.screen==='result'){
+    hs.style.display='none';
+    sub.textContent='Résultats finaux';
+  } else {
+    hs.style.display='none';
+    sub.textContent='QCM de positionnement — CYBERSTRUCT';
+  }
+}
+
+function intro(){
+  S.screen='intro'; uh();
+  document.getElementById('app').innerHTML=`
+  <div class="intro-card card-anim">
+    <div class="intro-title">Fondamentaux pour le Big Data</div>
+    <div class="intro-sub">63 questions couvrant les 7 parties du MOOC de l'Institut Mines-Télécom (Télécom ParisTech) disponible sur FUN MOOC. Seuil de certification : 60% par thème et 70% en global.</div>
+    <div class="intro-stats">
+      <div class="intro-stat"><div class="intro-stat-val">63</div><div class="intro-stat-label">questions</div></div>
+      <div class="intro-stat"><div class="intro-stat-val">70%</div><div class="intro-stat-label">seuil global</div></div>
+      <div class="intro-stat"><div class="intro-stat-val">60%</div><div class="intro-stat-label">seuil par thème</div></div>
+      <div class="intro-stat"><div class="intro-stat-val">~50 min</div><div class="intro-stat-label">durée estimée</div></div>
+    </div>
+    <div class="intro-blocs">
+      <div class="intro-blocs-title">Semaines du cours</div>
+      ${[
+        ["S0","Enjeux du Big Data (3V, CAP, MapReduce, scalabilité)","5 q"],
+        ["S1-2","Python & NumPy (broadcasting, vectorisation, slicing, np.linalg)","12 q"],
+        ["S2","Bases de données & NoSQL (SQL, ACID, HDFS, Spark, NoSQL)","8 q"],
+        ["S1-2","Algèbre linéaire (valeurs propres, SVD, produit scalaire, ACP)","8 q"],
+        ["S3-4","Probabilités (variables aléatoires, loi normale, Bayes, Poisson)","8 q"],
+        ["S3-4","Analyse & Optimisation (gradient, convexité, SGD, régularisation)","6 q"],
+        ["S5","Statistiques (estimateurs, tests d'hypothèse, régression, biais-variance)","6 q"],
+        ["S6","Perceptron & Classification (hyperplan, softmax, cross-entropy, MLP)","10 q"]
+      ].map(([s,name,q])=>`
+      <div class="intro-bloc-item">
+        <div class="intro-bloc-num">${s}</div>
+        <span>${name}</span>
+        <span class="intro-bloc-q">${q}</span>
+      </div>`).join('')}
+    </div>
+    <button class="btn-start" onclick="start()">Commencer le QCM</button>
+  </div>`;
+}
+
+function start(){
+  S={screen:'question',cur:0,score:0,ans:false,ss:[0,0,0,0,0,0,0,0]};
+  render();
+}
+
+function render(){
+  S.screen='question'; S.ans=false; uh();
+  const q=Q[S.cur];
+  const prog=Math.round(S.cur/Q.length*100);
+  document.getElementById('app').innerHTML=`
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" style="width:${prog}%"></div></div>
+    <div class="progress-labels"><span>Q${q.n} / ${Q.length}</span><span>${prog}%</span></div>
+  </div>
+  <div class="card card-anim">
+    <div class="semaine-badge">${q.s}</div>
+    <div class="question-text">${q.text}</div>
+    ${q.code?`<div class="code-block">${q.code}</div>`:''}
+    <div class="options" id="opts">
+      ${q.opts.map((o,i)=>`
+      <button class="option-btn" onclick="ans(${i})">
+        <span class="option-letter">${LETTERS[i]}</span>
+        <span>${o}</span>
+      </button>`).join('')}
+    </div>
+    <div id="fb"></div>
+    <div class="nav-row" id="nav" style="display:none">
+      <button class="btn-next" onclick="next()">${S.cur<Q.length-1?'Question suivante →':'Voir mes résultats →'}</button>
+    </div>
+  </div>`;
+}
+
+function ans(i){
+  if(S.ans)return;
+  S.ans=true;
+  const q=Q[S.cur];
+  const ok=i===q.ok;
+  if(ok){S.score++;S.ss[q.si]++;}
+  document.querySelectorAll('.option-btn').forEach((b,j)=>{
+    b.disabled=true;
+    if(j===i&&ok)b.classList.add('correct');
+    if(j===i&&!ok)b.classList.add('wrong');
+    if(j===q.ok&&!ok)b.classList.add('reveal-correct');
+  });
+  document.getElementById('fb').innerHTML=`
+  <div class="feedback-box ${ok?'correct':'wrong'}">
+    <span class="feedback-label">${ok?'✓ Bonne réponse':'✗ Mauvaise réponse'}</span>${q.fb}
+  </div>`;
+  document.getElementById('nav').style.display='flex';
+  uh();
+}
+
+function next(){
+  S.cur++;
+  if(S.cur>=Q.length) result();
+  else render();
+}
+
+function result(){
+  S.screen='result'; uh();
+  const p=pct(S.score,Q.length);
+  let vt,vs;
+  if(p>=80){vt='Excellent — tu es prêt(e) pour la certification FUN MOOC !';vs='background:var(--success-bg);border-color:var(--success-border);color:var(--success-text);';}
+  else if(p>=70){vt='Tu franchis le seuil global (70%) — quelques thèmes à consolider.';vs='background:var(--warn-bg);border-color:var(--warn-border);color:var(--warn-text);';}
+  else{vt='En dessous du seuil — reprendre les semaines en difficulté sur FUN MOOC.';vs='background:var(--error-bg);border-color:var(--error-border);color:var(--error-text);';}
+
+  const bc=SNAMES.map((n,i)=>{
+    const p2=pct(S.ss[i],STOTALS[i]);
+    const col=p2>=60?'':'color:var(--error-text)';
+    return `<div class="bloc-card"><div class="bloc-card-name">${n}</div><div class="bloc-card-score" style="${col}">${S.ss[i]}/${STOTALS[i]}<span class="bloc-card-pct">(${p2}%)</span></div></div>`;
+  }).join('');
+
+  document.getElementById('app').innerHTML=`
+  <div class="result-card card-anim">
+    <div class="result-pct">${p}%</div>
+    <div class="result-fraction">${S.score} / ${Q.length} bonnes réponses</div>
+    <div class="result-verdict" style="${vs}">${vt}</div>
+    <div class="bloc-grid">${bc}</div>
+    <div class="threshold-note">Seuil FUN MOOC : 70% global (44/63) ET 60% par thème. Les scores en rouge sont en dessous du seuil thématique.</div>
+    <button class="btn-restart" onclick="restart()">Recommencer le QCM</button>
+  </div>`;
+}
+
+function restart(){
+  S={screen:'intro',cur:0,score:0,ans:false,ss:[0,0,0,0,0,0,0,0]};
+  intro();
+}
+
+intro();
+</script>
+</body>
+</html>
